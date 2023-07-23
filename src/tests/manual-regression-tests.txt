@@ -1,0 +1,39 @@
+Manual Regression Tests
+-----------------------
+Steps to spot bugs and to ensure extension/source is not breaking
+Used for regression/smoke testing
+Automation tests commands:
+    - paperback test
+    - npm test 
+
+1. First source page
+* Recently Uploaded (Discover) + View:
+    - All thumbnails/album covers l are visible and correct
+    - All titles are correct
+    - Ordering of albums are correct
+
+* Hot (Discover) + View:
+    - All thumbnails/album covers l are visible and correct
+    - All titles are correct
+    - Ordering of albums are correct
+
+* Album Info
+    - Title is correct 
+    - Artist/Author is source name
+    - Description is correct
+    - Tags are correct
+    - Clicked tags are taken to search results that contain same tag
+    - Clicked asian tags are taken to search results that contain same tag
+    - Clicked chapter causes album to load and render all pages
+
+* Chapter viewing
+    - All pages are loaded
+    - Correct amount of pages are loaded
+    - Pages are not duplicated (unless actual album has duplications)
+
+* Search
+    - Search result brings expected results
+        - Single word
+        - Partial word
+        - Multiple words (with whitespace separation)
+        - Asian characters
