@@ -9,7 +9,7 @@
         "serve": "npx paperback serve",
         "test": "npx paperback test",
         "predeploy": "npm run bundle",
-        "deploy": "npx paperback deploy",
+        "deploy": "gh-page -d bundles",
         "nodemon": "nodemon"
     },
     "repository": {
