@@ -463,7 +463,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.NetTruyen = exports.NetTruyenInfo = exports.isLastPage = void 0;
 const types_1 = require("@paperback/types");
 const NetTruyenParser_1 = require("./NetTruyenParser");
-const DOMAIN = 'https://www.nettruyenmax.com';
+const DOMAIN = 'https://www.nettruyenmax.com/';
 const isLastPage = ($) => {
     const current = $('ul.pagination > li.active > a').text();
     let total = $('ul.pagination > li.PagerSSCCells:last-child').text();
@@ -794,7 +794,7 @@ class Parser {
             const group = $('div.col-xs-3', obj).text();
             let name = $('div.chapter a', obj).text();
             const chapNum = $('div.chapter a', obj).text().split(' ')[1];
-            name = name.includes(':') ? String(name.split('Chapter ' + chapNum + ':')[1]).trim() : '';
+            name = name.includes(':') ? String(name.split(':')[1]).trim() : '';
             const timeFinal = this.convertTime(time);
             chapters.push(App.createChapter({
                 id: id,
