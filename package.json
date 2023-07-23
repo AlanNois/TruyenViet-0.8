@@ -8,6 +8,8 @@
         "bundle": "npx paperback bundle",
         "serve": "npx paperback serve",
         "test": "npx paperback test",
+        "predeploy": "npm run bundle",
+        "deploy": "npx paperback deploy",
         "nodemon": "nodemon"
     },
     "repository": {
