@@ -35,13 +35,13 @@ export const isLastPage = ($: CheerioStatic): boolean => {
     return true;
 }
 
-export const NetTruyenInfo: SourceInfo = {
+export const NhatTruyenInfo: SourceInfo = {
     version: '1.0.0',
-    name: 'NetTruyen',
+    name: 'NhatTruyen',
     icon: 'icon.png',
     author: 'AlanNois',
     authorWebsite: 'https://github.com/AlanNois/',
-    description: 'Extension that pulls manga from NetTruyen.',
+    description: 'Extension that pulls manga from NhatTruyen.',
     contentRating: ContentRating.EVERYONE,
     websiteBaseURL: DOMAIN,
     sourceTags: [
@@ -57,7 +57,7 @@ export const NetTruyenInfo: SourceInfo = {
     intents: SourceIntents.MANGA_CHAPTERS | SourceIntents.HOMEPAGE_SECTIONS
 };
 
-export class NetTruyen implements SearchResultsProviding, MangaProviding, ChapterProviding, HomePageSectionsProviding{
+export class NhatTruyen implements SearchResultsProviding, MangaProviding, ChapterProviding, HomePageSectionsProviding{
     
     constructor(private cheerio: CheerioAPI) { }
 
