@@ -1801,7 +1801,7 @@ class Parser {
             manga.push(App.createPartialSourceManga({
                 mangaId: String(id),
                 image: encodeURI(this.decodeHTMLEntity(image)),
-                title: title,
+                title: this.decodeHTMLEntity(title),
                 subtitle: chapter,
             }));
         });
