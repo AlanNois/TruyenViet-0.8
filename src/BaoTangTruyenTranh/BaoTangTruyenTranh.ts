@@ -99,6 +99,7 @@ export class BaoTangTruyenTranh implements ChapterProviding, MangaProviding, Sea
     }
 
     async getMangaDetails(mangaId: string): Promise<SourceManga> {
+        console.log(`${DOMAIN}${mangaId}`);
         const $ = await this.DOMHTML(`${DOMAIN}${mangaId}`);
         return this.parser.parseMangaDetails($, mangaId);
     }
@@ -183,10 +184,10 @@ export class BaoTangTruyenTranh implements ChapterProviding, MangaProviding, Sea
                     url = `${DOMAIN}`;
                     break;
                 case 'new_updated':
-                    url = `${DOMAIN}/home?page=1&typegroup=0`;
+                    url = `${DOMAIN}home?page=1&typegroup=0`;
                     break;
                 case 'trans':
-                    url = `${DOMAIN}/home?page=1&typegroup=1`;
+                    url = `${DOMAIN}home?page=1&typegroup=1`;
                     break;
                 default:
                     throw new Error("Invalid home section ID");

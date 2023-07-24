@@ -19,11 +19,12 @@ export class Parser {
             tags.push(App.createTag({ label, id }));
         });
 
-        const titles = [this.decodeHTMLEntity($('.title').text().trim())];
+        const titles = [this.decodeHTMLEntity($('.title-detail').text().trim())];
+        console.log(titles);
         const author = this.decodeHTMLEntity($('.author p').last().text().trim());
         const artist = this.decodeHTMLEntity($('.author p').last().text().trim());
         const desc = $('#summary').text();
-        const image = $('.col-image img').attr('data-src') ?? "";
+        const image = encodeURI($('.col-image img').attr('data-src') ?? "");
         const status = $('.status p').last().text().trim();
 
         return App.createSourceManga({
@@ -83,7 +84,7 @@ export class Parser {
             manga.push(App.createPartialSourceManga({
                 mangaId: String(id),
                 image: encodeURI(this.decodeHTMLEntity(image)),
-                title: title,
+                title: this.decodeHTMLEntity(title),
                 subtitle: chapter,
             }));
         });
