@@ -1630,7 +1630,7 @@ class BaoTangTruyenTranh {
             metadata,
         });
     }
-    async getTags() {
+    async getSearchTags() {
         const tags = [];
         const tags2 = [
             {
