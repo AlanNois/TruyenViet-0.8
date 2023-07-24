@@ -460,10 +460,10 @@ __exportStar(require("./compat/DyamicUI"), exports);
 },{"./base/index":7,"./compat/DyamicUI":16,"./generated/_exports":60}],62:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.NetTruyen = exports.NetTruyenInfo = exports.isLastPage = void 0;
+exports.NhatTruyen = exports.NhatTruyenInfo = exports.isLastPage = void 0;
 const types_1 = require("@paperback/types");
-const NetTruyenParser_1 = require("./NetTruyenParser");
-const DOMAIN = 'https://www.nettruyenmax.com/';
+const NhatTruyenParser_1 = require("./NhatTruyenParser");
+const DOMAIN = 'https://nhattruyenmin.com/';
 const isLastPage = ($) => {
     const current = $('ul.pagination > li.active > a').text();
     let total = $('ul.pagination > li.PagerSSCCells:last-child').text();
@@ -474,13 +474,13 @@ const isLastPage = ($) => {
     return true;
 };
 exports.isLastPage = isLastPage;
-exports.NetTruyenInfo = {
+exports.NhatTruyenInfo = {
     version: '1.0.0',
-    name: 'NetTruyen',
+    name: 'NhatTruyen',
     icon: 'icon.png',
     author: 'AlanNois',
     authorWebsite: 'https://github.com/AlanNois/',
-    description: 'Extension that pulls manga from NetTruyen.',
+    description: 'Extension that pulls manga from NhatTruyen.',
     contentRating: types_1.ContentRating.EVERYONE,
     websiteBaseURL: DOMAIN,
     sourceTags: [
@@ -495,7 +495,7 @@ exports.NetTruyenInfo = {
     ],
     intents: types_1.SourceIntents.MANGA_CHAPTERS | types_1.SourceIntents.HOMEPAGE_SECTIONS
 };
-class NetTruyen {
+class NhatTruyen {
     constructor(cheerio) {
         this.cheerio = cheerio;
         this.requestManager = App.createRequestManager({
@@ -517,7 +517,7 @@ class NetTruyen {
                 }
             }
         });
-        this.parser = new NetTruyenParser_1.Parser();
+        this.parser = new NhatTruyenParser_1.Parser();
     }
     getMangaShareUrl(mangaId) {
         return `${DOMAIN}/${mangaId}`;
@@ -722,9 +722,9 @@ class NetTruyen {
         mangaUpdatesFoundCallback(App.createMangaUpdates(returnObject));
     }
 }
-exports.NetTruyen = NetTruyen;
+exports.NhatTruyen = NhatTruyen;
 
-},{"./NetTruyenParser":63,"@paperback/types":61}],63:[function(require,module,exports){
+},{"./NhatTruyenParser":63,"@paperback/types":61}],63:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Parser = void 0;
@@ -763,7 +763,6 @@ class Parser {
         $('li.kind > p.col-xs-8 > a').each((_, obj) => {
             const label = $(obj).text();
             const id = $(obj).attr('href')?.split('/')[4] ?? label;
-            console.log(id);
             tags.push(App.createTag({ label, id }));
         });
         const titles = $('h1.title-detail').text().trim();
