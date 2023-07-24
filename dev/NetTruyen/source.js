@@ -763,6 +763,7 @@ class Parser {
         $('li.kind > p.col-xs-8 > a').each((_, obj) => {
             const label = $(obj).text();
             const id = $(obj).attr('href')?.split('/')[4] ?? label;
+            console.log(id);
             tags.push(App.createTag({ label, id }));
         });
         const titles = $('h1.title-detail').text().trim();
