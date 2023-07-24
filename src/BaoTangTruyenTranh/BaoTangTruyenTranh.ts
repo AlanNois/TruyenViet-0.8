@@ -236,7 +236,7 @@ export class BaoTangTruyenTranh implements ChapterProviding, MangaProviding, Sea
         })
     }
 
-    async getTags(): Promise<TagSection[]> {
+    async getSearchTags(): Promise<TagSection[]> {
         const tags: Tag[] = [];
         const tags2: Tag[] = [
             {
