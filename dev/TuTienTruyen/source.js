@@ -748,6 +748,7 @@ class Parser {
     convertTime(timeAgo) {
         let trimmed = Number((/\d*/.exec(timeAgo) ?? [])[0]);
         trimmed = (trimmed === 0 && timeAgo.includes('a')) ? 1 : trimmed;
+        console.log(trimmed);
         if (timeAgo.includes('giây') || timeAgo.includes('secs')) {
             return new Date(Date.now() - trimmed * 1000);
         }
@@ -818,7 +819,6 @@ class Parser {
             const chapNum = parseFloat(String($('div.chapter a', obj).text().split(' ')[1]));
             name = name.includes(':') ? String(name.split('Chapter ' + chapNum + ':')[1]).trim() : '';
             const timeFinal = this.convertTime(time);
-            console.log(time);
             chapters.push(App.createChapter({
                 id,
                 chapNum,
