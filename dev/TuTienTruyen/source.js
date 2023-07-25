@@ -763,6 +763,9 @@ class Parser {
         else if (timeAgo.includes('tuần')) {
             return new Date(Date.now() - trimmed * 604800000);
         }
+        else if (timeAgo.includes('tháng')) {
+            return new Date(Date.now() - trimmed * 2592000000);
+        }
         else if (timeAgo.includes('năm')) {
             return new Date(Date.now() - trimmed * 31556952000);
         }
