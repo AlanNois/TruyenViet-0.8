@@ -662,10 +662,10 @@ class TuTienTruyen {
                 param = `?status=-1&sort=10&page=${page}`;
                 url = `${DOMAIN}tim-truyen`;
                 break;
-            // case "hot":
-            //     param = `?page=${page}`;
-            //     url = `${DOMAIN}hot`;
-            //     break;
+            case "hot":
+                param = `?page=${page}`;
+                url = `${DOMAIN}hot`;
+                break;
             case "new_updated":
                 param = `?page=${page}`;
                 url = DOMAIN;
@@ -705,12 +705,6 @@ class TuTienTruyen {
         const updateManga = [];
         const pages = 10;
         for (let i = 1; i < pages + 1; i++) {
-            // const request = createRequestObject({
-            //     url: DOMAIN + '?page=' + i,
-            //     method: 'GET',
-            // })
-            // const response = await this.requestManager.schedule(request, 1)
-            // const $ = this.cheerio.load(response.data);
             let url = `${DOMAIN}?page=${i}`;
             const $ = await this.DOMHTML(url);
             const updateManga = $('div.item', 'div.row').toArray().map(manga => {
