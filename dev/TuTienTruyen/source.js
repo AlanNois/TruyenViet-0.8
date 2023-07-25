@@ -665,7 +665,7 @@ class TuTienTruyen {
                 break;
             case "hot":
                 param = `?page=${page}`;
-                url = `${DOMAIN}hot`;
+                url = `${DOMAIN}hot/hot`;
                 break;
             case "new_updated":
                 param = `?page=${page}`;
