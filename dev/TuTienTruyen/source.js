@@ -536,15 +536,15 @@ class TuTienTruyen {
         return this.cheerio.load(response.data);
     }
     async getMangaDetails(mangaId) {
-        const $ = await this.DOMHTML(mangaId);
+        const $ = await this.DOMHTML(`${DOMAIN}${mangaId}`);
         return this.parser.parseMangaDetails($, mangaId, DOMAIN);
     }
     async getChapters(mangaId) {
-        const $ = await this.DOMHTML(mangaId);
+        const $ = await this.DOMHTML(`${DOMAIN}${mangaId}`);
         return this.parser.parseChapterList($);
     }
     async getChapterDetails(mangaId, chapterId) {
-        const $ = await this.DOMHTML(chapterId);
+        const $ = await this.DOMHTML(`${DOMAIN}${chapterId}`);
         const pages = this.parser.parseChapterDetails($);
         return App.createChapterDetails({
             id: chapterId,
@@ -840,6 +840,7 @@ class Parser {
         const tiles = [];
         $('div.item', 'div.row').each((_, manga) => {
             const title = $('figure.clearfix > figcaption > h3 > a', manga).first().text();
+            console.log(title);
             const mangaId = $('figure.clearfix > div.image > a', manga).attr('href')?.split('/').pop();
             const image = $('figure.clearfix > div.image > a > img', manga).first().attr('data-original');
             const subtitle = $("figure.clearfix > figcaption > ul > li.chapter:nth-of-type(1) > a", manga).last().text().trim();
