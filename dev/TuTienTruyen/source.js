@@ -839,8 +839,7 @@ class Parser {
     parseSearchResults($, DOMAIN) {
         const tiles = [];
         $('div.item', 'div.row').each((_, manga) => {
-            const title = $('figure.clearfix > figcaption > h3 > a', manga).first().text();
-            console.log(title);
+            const title = $('figure.clearfix > figcaption > h3 > a', manga).first().text().trim();
             const mangaId = $('figure.clearfix > div.image > a', manga).attr('href')?.split('/').pop();
             const image = $('figure.clearfix > div.image > a > img', manga).first().attr('data-original');
             const subtitle = $("figure.clearfix > figcaption > ul > li.chapter:nth-of-type(1) > a", manga).last().text().trim();
