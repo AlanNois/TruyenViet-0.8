@@ -1610,15 +1610,15 @@ class BaoTangTruyenTranh {
     async getViewMoreItems(homepageSectionId, metadata) {
         let page = metadata?.page ?? 1;
         let url = '';
-        let select = 1;
+        // let select = 1;
         switch (homepageSectionId) {
             case 'new_updated':
                 url = `${DOMAIN}/home?page=${page}&typegroup=0`;
-                select = 1;
+                // select = 1;
                 break;
             case 'trans':
                 url = `${DOMAIN}/home?page=${page}&typegroup=1`;
-                select = 1;
+                // select = 1;
                 break;
             default:
                 return App.createPagedResults({ results: [] });
