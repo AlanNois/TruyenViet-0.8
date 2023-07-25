@@ -532,6 +532,7 @@ class TuTienTruyen {
             method: 'GET',
         });
         const response = await this.requestManager.schedule(request, 1);
+        this.CloudFlareError(response.status);
         return this.cheerio.load(response.data);
     }
     async getMangaDetails(mangaId) {
