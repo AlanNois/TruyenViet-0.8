@@ -639,7 +639,7 @@ class TuTienTruyen {
                     section.items = this.parser.parsePopularSection($, DOMAIN);
                     break;
                 case 'hot':
-                    section.items = this.parser.parseHotSection($);
+                    section.items = this.parser.parseHotSection($, DOMAIN);
                     break;
                 case 'new_updated':
                     section.items = this.parser.parseNewUpdatedSection($, DOMAIN);
@@ -946,20 +946,20 @@ class Parser {
         });
         return viewestItems;
     }
-    parseHotSection($) {
+    parseHotSection($, DOMAIN) {
         const topWeek = [];
-        $('div.item', 'div.row').slice(0, 20).each((_, manga) => {
-            const title = $('figure.clearfix > figcaption > h3 > a', manga).first().text();
-            const mangaId = $('figure.clearfix > div.image > a', manga).attr('href')?.split('/').pop();
-            const image = $('figure.clearfix > div.image > a > img', manga).first().attr('data-original');
-            const subtitle = $("figure.clearfix > figcaption > ul > li.chapter:nth-of-type(1) > a", manga).last().text().trim();
+        $('div.item', 'div.altcontent1').each((_, manga) => {
+            const title = $('.slide-caption > h3 > a', manga).text();
+            const mangaId = $('a', manga).attr('href')?.split('/').pop();
+            const image = $('a > img.lazyOwl', manga).attr('src');
+            const subtitle = $('.slide-caption > a', manga).text().trim() + ' - ' + $('.slide-caption > .time', manga).text().trim();
             if (!mangaId || !title)
                 return;
             topWeek.push(App.createPartialSourceManga({
                 mangaId,
-                image: !image ? "https://i.imgur.com/GYUxEX8.png" : 'http:' + image,
+                image: !image ? "https://i.imgur.com/GYUxEX8.png" : image.includes('http') ? image : `${DOMAIN}${image}`,
                 title,
-                subtitle
+                subtitle,
             }));
         });
         return topWeek;
