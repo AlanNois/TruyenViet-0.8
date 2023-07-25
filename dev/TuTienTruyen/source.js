@@ -818,6 +818,7 @@ class Parser {
             const chapNum = parseFloat(String($('div.chapter a', obj).text().split(' ')[1]));
             name = name.includes(':') ? String(name.split('Chapter ' + chapNum + ':')[1]).trim() : '';
             const timeFinal = this.convertTime(time);
+            console.log(time);
             chapters.push(App.createChapter({
                 id,
                 chapNum,
@@ -827,7 +828,6 @@ class Parser {
                 group: `${group} lượt xem`
             }));
         });
-        console.log(chapters);
         return chapters;
     }
     parseChapterDetails($) {
