@@ -8536,6 +8536,7 @@ class Parser {
                 name,
                 langCode: 'vi',
                 time: new Date(`${formattedDate} ${formattedTime}`),
+                group: `${obj.total_view} lượt xem`,
             }));
         }
         if (chapters.length == 0) {
