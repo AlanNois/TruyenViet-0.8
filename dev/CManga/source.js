@@ -8471,7 +8471,7 @@ class CManga {
             const updateManga = Object.keys(json).map(key => {
                 const id = `${json[key].url}-${json[key].id_book}`;
                 const [date, time] = json[key].last_update.split(' ');
-                const [day, month, year] = date.split('/');
+                const [day, month, year] = date.replace('-', '/').split('/');
                 const [hour, minute] = time.split(':');
                 const formattedTime = `${hour}:${minute}`;
                 const formattedDate = `${month}/${day}/${year}`;
@@ -8522,7 +8522,7 @@ class Parser {
         const chapters = [];
         for (const obj of json) {
             const [date, time] = obj.last_update.split(' ');
-            const [day, month, year] = date.split('/');
+            const [day, month, year] = date.replace('-', '/').split('/');
             const [hour, minute] = time.split(':');
             const formattedTime = `${hour}:${minute}`;
             const formattedDate = `${month}/${day}/${year}`;
