@@ -764,7 +764,6 @@ class Parser {
             return new Date(Date.now() - trimmed * 604800000);
         }
         else if (timeAgo.includes('tháng')) {
-            console.log(new Date(Date.now() - trimmed * 2592000000));
             return new Date(Date.now() - trimmed * 2592000000);
         }
         else if (timeAgo.includes('năm')) {
