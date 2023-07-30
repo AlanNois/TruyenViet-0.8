@@ -90,6 +90,7 @@ export class GocTruyenTranh implements SearchResultsProviding, MangaProviding, C
     }
 
     async getMangaDetails(mangaId: string): Promise<SourceManga> {
+        console.log(`${DOMAIN}truyen/${mangaId.split('::')[0]}`);
         const $ = await this.DOMHTML(`${DOMAIN}truyen/${mangaId.split('::')[0]}`);
         return this.parser.parseMangaDetails($, mangaId);
     }

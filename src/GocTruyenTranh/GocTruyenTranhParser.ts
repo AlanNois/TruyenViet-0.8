@@ -52,7 +52,8 @@ export class Parser {
             tags.push(App.createTag({ label, id }));
         })
 
-        const titles = [this.decodeHTMLEntity($('.detail-section .title').text().trim()), this.decodeHTMLEntity($('.other h2').text().trim())];
+        const titles = [this.decodeHTMLEntity($('.detail-section .title h1').text().trim())];
+        console.log(titles);
         const author = $('.detail-section .author').clone().children().remove().end().text().trim();
         const artist = $('.detail-section .author').clone().children().remove().end().text().trim();
         const image = String($('.detail-section .photo > img').attr('src'));
