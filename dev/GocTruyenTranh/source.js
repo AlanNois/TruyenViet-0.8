@@ -1652,7 +1652,7 @@ class Parser {
             const id = $(obj).attr('href')?.trim() ?? label;
             tags.push(App.createTag({ label, id }));
         });
-        const titles = [this.decodeHTMLEntity($('.detail-section .title h1').text().trim()), this.decodeHTMLEntity($('.detail-section .other h2').text().trim())];
+        const titles = [this.decodeHTMLEntity($('.detail-section .title h1').text().trim())];
         console.log(titles);
         const author = $('.detail-section .author').clone().children().remove().end().text().trim();
         const artist = $('.detail-section .author').clone().children().remove().end().text().trim();
