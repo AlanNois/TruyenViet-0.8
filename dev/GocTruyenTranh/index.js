@@ -1692,7 +1692,7 @@ class Parser {
                 id,
                 chapNum,
                 name,
-                langCode: 'gb',
+                langCode: '🇬🇧',
                 time,
                 group
             }));
