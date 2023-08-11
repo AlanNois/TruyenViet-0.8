@@ -1780,7 +1780,7 @@ class Parser {
                 id: id.split('/').slice(-4).join('/'),
                 chapNum: chapNum,
                 name,
-                langCode: 'vi',
+                langCode: '🇻🇳',
                 time: timeFinal,
             }));
         });
