@@ -95,7 +95,7 @@ export class Parser {
                 id,
                 chapNum,
                 name,
-                langCode: 'vi',
+                langCode: '🇻🇳',
                 time,
                 group
             }))

@@ -87,7 +87,7 @@ export class Parser {
                 id,
                 chapNum,
                 name,
-                langCode: 'vi',
+                langCode: '🇻🇳',
                 time: timeFinal,
                 group: `${group} lượt xem`
             }));

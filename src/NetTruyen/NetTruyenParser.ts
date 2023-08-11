@@ -83,7 +83,7 @@ export class Parser {
                 id: id,
                 chapNum: parseFloat(String(chapNum)),
                 name: name,
-                langCode: 'vi',
+                langCode: '🇻🇳',
                 time: timeFinal,
                 group: `${group} lượt xem`
             }));
