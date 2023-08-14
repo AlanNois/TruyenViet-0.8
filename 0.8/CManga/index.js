@@ -8534,7 +8534,7 @@ class Parser {
                 id,
                 chapNum,
                 name,
-                langCode: 'vi',
+                langCode: '🇻🇳',
                 time: new Date(`${formattedDate} ${formattedTime}`),
                 group: `${obj.total_view} lượt xem`,
             }));
