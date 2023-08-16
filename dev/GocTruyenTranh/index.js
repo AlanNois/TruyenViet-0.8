@@ -1522,7 +1522,7 @@ class GocTruyenTranh {
         const tags = query.includedTags?.map(tag => tag.id) ?? [];
         const url = query.title ? encodeURI(`${DOMAIN}api/comic/search?name=${query.title}`) : `${DOMAIN}api/comic/search/category?p=${page}&value=${tags[0]}`;
         const json = await this.callAPI(url);
-        const tiles = this.parser.parseSearchResults(json, DOMAIN);
+        const tiles = this.parser.parseSearchResults(json);
         metadata = query.title ? undefined : { page: page + 1 };
         return App.createPagedResults({
             results: tiles,
@@ -1709,14 +1709,14 @@ class Parser {
         });
         return pages;
     }
-    parseSearchResults(json, DOMAIN) {
+    parseSearchResults(json) {
         const tiles = [];
         const array = json.result.data ?? json.result;
         for (let obj of array) {
             let title = obj.name;
             let subtitle = `Chương ${obj.numberChapter}`;
             const image = obj.photo;
-            let mangaId = `${DOMAIN}truyen/${obj.nameEn}::${obj.id}`;
+            let mangaId = `${obj.nameEn}::${obj.id}`;
             tiles.push(App.createPartialSourceManga({
                 mangaId,
                 image: encodeURI(image) ?? "",
