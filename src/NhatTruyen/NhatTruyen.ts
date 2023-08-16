@@ -116,16 +116,29 @@ export class NhatTruyen implements SearchResultsProviding, MangaProviding, Chapt
         })
     }
 
+    async supportsTagExclusion(): Promise<boolean> {
+        return true;
+    }
+
     async getSearchResults(query: SearchRequest, metadata: any): Promise<PagedResults> {
         let page = metadata?.page ?? 1;
 
         const search = {
             genres: '',
+            exgenres: '',
             gender: "-1",
             status: "-1",
             minchapter: "1",
             sort: "0"
         };
+
+        const extags = query.excludedTags?.map(tag => tag.id) ?? [];
+        const exgenres: string[] = [];
+        for (const value of extags) {
+            if (value.indexOf('.') === -1) {
+                exgenres.push(value);
+            }
+        }
 
         const tags = query.includedTags?.map(tag => tag.id) ?? [];
         const genres: string[] = [];
@@ -151,9 +164,11 @@ export class NhatTruyen implements SearchResultsProviding, MangaProviding, Chapt
             }
         }
         search.genres = genres.join(",");
+        search.exgenres = exgenres.join(",");
+        const paramExgenres = search.exgenres ? `&notgenres=${search.exgenres}` : '';
 
         const url = `${DOMAIN}${query.title ? '/tim-truyen' : '/tim-truyen-nang-cao'}`;
-        const param = encodeURI(`?keyword=${query.title ?? ''}&genres=${search.genres}&gender=${search.gender}&status=${search.status}&minchapter=${search.minchapter}&sort=${search.sort}&page=${page}`);
+        const param = encodeURI(`?keyword=${query.title ?? ''}&genres=${search.genres}${paramExgenres}&gender=${search.gender}&status=${search.status}&minchapter=${search.minchapter}&sort=${search.sort}&page=${page}`);
         const $ = await this.DOMHTML(url + param);
         const tiles = this.parser.parseSearchResults($);
         metadata = !isLastPage($) ? { page: page + 1 } : undefined;

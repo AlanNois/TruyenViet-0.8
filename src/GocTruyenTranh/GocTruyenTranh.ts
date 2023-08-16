@@ -116,7 +116,7 @@ export class GocTruyenTranh implements SearchResultsProviding, MangaProviding, C
         const tags = query.includedTags?.map(tag => tag.id) ?? [];
         const url = query.title ? encodeURI(`${DOMAIN}api/comic/search?name=${query.title}`) : `${DOMAIN}api/comic/search/category?p=${page}&value=${tags[0]}`;
         const json = await this.callAPI(url);
-        const tiles = this.parser.parseSearchResults(json, DOMAIN);
+        const tiles = this.parser.parseSearchResults(json);
 
         metadata = query.title ? undefined : { page: page + 1 };
 

@@ -116,14 +116,14 @@ export class Parser {
         return pages;
     }
 
-    parseSearchResults(json: any, DOMAIN: string): PartialSourceManga[] {
+    parseSearchResults(json: any): PartialSourceManga[] {
         const tiles: PartialSourceManga[] = [];
         const array = json.result.data ?? json.result;
         for (let obj of array) {
             let title = obj.name;
             let subtitle = `Chương ${obj.numberChapter}`;
             const image = obj.photo;
-            let mangaId = `${DOMAIN}truyen/${obj.nameEn}::${obj.id}`;
+            let mangaId = `${obj.nameEn}::${obj.id}`;
             tiles.push(App.createPartialSourceManga({
                 mangaId,
                 image: encodeURI(image) ?? "",
