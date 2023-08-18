@@ -460,7 +460,7 @@ __exportStar(require("./compat/DyamicUI"), exports);
 },{"./base/index":7,"./compat/DyamicUI":16,"./generated/_exports":60}],62:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.DocTruyen3Q = exports.Doctruyen3QInfo = exports.isLastPage = void 0;
+exports.DocTruyen3Q = exports.DocTruyen3QInfo = exports.isLastPage = void 0;
 const types_1 = require("@paperback/types");
 const DocTruyen3QParser_1 = require("./DocTruyen3QParser");
 const DOMAIN = 'https://doctruyen3qtv.net/';
@@ -470,7 +470,7 @@ const isLastPage = ($) => {
     return currentPage >= lastPage;
 };
 exports.isLastPage = isLastPage;
-exports.Doctruyen3QInfo = {
+exports.DocTruyen3QInfo = {
     version: '1.0.0',
     name: 'DocTruyen3Q',
     icon: 'icon.png',
