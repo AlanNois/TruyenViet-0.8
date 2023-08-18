@@ -768,7 +768,7 @@ class Parser {
         const tiles = [];
         $('.content-search-left > .main-left .item-manga > .item').each((_, obj) => {
             const title = $('.caption > h3 > a', obj).text().trim();
-            let image = $('.image-item > a > img', obj).attr('src') ?? $('.image-item > a > img', obj).attr('data-original');
+            let image = $('.image-item > a > img', obj).attr('data-original') ?? $('.image-item > a > img', obj).attr('src');
             image = !image ? "https://i.imgur.com/GYUxEX8.png" : image;
             const mangaId = String($('.caption > h3 > a', obj).attr('href')?.split('/').slice(4).join('/'));
             const subtitle = $('ul > li:first-child > a', obj).text().trim();
@@ -806,7 +806,7 @@ class Parser {
         const homeItems = [];
         $(`${id} > .body > .main-left .item-manga > .item`).each((_, obj) => {
             const title = $('.caption > h3 > a', obj).text().trim();
-            let image = $('.image-item > a > img', obj).attr('src') ?? $('.image-item > a > img', obj).attr('data-original');
+            let image = $('.image-item > a > img', obj).attr('data-original') ?? $('.image-item > a > img', obj).attr('src');
             image = !image ? "https://i.imgur.com/GYUxEX8.png" : image;
             const mangaId = String($('.caption > h3 > a', obj).attr('href')?.split('/').slice(4).join('/'));
             const subtitle = $('ul > li:first-child > a', obj).text().trim();
