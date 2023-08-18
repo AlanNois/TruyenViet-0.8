@@ -562,8 +562,8 @@ class DocTruyen3Q {
             }
         }
         const url = `${DOMAIN}/tim-truyen/`;
-        const search_query = (!query.title) ? '' : `?keyword=${query.title}`;
-        const param = `${search.cate}${search_query}&sort=${search.sort}&status=${search.status}&page=${page}`;
+        const search_query = (!query.title) ? '?' : `?keyword=${query.title}&`;
+        const param = `${search.cate}${search_query}sort=${search.sort}&status=${search.status}&page=${page}`;
         const $ = await this.DOMHTML(`${url}${encodeURI(param)}`);
         const tiles = this.parser.parseSearchResults($);
         metadata = (0, exports.isLastPage)($) ? undefined : { page: page + 1 };
