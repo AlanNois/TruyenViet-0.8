@@ -863,9 +863,9 @@ class Parser {
             tags2.push({ id: id, label: label });
         });
         const tagSections = [
-            App.createTagSection({ id: '1', label: 'Thể Loại', tags: tags.map(x => App.createTag(x)) }),
-            App.createTagSection({ id: '2', label: 'Trạng Thái', tags: tags1.map(x => App.createTag(x)) }),
-            App.createTagSection({ id: '3', label: 'Sắp Xếp', tags: tags2.map(x => App.createTag(x)) })
+            App.createTagSection({ id: '1', label: 'Thể Loại (Chỉ chọn 1)', tags: tags.map(x => App.createTag(x)) }),
+            App.createTagSection({ id: '2', label: 'Trạng Thái(Chỉ chọn 1)', tags: tags1.map(x => App.createTag(x)) }),
+            App.createTagSection({ id: '3', label: 'Sắp Xếp(Chỉ chọn 1)', tags: tags2.map(x => App.createTag(x)) })
         ];
         return tagSections;
     }
