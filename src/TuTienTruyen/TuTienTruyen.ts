@@ -52,10 +52,6 @@ export const TuTienTruyenInfo: SourceInfo = {
         {
             text: 'Notifications',
             type: BadgeColor.GREEN
-        },
-        {
-            text: 'Cloudflare',
-            type: BadgeColor.RED
         }
     ],
     intents: SourceIntents.MANGA_CHAPTERS | SourceIntents.HOMEPAGE_SECTIONS | SourceIntents.CLOUDFLARE_BYPASS_REQUIRED

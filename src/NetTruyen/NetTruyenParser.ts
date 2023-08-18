@@ -71,7 +71,7 @@ export class Parser {
         const chapters: Chapter[] = [];
 
         $('div.list-chapter > nav > ul > li.row:not(.heading)').each((_: any, obj: any) => {
-            const id = String($('div.chapter a', obj).attr('href')).split('/').slice(4, 7).join('/');
+            const id = String($('div.chapter a', obj).attr('href')).split('/').slice(4).join('/');
             const time = $('div.col-xs-4', obj).text();
             const group = $('div.col-xs-3', obj).text();
             let name = $('div.chapter a', obj).text();
