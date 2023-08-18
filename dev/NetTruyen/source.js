@@ -803,7 +803,7 @@ class Parser {
     parseChapterList($) {
         const chapters = [];
         $('div.list-chapter > nav > ul > li.row:not(.heading)').each((_, obj) => {
-            const id = String($('div.chapter a', obj).attr('href')).split('/').slice(4, 7).join('/');
+            const id = String($('div.chapter a', obj).attr('href')).split('/').slice(4).join('/');
             const time = $('div.col-xs-4', obj).text();
             const group = $('div.col-xs-3', obj).text();
             let name = $('div.chapter a', obj).text();
