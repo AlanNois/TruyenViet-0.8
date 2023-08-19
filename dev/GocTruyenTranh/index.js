@@ -1532,8 +1532,8 @@ class GocTruyenTranh {
     async getHomePageSections(sectionCallback) {
         const sections = [
             App.createHomeSection({ id: 'hot', title: 'TRUYỆN HOT NHẤT', containsMoreItems: true, type: types_1.HomeSectionType.singleRowNormal }),
-            App.createHomeSection({ id: 'new_added', title: '', containsMoreItems: true, type: types_1.HomeSectionType.singleRowNormal }),
-            App.createHomeSection({ id: 'new_updated', title: '', containsMoreItems: true, type: types_1.HomeSectionType.singleRowNormal })
+            App.createHomeSection({ id: 'new_added', title: 'TRUYỆN MỚI', containsMoreItems: true, type: types_1.HomeSectionType.singleRowNormal }),
+            App.createHomeSection({ id: 'new_updated', title: 'TRUYỆN CẬP NHẬT GẦN ĐÂY', containsMoreItems: true, type: types_1.HomeSectionType.singleRowNormal })
         ];
         for (const section of sections) {
             sectionCallback(section);
