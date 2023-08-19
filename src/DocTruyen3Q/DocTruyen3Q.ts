@@ -31,7 +31,7 @@ export const isLastPage = ($: CheerioStatic): boolean => {
     return currentPage >= lastPage;
 }
 
-export const Doctruyen3QInfo: SourceInfo = {
+export const DocTruyen3QInfo: SourceInfo = {
     version: '1.0.0',
     name: 'DocTruyen3Q',
     icon: 'icon.png',
@@ -75,7 +75,7 @@ export class DocTruyen3Q implements SearchResultsProviding, MangaProviding, Chap
     });
 
     getMangaShareUrl(mangaId: string): string {
-        return `${DOMAIN}${mangaId}`;
+        return `${DOMAIN}truyen-tranh/${mangaId}`;
     }
 
     parser = new Parser();
@@ -135,8 +135,8 @@ export class DocTruyen3Q implements SearchResultsProviding, MangaProviding, Chap
         }
 
         const url = `${DOMAIN}/tim-truyen/`
-        const search_query = (!query.title) ? '' : `?keyword=${query.title}`;
-        const param = `${search.cate}${search_query}&sort=${search.sort}&status=${search.status}&page=${page}`
+        const search_query = (!query.title) ? '?' : `?keyword=${query.title}&`;
+        const param = `${search.cate}${search_query}sort=${search.sort}&status=${search.status}&page=${page}`
         const $ = await this.DOMHTML(`${url}${encodeURI(param)}`);
         const tiles = this.parser.parseSearchResults($);
         metadata = isLastPage($) ? undefined : { page: page + 1 };

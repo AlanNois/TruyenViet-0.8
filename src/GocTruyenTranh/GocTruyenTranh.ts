@@ -129,8 +129,8 @@ export class GocTruyenTranh implements SearchResultsProviding, MangaProviding, C
     async getHomePageSections(sectionCallback: (section: HomeSection) => void): Promise<void> {
         const sections: HomeSection[] = [
             App.createHomeSection({ id: 'hot', title: 'TRUYỆN HOT NHẤT', containsMoreItems: true, type: HomeSectionType.singleRowNormal }),
-            App.createHomeSection({ id: 'new_added', title: '', containsMoreItems: true, type: HomeSectionType.singleRowNormal }),
-            App.createHomeSection({ id: 'new_updated', title: '', containsMoreItems: true, type: HomeSectionType.singleRowNormal })
+            App.createHomeSection({ id: 'new_added', title: 'TRUYỆN MỚI', containsMoreItems: true, type: HomeSectionType.singleRowNormal }),
+            App.createHomeSection({ id: 'new_updated', title: 'TRUYỆN CẬP NHẬT GẦN ĐÂY', containsMoreItems: true, type: HomeSectionType.singleRowNormal })
         ];
 
         for (const section of sections) {

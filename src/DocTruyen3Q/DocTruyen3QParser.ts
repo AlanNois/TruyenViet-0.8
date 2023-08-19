@@ -114,7 +114,7 @@ export class Parser {
 
         $('.content-search-left > .main-left .item-manga > .item').each((_: any, obj: any) => {
             const title = $('.caption > h3 > a', obj).text().trim();
-            let image = $('.image-item > a > img', obj).attr('src') ?? $('.image-item > a > img', obj).attr('data-original');
+            let image = $('.image-item > a > img', obj).attr('data-original') ?? $('.image-item > a > img', obj).attr('src');
             image = !image ? "https://i.imgur.com/GYUxEX8.png" : image;
             const mangaId = String($('.caption > h3 > a', obj).attr('href')?.split('/').slice(4).join('/'));
             const subtitle = $('ul > li:first-child > a', obj).text().trim();
@@ -157,7 +157,7 @@ export class Parser {
 
         $(`${id} > .body > .main-left .item-manga > .item`).each((_: any, obj: any) => {
             const title = $('.caption > h3 > a', obj).text().trim();
-            let image = $('.image-item > a > img', obj).attr('src') ?? $('.image-item > a > img', obj).attr('data-original');
+            let image = $('.image-item > a > img', obj).attr('data-original') ?? $('.image-item > a > img', obj).attr('src');
             image = !image ? "https://i.imgur.com/GYUxEX8.png" : image;
             const mangaId = String($('.caption > h3 > a', obj).attr('href')?.split('/').slice(4).join('/'));
             const subtitle = $('ul > li:first-child > a', obj).text().trim();
@@ -218,9 +218,9 @@ export class Parser {
         })
 
         const tagSections: TagSection[] = [
-            App.createTagSection({ id: '1', label: 'Thể Loại', tags: tags.map(x => App.createTag(x)) }),
-            App.createTagSection({ id: '2', label: 'Trạng Thái', tags: tags1.map(x => App.createTag(x)) }),
-            App.createTagSection({ id: '3', label: 'Sắp Xếp', tags: tags2.map(x => App.createTag(x)) })
+            App.createTagSection({ id: '1', label: 'Thể Loại (Chỉ chọn 1)', tags: tags.map(x => App.createTag(x)) }),
+            App.createTagSection({ id: '2', label: 'Trạng Thái(Chỉ chọn 1)', tags: tags1.map(x => App.createTag(x)) }),
+            App.createTagSection({ id: '3', label: 'Sắp Xếp(Chỉ chọn 1)', tags: tags2.map(x => App.createTag(x)) })
         ]
 
         return tagSections
