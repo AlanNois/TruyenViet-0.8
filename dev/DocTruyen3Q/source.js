@@ -512,7 +512,7 @@ class DocTruyen3Q {
         this.parser = new DocTruyen3QParser_1.Parser();
     }
     getMangaShareUrl(mangaId) {
-        return `${DOMAIN}${mangaId}`;
+        return `${DOMAIN}truyen-tranh/${mangaId}`;
     }
     async DOMHTML(url) {
         const request = App.createRequest({
