@@ -24,7 +24,8 @@ export class Parser {
         const author = this.decodeHTMLEntity($('.author p').last().text().trim());
         const artist = this.decodeHTMLEntity($('.author p').last().text().trim());
         const desc = $('#summary').text();
-        const image = encodeURI($('.col-image img').attr('data-src') ?? "");
+        const image = encodeURI($('.col-image img').attr('data-src')?.replace('http://', 'https://') ?? "");
+        console.log(image);
         const status = $('.status p').last().text().trim();
 
         return App.createSourceManga({
@@ -68,7 +69,7 @@ export class Parser {
     parseChapterDetails($: CheerioStatic): string[] {
         const pages: string[] = $('.reading-detail img').map((_, element) => {
             const image = $(element).attr('src');
-            return encodeURI(String(image));
+            return encodeURI(String(image?.replace('http://', 'https://')));
         }).get();
 
         return pages
@@ -83,7 +84,7 @@ export class Parser {
             const chapter = $("ul .chapter > a", element).first().text().trim().replace('Chapter ', 'Ch.') + ' | ' + $("ul .chapter > i", element).first().text().trim();
             manga.push(App.createPartialSourceManga({
                 mangaId: String(id),
-                image: encodeURI(this.decodeHTMLEntity(image)),
+                image: encodeURI(this.decodeHTMLEntity(image?.replace('http://', 'https://'))),
                 title: this.decodeHTMLEntity(title),
                 subtitle: chapter,
             }));
@@ -100,7 +101,7 @@ export class Parser {
             const subtitle = $(".slide-caption > a", element).first().text().trim() + ' | ' + $(".time", element).first().text().trim();
             return App.createPartialSourceManga({
                 mangaId: String(id),
-                image: encodeURI(this.decodeHTMLEntity(String(image))),
+                image: encodeURI(this.decodeHTMLEntity(String(image?.replace('http://', 'https://')))),
                 title: this.decodeHTMLEntity(title),
                 subtitle: this.decodeHTMLEntity(subtitle),
             });
@@ -116,7 +117,7 @@ export class Parser {
             const subtitle = $("ul .chapter > a", element).first().text().trim().replace('Chapter ', 'Ch.') + ' | ' + $("ul .chapter > i", element).first().text().trim();
             return App.createPartialSourceManga({
                 mangaId: String(id),
-                image: encodeURI(this.decodeHTMLEntity(String(image))),
+                image: encodeURI(this.decodeHTMLEntity(String(image?.replace('http://', 'https://')))),
                 title: this.decodeHTMLEntity(title),
                 subtitle: this.decodeHTMLEntity(subtitle),
             });
@@ -132,7 +133,7 @@ export class Parser {
             const subtitle = $("ul .chapter > a", element).first().text().trim().replace('Chapter ', 'Ch.') + ' | ' + $("ul .chapter > i", element).first().text().trim();
             return App.createPartialSourceManga({
                 mangaId: String(id),
-                image: encodeURI(this.decodeHTMLEntity(String(image))),
+                image: encodeURI(this.decodeHTMLEntity(String(image?.replace('http://', 'https://')))),
                 title: this.decodeHTMLEntity(title),
                 subtitle: this.decodeHTMLEntity(subtitle),
             });
@@ -149,7 +150,7 @@ export class Parser {
             const chapter = $("ul .chapter > a", element).first().text().trim().replace('Chapter ', 'Ch.') + ' | ' + $("ul .chapter > i", element).first().text().trim();
             manga.push(App.createPartialSourceManga({
                 mangaId: String(id),
-                image: encodeURI(this.decodeHTMLEntity(image)),
+                image: encodeURI(this.decodeHTMLEntity(image?.replace('http://', 'https://'))),
                 title: title,
                 subtitle: chapter,
             }));
