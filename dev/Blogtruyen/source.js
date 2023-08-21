@@ -1690,7 +1690,7 @@ class Parser {
     parseChapters($) {
         const chapters = [];
         var chapNum = 0;
-        $('#list-chapters > p').each((_, obj) => {
+        $('#list-chapters > p').get().reverse().forEach((obj) => {
             const time_raw = $('.publishedDate', obj).text().trim();
             const time = this.convert_time(time_raw);
             const id = String($('span > a', obj).attr('href'));
@@ -1702,6 +1702,7 @@ class Parser {
                 time,
                 langCode: '🇻🇳',
             }));
+            chapNum++;
         });
         if (chapters.length == 0) {
             throw new Error('No chapters found');
