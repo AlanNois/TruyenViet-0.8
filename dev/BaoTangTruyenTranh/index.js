@@ -1803,7 +1803,7 @@ class Parser {
             const chapter = $("ul .chapter > a", element).first().text().trim().replace('Chapter ', 'Ch.') + ' | ' + $("ul .chapter > i", element).first().text().trim();
             manga.push(App.createPartialSourceManga({
                 mangaId: String(id),
-                image: encodeURI(this.decodeHTMLEntity(image)),
+                image: encodeURI(this.decodeHTMLEntity(image?.replace('http://', 'https://'))),
                 title: this.decodeHTMLEntity(title),
                 subtitle: chapter,
             }));
@@ -1819,7 +1819,7 @@ class Parser {
             const subtitle = $(".slide-caption > a", element).first().text().trim() + ' | ' + $(".time", element).first().text().trim();
             return App.createPartialSourceManga({
                 mangaId: String(id),
-                image: encodeURI(this.decodeHTMLEntity(String(image))),
+                image: encodeURI(this.decodeHTMLEntity(String(image?.replace('http://', 'https://')))),
                 title: this.decodeHTMLEntity(title),
                 subtitle: this.decodeHTMLEntity(subtitle),
             });
@@ -1834,7 +1834,7 @@ class Parser {
             const subtitle = $("ul .chapter > a", element).first().text().trim().replace('Chapter ', 'Ch.') + ' | ' + $("ul .chapter > i", element).first().text().trim();
             return App.createPartialSourceManga({
                 mangaId: String(id),
-                image: encodeURI(this.decodeHTMLEntity(String(image))),
+                image: encodeURI(this.decodeHTMLEntity(String(image?.replace('http://', 'https://')))),
                 title: this.decodeHTMLEntity(title),
                 subtitle: this.decodeHTMLEntity(subtitle),
             });
@@ -1849,7 +1849,7 @@ class Parser {
             const subtitle = $("ul .chapter > a", element).first().text().trim().replace('Chapter ', 'Ch.') + ' | ' + $("ul .chapter > i", element).first().text().trim();
             return App.createPartialSourceManga({
                 mangaId: String(id),
-                image: encodeURI(this.decodeHTMLEntity(String(image))),
+                image: encodeURI(this.decodeHTMLEntity(String(image?.replace('http://', 'https://')))),
                 title: this.decodeHTMLEntity(title),
                 subtitle: this.decodeHTMLEntity(subtitle),
             });
@@ -1865,7 +1865,7 @@ class Parser {
             const chapter = $("ul .chapter > a", element).first().text().trim().replace('Chapter ', 'Ch.') + ' | ' + $("ul .chapter > i", element).first().text().trim();
             manga.push(App.createPartialSourceManga({
                 mangaId: String(id),
-                image: encodeURI(this.decodeHTMLEntity(image)),
+                image: encodeURI(this.decodeHTMLEntity(image?.replace('http://', 'https://'))),
                 title: title,
                 subtitle: chapter,
             }));
