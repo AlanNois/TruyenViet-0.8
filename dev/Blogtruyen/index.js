@@ -1467,7 +1467,7 @@ class Blogtruyen {
                     request.headers = {
                         ...request.headers,
                         'Referer': DOMAIN,
-                        'User-Agent': await this.requestManager.getDefaultUserAgent(),
+                        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
                     };
                     return request;
                 },
