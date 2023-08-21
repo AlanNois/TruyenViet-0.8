@@ -1748,7 +1748,7 @@ class Parser {
         const author = this.decodeHTMLEntity($('.author p').last().text().trim());
         const artist = this.decodeHTMLEntity($('.author p').last().text().trim());
         const desc = $('#summary').text();
-        const image = encodeURI($('.col-image img').attr('data-src') ?? "");
+        const image = encodeURI($('.col-image img').attr('data-src')?.replace('http://', 'https://') ?? "");
         console.log(image);
         const status = $('.status p').last().text().trim();
         return App.createSourceManga({
@@ -1790,7 +1790,7 @@ class Parser {
     parseChapterDetails($) {
         const pages = $('.reading-detail img').map((_, element) => {
             const image = $(element).attr('src');
-            return encodeURI(String(image));
+            return encodeURI(String(image?.replace('http://', 'https://')));
         }).get();
         return pages;
     }
