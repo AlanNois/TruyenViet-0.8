@@ -1749,6 +1749,7 @@ class Parser {
         const artist = this.decodeHTMLEntity($('.author p').last().text().trim());
         const desc = $('#summary').text();
         const image = encodeURI($('.col-image img').attr('data-src') ?? "");
+        console.log(image);
         const status = $('.status p').last().text().trim();
         return App.createSourceManga({
             id: mangaId,
