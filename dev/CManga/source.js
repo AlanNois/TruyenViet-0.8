@@ -8276,7 +8276,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.CManga = exports.CMangaInfo = void 0;
 const types_1 = require("@paperback/types");
 const CMangaParser_1 = require("./CMangaParser");
-const DOMAIN = 'https://cmangaah.com/';
+const DOMAIN = 'https://cmangaaz.com/';
 exports.CMangaInfo = {
     version: '1.0.0',
     name: 'CManga',
@@ -8406,6 +8406,7 @@ class CManga {
         });
     }
     async getHomePageSections(sectionCallback) {
+        console.log('CManga Running...');
         const sections = [
             App.createHomeSection({ id: 'new_updated', title: "TRUYỆN MỚI CẬP NHẬT", containsMoreItems: true, type: types_1.HomeSectionType.singleRowNormal, }),
             App.createHomeSection({ id: 'new_added', title: "VIP TRUYỆN SIÊU HAY", containsMoreItems: true, type: types_1.HomeSectionType.singleRowNormal, })

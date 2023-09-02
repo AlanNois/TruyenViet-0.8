@@ -1446,7 +1446,7 @@ const isLastPage = ($) => {
 };
 exports.isLastPage = isLastPage;
 exports.BlogtruyenInfo = {
-    version: '1.0.0',
+    version: '1.0.1',
     name: 'Blogtruyen',
     icon: 'icon.png',
     author: 'AlanNois',
@@ -1559,6 +1559,7 @@ class Blogtruyen {
         });
     }
     async getHomePageSections(sectionCallback) {
+        console.log('Blogtruyen Running...');
         const sections = [
             App.createHomeSection({ id: 'featured', title: "TRUYỆN ĐỀ CỬ", containsMoreItems: false, type: types_1.HomeSectionType.featured }),
             App.createHomeSection({ id: 'hot', title: "TRUYỆN XEM NHIỀU NHẤT", containsMoreItems: true, type: types_1.HomeSectionType.singleRowNormal }),
@@ -1672,7 +1673,7 @@ class Parser {
         const title = [this.decodeHTMLEntity($('.entry-title > a').text().trim())];
         const desc = $('.content').text();
         const image = encodeURI(String($('.thumbnail > img').attr('src'))) ?? "https://i.imgur.com/GYUxEX8.png";
-        const status = $('.description > p > .color-red:last-child').text().trim();
+        const status = this.decodeHTMLEntity($('.description > p > .color-red:last-child').text().trim());
         return App.createSourceManga({
             id: mangaId,
             mangaInfo: App.createMangaInfo({
@@ -1722,8 +1723,8 @@ class Parser {
     parseSearchResults($) {
         const results = [];
         $('p:not(:first-child)', '.list').each((_, obj) => {
-            const title = $('a', obj).text().trim();
-            const subtitle = 'Chương ' + $('span:nth-child(2)', obj).text().trim();
+            const title = this.decodeHTMLEntity($('a', obj).text().trim());
+            const subtitle = 'Chương ' + this.decodeHTMLEntity($('span:nth-child(2)', obj).text().trim());
             const image = $('img', $(obj).next()).attr('src') || "https://i.imgur.com/GYUxEX8.png";
             const mangaId = String($('a', obj).attr('href'));
             if (!mangaId || !title)
@@ -1740,10 +1741,10 @@ class Parser {
     parseFeaturedSection($) {
         const featuredItems = [];
         $('a', '#storyPinked').each((_, obj) => {
-            const title = $('p:first-child', $(obj).next()).text().trim();
+            const title = this.decodeHTMLEntity($('p:first-child', $(obj).next()).text().trim());
             const mangaId = String($(obj).attr('href'));
             const image = $('img', obj).attr('src')?.replace('300x300', '500x') || "https://i.imgur.com/GYUxEX8.png";
-            const subtitle = $('p:last-child', $(obj).next()).text().trim();
+            const subtitle = this.decodeHTMLEntity($('p:last-child', $(obj).next()).text().trim());
             if (!mangaId || !title)
                 return;
             featuredItems.push(App.createPartialSourceManga({
@@ -1758,8 +1759,8 @@ class Parser {
     parseAjaxSection($) {
         const ajaxItems = [];
         $('p:not(:first-child)', '.list').each((_, obj) => {
-            const title = $('a', obj).text().trim();
-            const subtitle = 'Chương ' + $('span:nth-child(2)', obj).text().trim();
+            const title = this.decodeHTMLEntity($('a', obj).text().trim());
+            const subtitle = 'Chương ' + this.decodeHTMLEntity($('span:nth-child(2)', obj).text().trim());
             const image = $('img', $(obj).next()).attr('src') || "https://i.imgur.com/GYUxEX8.png";
             const mangaId = String($('a', obj).attr('href'));
             if (!mangaId || !title)
@@ -1776,8 +1777,8 @@ class Parser {
     parseNewUpdatedSection($) {
         const newUpdatedItems = [];
         $('.row', '.list-mainpage .storyitem').each((_, obj) => {
-            const title = $('h3.title > a', obj).attr('title')?.trim();
-            const subtitle = $('div:nth-child(2) > div:nth-child(4) > span:nth-child(1) > .color-red', obj).text();
+            const title = this.decodeHTMLEntity(String($('h3.title > a', obj).attr('title')).trim());
+            const subtitle = this.decodeHTMLEntity($('div:nth-child(2) > div:nth-child(4) > span:nth-child(1) > .color-red', obj).text());
             const image = String($('div:nth-child(1) > a > img', obj).attr('src'));
             const mangaId = $('div:nth-child(1) > a', obj).attr('href') ?? title;
             if (!mangaId || !title)

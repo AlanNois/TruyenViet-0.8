@@ -463,7 +463,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.NetTruyen = exports.NetTruyenInfo = exports.isLastPage = void 0;
 const types_1 = require("@paperback/types");
 const NetTruyenParser_1 = require("./NetTruyenParser");
-const DOMAIN = 'https://www.nettruyenmax.com/';
+const DOMAIN = 'https://www.nettruyenus.com/';
 const isLastPage = ($) => {
     const current = $('ul.pagination > li.active > a').text();
     let total = $('ul.pagination > li.PagerSSCCells:last-child').text();
@@ -475,7 +475,7 @@ const isLastPage = ($) => {
 };
 exports.isLastPage = isLastPage;
 exports.NetTruyenInfo = {
-    version: '1.0.0',
+    version: '1.0.1',
     name: 'NetTruyen',
     icon: 'icon.png',
     author: 'AlanNois',
@@ -605,6 +605,7 @@ class NetTruyen {
         });
     }
     async getHomePageSections(sectionCallback) {
+        console.log('NetTruyen Running...');
         const sections = [
             App.createHomeSection({ id: 'featured', title: "Truyện Đề Cử", containsMoreItems: false, type: types_1.HomeSectionType.featured }),
             App.createHomeSection({ id: 'viewest', title: "Truyện Xem Nhiều Nhất", containsMoreItems: true, type: types_1.HomeSectionType.singleRowNormal }),
@@ -776,7 +777,6 @@ class Parser {
         $('li.kind > p.col-xs-8 > a').each((_, obj) => {
             const label = $(obj).text();
             const id = $(obj).attr('href')?.split('/')[4] ?? label;
-            console.log(id);
             tags.push(App.createTag({ label, id }));
         });
         const titles = $('h1.title-detail').text().trim();
