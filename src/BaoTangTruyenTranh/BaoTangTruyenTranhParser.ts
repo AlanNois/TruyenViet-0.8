@@ -20,12 +20,10 @@ export class Parser {
         });
 
         const titles = [this.decodeHTMLEntity($('.title-detail').text().trim())];
-        console.log(titles);
         const author = this.decodeHTMLEntity($('.author p').last().text().trim());
         const artist = this.decodeHTMLEntity($('.author p').last().text().trim());
         const desc = $('#summary').text();
         const image = encodeURI($('.col-image img').attr('data-src')?.replace('http://', 'https://') ?? "");
-        console.log(image);
         const status = $('.status p').last().text().trim();
 
         return App.createSourceManga({

@@ -22,7 +22,7 @@ import {
 
 import { Parser } from './NetTruyenParser';
 
-const DOMAIN = 'https://www.nettruyenmax.com/';
+const DOMAIN = 'https://www.nettruyenus.com/';
 
 export const isLastPage = ($: CheerioStatic): boolean => {
     const current = $('ul.pagination > li.active > a').text();
@@ -36,7 +36,7 @@ export const isLastPage = ($: CheerioStatic): boolean => {
 }
 
 export const NetTruyenInfo: SourceInfo = {
-    version: '1.0.0',
+    version: '1.0.1',
     name: 'NetTruyen',
     icon: 'icon.png',
     author: 'AlanNois',
@@ -180,6 +180,7 @@ export class NetTruyen implements SearchResultsProviding, MangaProviding, Chapte
     }
 
     async getHomePageSections(sectionCallback: (section: HomeSection) => void): Promise<void> {
+        console.log('NetTruyen Running...')
         const sections: HomeSection[] = [
             App.createHomeSection({ id: 'featured', title: "Truyện Đề Cử", containsMoreItems: false, type: HomeSectionType.featured }),
             App.createHomeSection({ id: 'viewest', title: "Truyện Xem Nhiều Nhất", containsMoreItems: true, type: HomeSectionType.singleRowNormal }),

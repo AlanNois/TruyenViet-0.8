@@ -23,7 +23,7 @@ import {
 
 import { Parser } from './BaoTangTruyenTranhParser';
 
-const DOMAIN = 'https://baotangtruyen3.com/';
+const DOMAIN = 'https://baotangtruyen4.com/';
 
 export const isLastPage = ($: CheerioStatic): boolean => {
     const pages: number[] = [];
@@ -39,7 +39,7 @@ export const isLastPage = ($: CheerioStatic): boolean => {
 }
 
 export const BaoTangTruyenTranhInfo: SourceInfo = {
-    version: '1.0.0',
+    version: '1.0.1',
     name: 'BaoTangTruyenTranh',
     icon: 'icon.png',
     author: 'AlanNois',
@@ -99,7 +99,6 @@ export class BaoTangTruyenTranh implements ChapterProviding, MangaProviding, Sea
     }
 
     async getMangaDetails(mangaId: string): Promise<SourceManga> {
-        console.log(`${DOMAIN}${mangaId}`);
         const $ = await this.DOMHTML(`${DOMAIN}${mangaId}`);
         return this.parser.parseMangaDetails($, mangaId);
     }
@@ -170,6 +169,7 @@ export class BaoTangTruyenTranh implements ChapterProviding, MangaProviding, Sea
     }
 
     async getHomePageSections(sectionCallback: (section: HomeSection) => void): Promise<void> {
+        console.log('BaoTangTruyenTranh Running...')
         const sections: HomeSection[] = [
             App.createHomeSection({ id: 'featured', title: 'TRUYỆN ĐỀ CỬ', containsMoreItems: false, type: HomeSectionType.featured}),
             App.createHomeSection({ id: 'new_updated', title: 'TRUYỆN MỚI CẬP NHẬT', containsMoreItems: true, type: HomeSectionType.singleRowNormal}),

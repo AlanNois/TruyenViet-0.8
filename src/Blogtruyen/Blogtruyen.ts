@@ -30,7 +30,7 @@ export const isLastPage = ($: CheerioStatic): boolean => {
 }
 
 export const BlogtruyenInfo: SourceInfo = {
-    version: '1.0.0',
+    version: '1.0.1',
     name: 'Blogtruyen',
     icon: 'icon.png',
     author: 'AlanNois',
@@ -162,6 +162,7 @@ export class Blogtruyen implements SearchResultsProviding, MangaProviding, Chapt
     }
 
     async getHomePageSections(sectionCallback: (section: HomeSection) => void): Promise<void> {
+        console.log('Blogtruyen Running...')
         const sections: HomeSection[] = [
             App.createHomeSection({ id: 'featured', title: "TRUYỆN ĐỀ CỬ", containsMoreItems: false, type: HomeSectionType.featured}),
             App.createHomeSection({ id: 'hot', title: "TRUYỆN XEM NHIỀU NHẤT", containsMoreItems: true, type: HomeSectionType.singleRowNormal}),

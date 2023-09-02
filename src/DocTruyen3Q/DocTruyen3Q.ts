@@ -22,7 +22,7 @@ import {
 
 import { Parser } from './DocTruyen3QParser';
 
-const DOMAIN = 'https://doctruyen3qtv.net/';
+const DOMAIN = 'https://doctruyen3qne.com/';
 
 export const isLastPage = ($: CheerioStatic): boolean => {
     const lastPage = Number($("ul.pagination > li.page-item:not(:has(a[rel='next'])) a").last().text().trim());
@@ -32,7 +32,7 @@ export const isLastPage = ($: CheerioStatic): boolean => {
 }
 
 export const DocTruyen3QInfo: SourceInfo = {
-    version: '1.0.0',
+    version: '1.0.1',
     name: 'DocTruyen3Q',
     icon: 'icon.png',
     author: 'AlanNois',
@@ -148,6 +148,7 @@ export class DocTruyen3Q implements SearchResultsProviding, MangaProviding, Chap
     };
 
     async getHomePageSections(sectionCallback: (section: HomeSection) => void): Promise<void> {
+        console.log('DocTruyen3Q Running...')
         const sections: HomeSection[] = [
             App.createHomeSection({ id: 'featured', title: "TRUYỆN ĐỀ CỬ", containsMoreItems: false, type: HomeSectionType.featured,}),
             App.createHomeSection({ id: 'viewest', title: "TRUYỆN XEM NHIỀU NHẤT", containsMoreItems: true, type: HomeSectionType.singleRowNormal,}),

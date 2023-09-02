@@ -22,7 +22,7 @@ import {
 
 import { Parser } from './CMangaParser';
 
-const DOMAIN = 'https://cmangaah.com/';
+const DOMAIN = 'https://cmangaaz.com/';
 
 export const CMangaInfo: SourceInfo = {
     version: '1.0.0',
@@ -167,6 +167,7 @@ export class CManga implements ChapterProviding, MangaProviding, SearchResultsPr
     }
 
     async getHomePageSections(sectionCallback: (section: HomeSection) => void): Promise<void> {
+        console.log('CManga Running...')
         const sections: HomeSection[] = [
             App.createHomeSection({ id: 'new_updated', title: "TRUYỆN MỚI CẬP NHẬT", containsMoreItems: true, type: HomeSectionType.singleRowNormal, }),
             App.createHomeSection({ id: 'new_added', title: "VIP TRUYỆN SIÊU HAY", containsMoreItems: true, type: HomeSectionType.singleRowNormal, })

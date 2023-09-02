@@ -90,7 +90,6 @@ export class GocTruyenTranh implements SearchResultsProviding, MangaProviding, C
     }
 
     async getMangaDetails(mangaId: string): Promise<SourceManga> {
-        console.log(`${DOMAIN}truyen/${mangaId.split('::')[0]}`);
         const $ = await this.DOMHTML(`${DOMAIN}truyen/${mangaId.split('::')[0]}`);
         return this.parser.parseMangaDetails($, mangaId);
     }
@@ -127,6 +126,7 @@ export class GocTruyenTranh implements SearchResultsProviding, MangaProviding, C
     }
 
     async getHomePageSections(sectionCallback: (section: HomeSection) => void): Promise<void> {
+        console.log('GocTruyenTranh Running...')
         const sections: HomeSection[] = [
             App.createHomeSection({ id: 'hot', title: 'TRUYỆN HOT NHẤT', containsMoreItems: true, type: HomeSectionType.singleRowNormal }),
             App.createHomeSection({ id: 'new_added', title: 'TRUYỆN MỚI', containsMoreItems: true, type: HomeSectionType.singleRowNormal }),
