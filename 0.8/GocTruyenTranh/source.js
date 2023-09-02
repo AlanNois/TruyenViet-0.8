@@ -1500,7 +1500,6 @@ class GocTruyenTranh {
         return JSON.parse(response.data);
     }
     async getMangaDetails(mangaId) {
-        console.log(`${DOMAIN}truyen/${mangaId.split('::')[0]}`);
         const $ = await this.DOMHTML(`${DOMAIN}truyen/${mangaId.split('::')[0]}`);
         return this.parser.parseMangaDetails($, mangaId);
     }
@@ -1530,6 +1529,7 @@ class GocTruyenTranh {
         });
     }
     async getHomePageSections(sectionCallback) {
+        console.log('GocTruyenTranh Running...');
         const sections = [
             App.createHomeSection({ id: 'hot', title: 'TRUYỆN HOT NHẤT', containsMoreItems: true, type: types_1.HomeSectionType.singleRowNormal }),
             App.createHomeSection({ id: 'new_added', title: 'TRUYỆN MỚI', containsMoreItems: true, type: types_1.HomeSectionType.singleRowNormal }),
@@ -1653,7 +1653,6 @@ class Parser {
             tags.push(App.createTag({ label, id }));
         });
         const titles = [this.decodeHTMLEntity($('.detail-section .title h1').text().trim())];
-        console.log(titles);
         const author = $('.detail-section .author').clone().children().remove().end().text().trim();
         const artist = $('.detail-section .author').clone().children().remove().end().text().trim();
         const image = String($('.detail-section .photo > img').attr('src'));

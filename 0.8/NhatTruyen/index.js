@@ -463,7 +463,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.NhatTruyen = exports.NhatTruyenInfo = exports.isLastPage = void 0;
 const types_1 = require("@paperback/types");
 const NhatTruyenParser_1 = require("./NhatTruyenParser");
-const DOMAIN = 'https://nhattruyenmin.com/';
+const DOMAIN = 'https://nhattruyenplus.com/';
 const isLastPage = ($) => {
     const current = $('ul.pagination > li.active > a').text();
     let total = $('ul.pagination > li.PagerSSCCells:last-child').text();
@@ -605,6 +605,7 @@ class NhatTruyen {
         });
     }
     async getHomePageSections(sectionCallback) {
+        console.log('NhatTruyen Running...');
         const sections = [
             App.createHomeSection({ id: 'featured', title: "Truyện Đề Cử", containsMoreItems: false, type: types_1.HomeSectionType.featured }),
             App.createHomeSection({ id: 'viewest', title: "Truyện Xem Nhiều Nhất", containsMoreItems: true, type: types_1.HomeSectionType.singleRowNormal }),
