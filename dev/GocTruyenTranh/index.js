@@ -1440,7 +1440,7 @@ const types_1 = require("@paperback/types");
 const GocTruyenTranhParser_1 = require("./GocTruyenTranhParser");
 const DOMAIN = 'https://goctruyentranhvui.com/';
 exports.GocTruyenTranhInfo = {
-    version: '1.0.0',
+    version: '1.0.1',
     name: 'GocTruyenTranh',
     icon: 'icon.png',
     author: 'AlanNois',
@@ -1590,7 +1590,7 @@ class GocTruyenTranh {
             metadata
         });
     }
-    async getTags() {
+    async getSearchTags() {
         const url = `${DOMAIN}api/category`;
         const json = await this.callAPI(url);
         return this.parser.parseTags(json);
