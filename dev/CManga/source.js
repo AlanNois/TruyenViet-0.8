@@ -1666,7 +1666,7 @@ class Parser {
         const titles = [this.titleCase(json.name)];
         const status = json.status == 'doing' ? 'Đang cập nhật' : 'Hoàn thành';
         const desc = this.decodeHTMLEntity(json.detail);
-        const image = `${DOMAIN}assets/tmp/book/avatar/${json.avatar}`;
+        const image = `${DOMAIN}assets/tmp/album/${json.avatar}`;
         return App.createSourceManga({
             id: mangaId,
             mangaInfo: App.createMangaInfo({
