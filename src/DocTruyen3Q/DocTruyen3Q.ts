@@ -49,7 +49,7 @@ export const DocTruyen3QInfo: SourceInfo = {
     intents: SourceIntents.MANGA_CHAPTERS | SourceIntents.HOMEPAGE_SECTIONS
 };
 
-export class DocTruyen3Q implements SearchResultsProviding, MangaProviding, ChapterProviding, HomePageSectionsProviding{
+export class DocTruyen3Q implements SearchResultsProviding, MangaProviding, ChapterProviding, HomePageSectionsProviding {
 
 
     constructor(private cheerio: CheerioAPI) { }
@@ -89,7 +89,7 @@ export class DocTruyen3Q implements SearchResultsProviding, MangaProviding, Chap
         return this.cheerio.load(resquest.data as string);
     }
 
-    async  getMangaDetails(mangaId: string): Promise<SourceManga> {
+    async getMangaDetails(mangaId: string): Promise<SourceManga> {
         const $ = await this.DOMHTML(`${DOMAIN}truyen-tranh/${mangaId}`);
         return this.parser.parseMangaDetails($, mangaId);
     }
@@ -103,7 +103,7 @@ export class DocTruyen3Q implements SearchResultsProviding, MangaProviding, Chap
         const $ = await this.DOMHTML(`${DOMAIN}truyen-tranh/${chapterId}`);
         const pages = this.parser.parseChapterDetails($);
         return App.createChapterDetails({
-            id : chapterId,
+            id: chapterId,
             mangaId: mangaId,
             pages: pages,
         })
@@ -117,7 +117,7 @@ export class DocTruyen3Q implements SearchResultsProviding, MangaProviding, Chap
             status: "2",
             sort: "1",
         }
-        
+
         const tags = query.includedTags?.map(tag => tag.id) ?? [];
         for (const value of tags) {
             const [key, val] = value.split('.');
@@ -150,11 +150,11 @@ export class DocTruyen3Q implements SearchResultsProviding, MangaProviding, Chap
     async getHomePageSections(sectionCallback: (section: HomeSection) => void): Promise<void> {
         console.log('DocTruyen3Q Running...')
         const sections: HomeSection[] = [
-            App.createHomeSection({ id: 'featured', title: "TRUYỆN ĐỀ CỬ", containsMoreItems: false, type: HomeSectionType.featured,}),
-            App.createHomeSection({ id: 'viewest', title: "TRUYỆN XEM NHIỀU NHẤT", containsMoreItems: true, type: HomeSectionType.singleRowNormal,}),
-            App.createHomeSection({ id: 'hot', title: "TRUYỆN HOT NHẤT", containsMoreItems: true, type: HomeSectionType.singleRowNormal,}),
-            App.createHomeSection({ id: 'new_updated', title: "TRUYỆN MỚI CẬP NHẬT", containsMoreItems: true, type: HomeSectionType.singleRowNormal,}),
-            App.createHomeSection({ id: 'full', title: "TRUYỆN ĐÃ HOÀN THÀNH", containsMoreItems: true, type: HomeSectionType.singleRowNormal,})
+            App.createHomeSection({ id: 'featured', title: "TRUYỆN ĐỀ CỬ", containsMoreItems: false, type: HomeSectionType.featured, }),
+            App.createHomeSection({ id: 'viewest', title: "TRUYỆN XEM NHIỀU NHẤT", containsMoreItems: true, type: HomeSectionType.singleRowNormal, }),
+            App.createHomeSection({ id: 'hot', title: "TRUYỆN HOT NHẤT", containsMoreItems: true, type: HomeSectionType.singleRowNormal, }),
+            App.createHomeSection({ id: 'new_updated', title: "TRUYỆN MỚI CẬP NHẬT", containsMoreItems: true, type: HomeSectionType.singleRowNormal, }),
+            App.createHomeSection({ id: 'full', title: "TRUYỆN ĐÃ HOÀN THÀNH", containsMoreItems: true, type: HomeSectionType.singleRowNormal, })
         ];
 
         for (const section of sections) {

@@ -140,7 +140,7 @@ export class Parser {
             const image = $('img', $(obj).next()).attr('src') || "https://i.imgur.com/GYUxEX8.png";
             const mangaId = String($('a', obj).attr('href'));
             if (!mangaId || !title) return;
-            
+
             ajaxItems.push(App.createPartialSourceManga({
                 mangaId,
                 image,
@@ -201,7 +201,7 @@ export class Parser {
         // Tinh trang
         for (const tag of $('option', '#Status').toArray()) {
             const label = this.decodeHTMLEntity($(tag).text().trim());
-            let id : string;
+            let id: string;
             switch (label) {
                 case 'Sao cũng được':
                     id = 'anything' + $(tag).attr('value') ?? label;
@@ -223,8 +223,8 @@ export class Parser {
         }
 
         const tagSections: TagSection[] = [
-            App.createTagSection({ id: '0', label: 'Thể loại (Chọn nhiều)', tags: arrayTags.map(x => App.createTag(x))}),
-            App.createTagSection({ id: '1', label: 'Tình trạng (Chọn 1)', tags: arrayTags2.map(x => App.createTag(x))}),
+            App.createTagSection({ id: '0', label: 'Thể loại (Chọn nhiều)', tags: arrayTags.map(x => App.createTag(x)) }),
+            App.createTagSection({ id: '1', label: 'Tình trạng (Chọn 1)', tags: arrayTags2.map(x => App.createTag(x)) }),
         ];
 
         return tagSections;

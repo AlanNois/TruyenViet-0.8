@@ -36,7 +36,7 @@ export const isLastPage = ($: CheerioStatic): boolean => {
 }
 
 export const TuTienTruyenInfo: SourceInfo = {
-    version: '1.0.0',
+    version: '1.0.1',
     name: 'TuTienTruyen',
     icon: 'icon.png',
     author: 'AlanNois',
@@ -57,13 +57,13 @@ export const TuTienTruyenInfo: SourceInfo = {
     intents: SourceIntents.MANGA_CHAPTERS | SourceIntents.HOMEPAGE_SECTIONS | SourceIntents.CLOUDFLARE_BYPASS_REQUIRED
 };
 
-export class TuTienTruyen  implements ChapterProviding, MangaProviding, SearchResultsProviding, HomePageSectionsProviding {
+export class TuTienTruyen implements ChapterProviding, MangaProviding, SearchResultsProviding, HomePageSectionsProviding {
 
     constructor(private cheerio: CheerioAPI) { }
 
     readonly requestManager = App.createRequestManager({
         requestsPerSecond: 4,
-        requestTimeout: 15000,
+        requestTimeout: 20000,
         interceptor: {
             interceptRequest: async (request: Request): Promise<Request> => {
                 request.headers = {

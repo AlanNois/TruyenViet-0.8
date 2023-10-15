@@ -74,7 +74,7 @@ export class Parser {
     parseChapterList($: CheerioStatic): Chapter[] {
         const chapters: Chapter[] = [];
 
-        $('div.list-chapter > nav > ul > li.row:not(.heading)').each((_: any, obj: any) => {
+        $('div.list-chapter > nav > ul > li:not(:first-child).row:not(.heading)').each((_: any, obj: any) => {
             const id = String($('div.chapter a', obj).attr('href'))
             const time = $('div.col-xs-4', obj).text();
             const group = $('div.col-xs-2', obj).text();

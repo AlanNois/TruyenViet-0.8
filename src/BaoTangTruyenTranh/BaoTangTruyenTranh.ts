@@ -61,7 +61,7 @@ export const BaoTangTruyenTranhInfo: SourceInfo = {
 }
 
 export class BaoTangTruyenTranh implements ChapterProviding, MangaProviding, SearchResultsProviding, HomePageSectionsProviding {
-    
+
     constructor(private cheerio: CheerioAPI) { }
 
     readonly requestManager = App.createRequestManager({
@@ -171,12 +171,12 @@ export class BaoTangTruyenTranh implements ChapterProviding, MangaProviding, Sea
     async getHomePageSections(sectionCallback: (section: HomeSection) => void): Promise<void> {
         console.log('BaoTangTruyenTranh Running...')
         const sections: HomeSection[] = [
-            App.createHomeSection({ id: 'featured', title: 'TRUYỆN ĐỀ CỬ', containsMoreItems: false, type: HomeSectionType.featured}),
-            App.createHomeSection({ id: 'new_updated', title: 'TRUYỆN MỚI CẬP NHẬT', containsMoreItems: true, type: HomeSectionType.singleRowNormal}),
-            App.createHomeSection({ id: 'trans', title: 'TRUYỆN DỊCH', containsMoreItems: true, type: HomeSectionType.singleRowNormal})
+            App.createHomeSection({ id: 'featured', title: 'TRUYỆN ĐỀ CỬ', containsMoreItems: false, type: HomeSectionType.featured }),
+            App.createHomeSection({ id: 'new_updated', title: 'TRUYỆN MỚI CẬP NHẬT', containsMoreItems: true, type: HomeSectionType.singleRowNormal }),
+            App.createHomeSection({ id: 'trans', title: 'TRUYỆN DỊCH', containsMoreItems: true, type: HomeSectionType.singleRowNormal })
         ];
 
-        for (const section of sections){
+        for (const section of sections) {
             sectionCallback(section);
             let url: string;
             switch (section.id) {
@@ -211,7 +211,7 @@ export class BaoTangTruyenTranh implements ChapterProviding, MangaProviding, Sea
 
     async getViewMoreItems(homepageSectionId: string, metadata: any): Promise<PagedResults> {
         let page: number = metadata?.page ?? 1;
-        let url= '';
+        let url = '';
         // let select = 1;
 
         switch (homepageSectionId) {
@@ -311,7 +311,7 @@ export class BaoTangTruyenTranh implements ChapterProviding, MangaProviding, Sea
         ];
 
         return tagSections;
-    } 
+    }
 
     async filterUpdatedManga(mangaUpdatesFoundCallback: (updates: MangaUpdates) => void, time: Date, ids: string[]): Promise<void> {
         const updatedManga: any = [];

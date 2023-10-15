@@ -52,7 +52,7 @@ export class Parser {
             tags.push(App.createTag({ label, id }));
         })
 
-        const titles =[$('.title-manga').text().trim()];
+        const titles = [$('.title-manga').text().trim()];
         const image = $('.image-info img').attr('src') ?? '';
         const desc = $('.summary-content > p').text();
         const status = $('.status > .detail-info > span').text();

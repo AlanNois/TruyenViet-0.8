@@ -57,8 +57,8 @@ export const NetTruyenInfo: SourceInfo = {
     intents: SourceIntents.MANGA_CHAPTERS | SourceIntents.HOMEPAGE_SECTIONS
 };
 
-export class NetTruyen implements SearchResultsProviding, MangaProviding, ChapterProviding, HomePageSectionsProviding{
-    
+export class NetTruyen implements SearchResultsProviding, MangaProviding, ChapterProviding, HomePageSectionsProviding {
+
     constructor(private cheerio: CheerioAPI) { }
 
     readonly requestManager = App.createRequestManager({
@@ -75,8 +75,8 @@ export class NetTruyen implements SearchResultsProviding, MangaProviding, Chapte
                 };
                 return request;
             },
-            interceptResponse: async (response: Response): Promise<Response> => { 
-                return response; 
+            interceptResponse: async (response: Response): Promise<Response> => {
+                return response;
             }
         }
     });
@@ -105,7 +105,7 @@ export class NetTruyen implements SearchResultsProviding, MangaProviding, Chapte
         const $ = await this.DOMHTML(`${DOMAIN}truyen-tranh/${mangaId}`);
         return this.parser.parseChapterList($);
     }
-    
+
     async getChapterDetails(mangaId: string, chapterId: string): Promise<ChapterDetails> {
         const $ = await this.DOMHTML(`${DOMAIN}truyen-tranh/${chapterId}`);
         const pages = this.parser.parseChapterDetails($);

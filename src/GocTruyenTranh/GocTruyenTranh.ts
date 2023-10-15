@@ -24,7 +24,7 @@ import { Parser } from './GocTruyenTranhParser';
 const DOMAIN = 'https://goctruyentranhvui.com/';
 
 export const GocTruyenTranhInfo: SourceInfo = {
-    version: '1.0.0',
+    version: '1.0.1',
     name: 'GocTruyenTranh',
     icon: 'icon.png',
     author: 'AlanNois',
@@ -194,7 +194,7 @@ export class GocTruyenTranh implements SearchResultsProviding, MangaProviding, C
         })
     }
 
-    async getTags(): Promise<TagSection[]> {
+    async getSearchTags(): Promise<TagSection[]> {
         const url = `${DOMAIN}api/category`;
         const json = await this.callAPI(url);
         return this.parser.parseTags(json);

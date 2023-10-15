@@ -164,10 +164,10 @@ export class Blogtruyen implements SearchResultsProviding, MangaProviding, Chapt
     async getHomePageSections(sectionCallback: (section: HomeSection) => void): Promise<void> {
         console.log('Blogtruyen Running...')
         const sections: HomeSection[] = [
-            App.createHomeSection({ id: 'featured', title: "TRUYỆN ĐỀ CỬ", containsMoreItems: false, type: HomeSectionType.featured}),
-            App.createHomeSection({ id: 'hot', title: "TRUYỆN XEM NHIỀU NHẤT", containsMoreItems: true, type: HomeSectionType.singleRowNormal}),
-            App.createHomeSection({ id: 'new_updated', title: "TRUYỆN MỚI CẬP NHẬT", containsMoreItems: true, type: HomeSectionType.singleRowNormal}),
-            App.createHomeSection({ id: 'full', title: "TRUYỆN ĐÃ HOÀN THÀNH", containsMoreItems: true, type: HomeSectionType.singleRowNormal})
+            App.createHomeSection({ id: 'featured', title: "TRUYỆN ĐỀ CỬ", containsMoreItems: false, type: HomeSectionType.featured }),
+            App.createHomeSection({ id: 'hot', title: "TRUYỆN XEM NHIỀU NHẤT", containsMoreItems: true, type: HomeSectionType.singleRowNormal }),
+            App.createHomeSection({ id: 'new_updated', title: "TRUYỆN MỚI CẬP NHẬT", containsMoreItems: true, type: HomeSectionType.singleRowNormal }),
+            App.createHomeSection({ id: 'full', title: "TRUYỆN ĐÃ HOÀN THÀNH", containsMoreItems: true, type: HomeSectionType.singleRowNormal })
         ]
 
         for (const section of sections) {
