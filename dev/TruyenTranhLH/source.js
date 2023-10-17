@@ -1435,7 +1435,7 @@ Object.defineProperty(exports, "decodeXMLStrict", { enumerable: true, get: funct
 },{"./decode.js":62,"./encode.js":64,"./escape.js":65}],70:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.TruyenTranhLH = exports.TruyentranhLHInfo = exports.isLastPage = void 0;
+exports.TruyenTranhLH = exports.TruyenTranhLHInfo = exports.isLastPage = void 0;
 const types_1 = require("@paperback/types");
 const TruyenTranhLHParser_1 = require("./TruyenTranhLHParser");
 const DOMAIN = 'https://truyentranhlh.net/';
@@ -1445,7 +1445,7 @@ const isLastPage = ($) => {
     return (+current) === (+String(lastPage));
 };
 exports.isLastPage = isLastPage;
-exports.TruyentranhLHInfo = {
+exports.TruyenTranhLHInfo = {
     version: '1.0.0',
     name: 'TruyenTranhLH',
     icon: 'icon.png',
