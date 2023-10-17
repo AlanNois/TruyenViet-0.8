@@ -1597,6 +1597,7 @@ class TruyenTranhLH {
                     section.items = this.parser.parseSearchResults($);
                     break;
             }
+            sectionCallback(section);
         }
     }
     async getViewMoreItems(homepageSectionId, metadata) {
@@ -1712,7 +1713,7 @@ class Parser {
     }
     parseSearchResults($) {
         const tiles = [];
-        $('.container > div > div > div:nth-child(2) > div > div.row').each((_, obj) => {
+        $('.container > div > div > div:nth-child(2) > div > div.row > .thumb-item-flow').each((_, obj) => {
             const title = $('.series-title > a', obj).text().trim();
             const mangaId = $('.series-title > a', obj).attr('href')?.split("/").pop() ?? title;
             let image = $('.a6-ratio > div.img-in-ratio', obj).attr('data-bg');
