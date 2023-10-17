@@ -1602,9 +1602,9 @@ class CManga {
             case 'new_updated':
                 url = `${DOMAIN}api/home_album_list?num_chapter=0&sort=update&tag=all&limit=40&page=${page}&user=0`;
                 break;
-            case 'new_added':
-                url = `${DOMAIN}api/list_item?page=${page}&limit=40&sort=new&type=all&tag=Truy%E1%BB%87n%20si%C3%AAu%20hay&child=off&status=all&num_chapter=0`;
-                break;
+            // case 'new_added':
+            //     url = `${DOMAIN}api/list_item?page=${page}&limit=40&sort=new&type=all&tag=Truy%E1%BB%87n%20si%C3%AAu%20hay&child=off&status=all&num_chapter=0`
+            //     break;
             default:
                 throw new Error(`Requested to getViewMoreItems for a section ID which doesn't exist`);
         }

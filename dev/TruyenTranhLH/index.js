@@ -1525,7 +1525,7 @@ class TruyenTranhLH {
             genres: "",
             exgenres: ""
         };
-        const extags = query.includedTags?.map(tag => tag.id) ?? [];
+        const extags = query.excludedTags?.map(tag => tag.id) ?? [];
         const exgenres = [];
         for (const value of extags) {
             if (value.indexOf('.') === -1) {
