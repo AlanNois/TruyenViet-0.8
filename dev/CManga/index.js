@@ -1709,7 +1709,6 @@ class Parser {
         for (const img of json) {
             pages.push(img.replace('?v=1&', '?v=9999&'));
         }
-        console.log(pages);
         return pages;
     }
     parseSearch(json, /*search: any,*/ DOMAIN) {
