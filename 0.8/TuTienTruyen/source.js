@@ -475,7 +475,7 @@ const isLastPage = ($) => {
 };
 exports.isLastPage = isLastPage;
 exports.TuTienTruyenInfo = {
-    version: '1.0.0',
+    version: '1.0.1',
     name: 'TuTienTruyen',
     icon: 'icon.png',
     author: 'AlanNois',
@@ -500,7 +500,7 @@ class TuTienTruyen {
         this.cheerio = cheerio;
         this.requestManager = App.createRequestManager({
             requestsPerSecond: 4,
-            requestTimeout: 15000,
+            requestTimeout: 20000,
             interceptor: {
                 interceptRequest: async (request) => {
                     request.headers = {
@@ -806,7 +806,7 @@ class Parser {
     }
     parseChapterList($) {
         const chapters = [];
-        $('div.list-chapter > nav > ul > li.row:not(.heading)').each((_, obj) => {
+        $('div.list-chapter > nav > ul > li:not(:first-child).row:not(.heading)').each((_, obj) => {
             const id = String($('div.chapter a', obj).attr('href'));
             const time = $('div.col-xs-4', obj).text();
             const group = $('div.col-xs-2', obj).text();
