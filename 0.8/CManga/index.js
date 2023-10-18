@@ -1508,8 +1508,8 @@ class CManga {
         return this.parser.parseChapters(json);
     }
     async getChapterDetails(mangaId, chapterId) {
-        const lst = await this.getAPI(`${DOMAIN}api/chapter_image?chapter=${chapterId}&v=0`);
-        const pages = this.parser.parseChapterDetails(lst);
+        const json = await this.getAPI(`${DOMAIN}api/chapter_image?chapter=${chapterId}&v=0`);
+        const pages = this.parser.parseChapterDetails(JSON.parse(json));
         return App.createChapterDetails({
             id: chapterId,
             mangaId: mangaId,
@@ -1704,9 +1704,9 @@ class Parser {
         }
         return chapters;
     }
-    parseChapterDetails(lst) {
+    parseChapterDetails(json) {
         const pages = [];
-        for (const img of lst) {
+        for (const img of json) {
             pages.push(img.replace('?v=1&', '?v=9999&'));
         }
         return pages;
