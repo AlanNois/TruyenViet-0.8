@@ -1723,6 +1723,7 @@ class Parser {
             const mangaId = $('.series-title > a', obj).attr('href')?.split("/").pop() ?? title;
             let image = $('.a6-ratio > div.img-in-ratio', obj).attr('data-bg');
             image = !image ? "https://i.imgur.com/GYUxEX8.png" : image;
+            image = image.indexOf('https') === -1 ? image.replace('http', 'https') : image;
             const subtitle = $(`.thumb-detail > div > a`, obj).text().trim();
             if (!mangaId || !title)
                 return;
@@ -1742,6 +1743,7 @@ class Parser {
             const mangaId = $('.series-title > a', obj).attr('href')?.split("/").pop() ?? title;
             let image = $('.a6-ratio > div.img-in-ratio', obj).css('background-image').replace('url(', '').replace(')', '').replace(/\"/gi, "").replace(/['"]+/g, '');
             image = !image ? "https://i.imgur.com/GYUxEX8.png" : image;
+            image = image.indexOf('https') === -1 ? image.replace('http', 'https') : image;
             const subtitle = $(`.thumb-detail > div > a`, obj).text().trim();
             if (!mangaId || !title)
                 return;
