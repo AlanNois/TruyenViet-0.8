@@ -2,7 +2,7 @@ import {
     Chapter,
     SourceManga,
     Tag,
-    TagSection,
+    // TagSection,
     MangaUpdates,
     PartialSourceManga
 } from '@paperback/types'
@@ -14,15 +14,15 @@ export class Parser {
     parseMangaDetails(json: any, mangaId: string, DOMAIN: string): SourceManga {
         const tags: Tag[] = [];
 
-        for (const id of json.tags.split(',')) {
+        for (const id of json.tags) {
             if (!id) continue;
             const label = this.titleCase(id);
             tags.push(App.createTag({ label, id }));
         }
         const titles = [this.titleCase(json.name)];
-        const status = json.status
+        const status = json.status == 'doing' ? 'Đang cập nhật' : 'Hoàn thành'
         const desc = this.decodeHTMLEntity(json.detail)
-        const image = `${DOMAIN}assets/tmp/book/avatar/${json.avatar}.jpg`
+        const image = `${DOMAIN}assets/tmp/album/${json.avatar}`
 
         return App.createSourceManga({
             id: mangaId,
@@ -36,20 +36,21 @@ export class Parser {
         })
     }
 
-    parseChapters(json: any, mangaId: any): Chapter[] {
+    parseChapters(json: any): Chapter[] {
         const chapters: Chapter[] = [];
 
         for (const obj of json) {
-            const [date, time] = obj.last_update.split(' ');
+            const in4 = JSON.parse(obj.info)
+
+            const [date, time] = in4.last_update.split(' ');
             const [year, month, day] = date.split('-');
             const [hour, minute] = time.split(':');
             const formattedTime = `${hour}:${minute}`
             const formattedDate = `${month}/${day}/${year}`
 
-            const preid = mangaId.split('-');
-            const id = `${preid.slice(0, preid.length - 1).join('-')}/${this.change_alias(obj.chapter_name?.split(': ')[0])}/${obj.id_chapter}`;
-            const chapNum = parseFloat(obj.chapter_num);
-            const name = this.titleCase(obj.chapter_name);
+            const id = obj.id_chapter;
+            const chapNum = parseFloat(in4.num);
+            const name = this.titleCase(in4.name);
 
             chapters.push(App.createChapter({
                 id,
@@ -57,7 +58,7 @@ export class Parser {
                 name,
                 langCode: '🇻🇳',
                 time: new Date(`${formattedDate} ${formattedTime}`),
-                group: `${obj.total_view} lượt xem`,
+                group: `${in4.statics.view} lượt xem`,
             }));
         }
 
@@ -72,27 +73,30 @@ export class Parser {
         const pages: string[] = [];
 
         for (const img of json) {
-            pages.push(img.replace('.net', '.com').replace('?v=1&', '?v=9999&'));
+            pages.push(img.replace('?v=1&', '?v=9999&'));
         }
 
         return pages
     }
 
-    parseSearch(json: any, search: any, DOMAIN: string): PartialSourceManga[] {
+    parseSearch(json: any, /*search: any,*/ DOMAIN: string): PartialSourceManga[] {
         const manga: PartialSourceManga[] = [];
 
-        const getData = (item: any) => ({
-            mangaId: `${item.url}-${item.id_book}`,
-            image: `${DOMAIN}assets/tmp/book/avatar/${item.avatar}.jpg`,
-            title: String(item.name),
-            subtitle: search.top !== '' ? `${Number(item.total_view).toLocaleString()} views` : `Chap ${item.last_chapter}`
+        const getData = (item: any, in4: any) => ({
+            mangaId: `${item.id_album}`,
+            image: `${DOMAIN}assets/tmp/album/${in4.avatar}`,
+            title: this.titleCase(in4.name),
+            subtitle: `Chap ${in4.chapter.last}`,
+            // subtitle: search.top !== '' ? `${Number(item.total_view).toLocaleString()} views` : `Chap ${item.last_chapter}`
         });
 
-        const itemList = search.top !== '' ? json[search.top] : json;
-        for (const i of Object.keys(itemList)) {
-            const item = itemList[i];
-            if (!item.name) continue;
-            manga.push(App.createPartialSourceManga(getData(item)));
+        // const itemList = search.top !== '' ? json[search.top] : json;
+        for (const i of Object.keys(json)) {
+            // const item = itemList[i];
+            const item = json[i];
+            var in4 = JSON.parse(item['info'])
+            // if (!item.name) continue;
+            manga.push(App.createPartialSourceManga(getData(item, in4)));
         }
 
         return manga;
@@ -103,12 +107,13 @@ export class Parser {
 
         for (var i of Object.keys(json)) {
             var item = json[i];
-            if (!item.name) continue;
+            var in4 = JSON.parse(item['info'])
+            // if (!item.name) continue;
             newUpdatedItems.push(App.createPartialSourceManga({
-                mangaId: `${item.url}-${item.id_book}`,
-                image: `${DOMAIN}assets/tmp/book/avatar/${item.avatar}.jpg`,
-                title: this.titleCase(item.name),
-                subtitle: `Chap ${item.last_chapter}`,
+                mangaId: `${item.id_album}`,
+                image: `${DOMAIN}assets/tmp/album/${in4.avatar}`,
+                title: this.titleCase(in4.name),
+                subtitle: `Chap ${in4.chapter.last}`,
             }))
         }
 
@@ -135,105 +140,106 @@ export class Parser {
     parseViewMore(json: any, DOMAIN: string): PartialSourceManga[] {
         const manga: PartialSourceManga[] = [];
 
-        const getData = (item: any) => ({
-            mangaId: `${item.url}-${item.id_book}`,
-            image: `${DOMAIN}assets/tmp/book/avatar/${item.avatar}.jpg`,
-            title: String(item.name),
-            subtitle: `Chap ${item.last_chapter}`
+        const getData = (item: any, in4: any) => ({
+            mangaId: `${item.id_album}`,
+            image: `${DOMAIN}assets/tmp/album/${in4.avatar}`,
+            title: this.titleCase(in4.name),
+            subtitle: `Chap ${in4.chapter.last}`,
         });
 
         for (const i of Object.keys(json)) {
             const item = json[i];
-            if (!item.name) continue;
-            manga.push(App.createPartialSourceManga(getData(item)));
+            var in4 = JSON.parse(item['info'])
+            // if (!item.name) continue;
+            manga.push(App.createPartialSourceManga(getData(item, in4)));
         }
 
         return manga;
     }
 
-    parseTags($: CheerioStatic): TagSection[] {
-        const arrayTags: Tag[] = [];
+    // parseTags($: CheerioStatic): TagSection[] {
+    //     const arrayTags: Tag[] = [];
 
-        for (const tag of $('.book_tags_content a').toArray()) {
-            const label = $(tag).text().trim();
-            const id = 'tag.' + label;
-            arrayTags.push({ id: id, label: label });
-        }
+    //     for (const tag of $('.book_tags_content a').toArray()) {
+    //         const label = $(tag).text().trim();
+    //         const id = 'tag.' + label;
+    //         arrayTags.push({ id: id, label: label });
+    //     }
 
-        const arrayTags2: Tag[] = [
-            {
-                label: 'Ngày đăng',
-                id: 'sort.new'
-            },
-            {
-                label: 'Lượt xem',
-                id: 'sort.view'
-            },
-            {
-                label: 'Lượt theo dõi',
-                id: 'sort.follow'
-            }
-        ];
+    //     const arrayTags2: Tag[] = [
+    //         {
+    //             label: 'Ngày đăng',
+    //             id: 'sort.new'
+    //         },
+    //         {
+    //             label: 'Lượt xem',
+    //             id: 'sort.view'
+    //         },
+    //         {
+    //             label: 'Lượt theo dõi',
+    //             id: 'sort.follow'
+    //         }
+    //     ];
 
-        const arrayTags3: Tag[] = [
-            {
-                label: 'Tất cả',
-                id: 'status.all'
-            },
-            {
-                label: 'Hoàn thành',
-                id: 'status.completed'
-            }
-        ];
+    //     const arrayTags3: Tag[] = [
+    //         {
+    //             label: 'Tất cả',
+    //             id: 'status.all'
+    //         },
+    //         {
+    //             label: 'Hoàn thành',
+    //             id: 'status.completed'
+    //         }
+    //     ];
 
-        const arrayTags4: Tag[] = [
-            {
-                label: '>= 100',
-                id: 'num.100'
-            },
-            {
-                label: '>= 200',
-                id: 'num.200'
-            },
-            {
-                label: '>= 300',
-                id: 'num.300'
-            },
-            {
-                label: '>= 400',
-                id: 'num.400'
-            },
-            {
-                label: '>= 500',
-                id: 'num.500'
-            }
-        ];
+    //     const arrayTags4: Tag[] = [
+    //         {
+    //             label: '>= 100',
+    //             id: 'num.100'
+    //         },
+    //         {
+    //             label: '>= 200',
+    //             id: 'num.200'
+    //         },
+    //         {
+    //             label: '>= 300',
+    //             id: 'num.300'
+    //         },
+    //         {
+    //             label: '>= 400',
+    //             id: 'num.400'
+    //         },
+    //         {
+    //             label: '>= 500',
+    //             id: 'num.500'
+    //         }
+    //     ];
 
-        const arrayTags5: Tag[] = [
-            {
-                label: 'Top Ngày',
-                id: 'top.day'
-            },
-            {
-                label: 'Top Tuần',
-                id: 'top.week'
-            },
-            {
-                label: 'Top Tổng',
-                id: 'top.month'
-            }
-        ];
+    //     const arrayTags5: Tag[] = [
+    //         {
+    //             label: 'Top Ngày',
+    //             id: 'top.day'
+    //         },
+    //         {
+    //             label: 'Top Tuần',
+    //             id: 'top.week'
+    //         },
+    //         {
+    //             label: 'Top Tổng',
+    //             id: 'top.month'
+    //         }
+    //     ];
 
-        const tagSections: TagSection[] = [
-            App.createTagSection({ id: '4', label: 'Rank', tags: arrayTags5.map(x => App.createTag(x)) }),
-            App.createTagSection({ id: '0', label: 'Thể Loại', tags: arrayTags.map(x => App.createTag(x)) }),
-            App.createTagSection({ id: '1', label: 'Sắp xếp theo', tags: arrayTags2.map(x => App.createTag(x)) }),
-            App.createTagSection({ id: '2', label: 'Tình trạng', tags: arrayTags3.map(x => App.createTag(x)) }),
-            App.createTagSection({ id: '3', label: 'Num chapter', tags: arrayTags4.map(x => App.createTag(x)) })
-        ]
+    //     const tagSections: TagSection[] = [
+    //         App.createTagSection({ id: '4', label: 'Rank', tags: arrayTags5.map(x => App.createTag(x)) }),
+    //         App.createTagSection({ id: '0', label: 'Thể Loại', tags: arrayTags.map(x => App.createTag(x)) }),
+    //         App.createTagSection({ id: '1', label: 'Sắp xếp theo', tags: arrayTags2.map(x => App.createTag(x)) }),
+    //         App.createTagSection({ id: '2', label: 'Tình trạng', tags: arrayTags3.map(x => App.createTag(x)) }),
+    //         App.createTagSection({ id: '3', label: 'Num chapter', tags: arrayTags4.map(x => App.createTag(x)) })
+    //     ]
 
-        return tagSections;
-    }
+    //     return tagSections;
+    // }
 
     parseUpdatedManga(updatedManga: any, time: Date, ids: string[]): MangaUpdates {
         const returnObject: MangaUpdates = {
@@ -263,56 +269,56 @@ export class Parser {
         return splitStr.join(' ');
     }
 
-    private change_alias(alias: any) {
-        var str = alias;
-        str = str.toLowerCase().trim();
+    // private change_alias(alias: any) {
+    //     var str = alias;
+    //     str = str.toLowerCase().trim();
 
-        const charMap: { [key: string]: string } = {
-            à: 'a', á: 'a', ả: 'a', ã: 'a', ạ: 'a',
-            ă: 'a', ằ: 'a', ắ: 'a', ẳ: 'a', ẵ: 'a', ặ: 'a',
-            â: 'a', ầ: 'a', ấ: 'a', ẩ: 'a', ẫ: 'a', ậ: 'a',
-            đ: 'd',
-            è: 'e', é: 'e', ẻ: 'e', ẽ: 'e', ẹ: 'e',
-            ê: 'e', ề: 'e', ế: 'e', ể: 'e', ễ: 'e', ệ: 'e',
-            ì: 'i', í: 'i', ỉ: 'i', ĩ: 'i', ị: 'i',
-            ò: 'o', ó: 'o', ỏ: 'o', õ: 'o', ọ: 'o',
-            ô: 'o', ồ: 'o', ố: 'o', ổ: 'o', ỗ: 'o', ộ: 'o',
-            ơ: 'o', ờ: 'o', ớ: 'o', ở: 'o', ỡ: 'o', ợ: 'o',
-            ù: 'u', ú: 'u', ủ: 'u', ũ: 'u', ụ: 'u',
-            ư: 'u', ừ: 'u', ứ: 'u', ử: 'u', ữ: 'u', ự: 'u',
-            ỳ: 'y', ý: 'y', ỷ: 'y', ỹ: 'y', ỵ: 'y',
-        };
+    //     const charMap: { [key: string]: string } = {
+    //         à: 'a', á: 'a', ả: 'a', ã: 'a', ạ: 'a',
+    //         ă: 'a', ằ: 'a', ắ: 'a', ẳ: 'a', ẵ: 'a', ặ: 'a',
+    //         â: 'a', ầ: 'a', ấ: 'a', ẩ: 'a', ẫ: 'a', ậ: 'a',
+    //         đ: 'd',
+    //         è: 'e', é: 'e', ẻ: 'e', ẽ: 'e', ẹ: 'e',
+    //         ê: 'e', ề: 'e', ế: 'e', ể: 'e', ễ: 'e', ệ: 'e',
+    //         ì: 'i', í: 'i', ỉ: 'i', ĩ: 'i', ị: 'i',
+    //         ò: 'o', ó: 'o', ỏ: 'o', õ: 'o', ọ: 'o',
+    //         ô: 'o', ồ: 'o', ố: 'o', ổ: 'o', ỗ: 'o', ộ: 'o',
+    //         ơ: 'o', ờ: 'o', ớ: 'o', ở: 'o', ỡ: 'o', ợ: 'o',
+    //         ù: 'u', ú: 'u', ủ: 'u', ũ: 'u', ụ: 'u',
+    //         ư: 'u', ừ: 'u', ứ: 'u', ử: 'u', ữ: 'u', ự: 'u',
+    //         ỳ: 'y', ý: 'y', ỷ: 'y', ỹ: 'y', ỵ: 'y',
+    //     };
 
-        // Replace Vietnamese characters with their non-diacritic counterparts
-        str = str.replace(/[\u0300-\u036f]/g, (match: string) => charMap[match] || '');
+    //     // Replace Vietnamese characters with their non-diacritic counterparts
+    //     str = str.replace(/[\u0300-\u036f]/g, (match: string) => charMap[match] || '');
 
-        // Replace spaces with hyphens
-        str = str.replace(/\s+/g, '-');
+    //     // Replace spaces with hyphens
+    //     str = str.replace(/\s+/g, '-');
 
-        // Remove consecutive hyphens
-        str = str.replace(/-{2,}/g, '-');
+    //     // Remove consecutive hyphens
+    //     str = str.replace(/-{2,}/g, '-');
 
-        return str;
-    }
+    //     return str;
+    // }
 
-    decrypt_data(data: any) {
-        const CryptoJS = require('crypto-js');
-        const parsed = data;
-        const type = parsed.ciphertext;
-        const score = CryptoJS.enc.Hex.parse(parsed.iv);
-        const lastviewmatrix = CryptoJS.enc.Hex.parse(parsed.salt);
-        const adjustedLevel = CryptoJS.PBKDF2("nettruyenhayvn", lastviewmatrix, {
-            hasher: CryptoJS.algo.SHA512,
-            keySize: 64 / 8,
-            iterations: 999,
-        });
-        const queryTokenScores = { iv: '' };
-        queryTokenScores["iv"] = score;
-        const pixelSizeTargetMax = CryptoJS.AES.decrypt(
-            type,
-            adjustedLevel,
-            queryTokenScores
-        );
-        return pixelSizeTargetMax.toString(CryptoJS.enc.Utf8);
-    }
+    // decrypt_data(data: any) {
+    //     const CryptoJS = require('crypto-js');
+    //     const parsed = data;
+    //     const type = parsed.ciphertext;
+    //     const score = CryptoJS.enc.Hex.parse(parsed.iv);
+    //     const lastviewmatrix = CryptoJS.enc.Hex.parse(parsed.salt);
+    //     const adjustedLevel = CryptoJS.PBKDF2("nettruyenhayvn", lastviewmatrix, {
+    //         hasher: CryptoJS.algo.SHA512,
+    //         keySize: 64 / 8,
+    //         iterations: 999,
+    //     });
+    //     const queryTokenScores = { iv: '' };
+    //     queryTokenScores["iv"] = score;
+    //     const pixelSizeTargetMax = CryptoJS.AES.decrypt(
+    //         type,
+    //         adjustedLevel,
+    //         queryTokenScores
+    //     );
+    //     return pixelSizeTargetMax.toString(CryptoJS.enc.Utf8);
+    // }
 }
