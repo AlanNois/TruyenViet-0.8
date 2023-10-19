@@ -1640,11 +1640,15 @@ class Parser {
         let author = '';
         let artist = '';
         let status = '';
+        let au_ar_txt = [];
         $('.info-item', '.series-information').each((_, obj) => {
             switch ($('.info-name', obj).text().trim()) {
                 case 'Tác giả:':
-                    author = $('.info-value', obj).text();
-                    artist = $('.info-value', obj).text();
+                    for (const i of $('.info-value', obj).toArray()) {
+                        au_ar_txt.push($(i).text());
+                    }
+                    author = au_ar_txt.join(',');
+                    artist = au_ar_txt.join(',');
                     break;
                 case 'Thể loại:':
                     $('.info-value > a', obj).each((_, obj) => {
@@ -1664,7 +1668,7 @@ class Parser {
         let image = $('.series-cover > div > .content').css('background-image');
         image = image.replace('url(', '').replace(')', '').replace(/\"/gi, "").replace(/['"]+/g, '');
         const titles = [this.decodeHTMLEntity($('.series-name > a').text().trim())];
-        const desc = $('.summary-content > p').text();
+        const desc = $('.series-summary > .summary-content').text();
         const rating = parseFloat(String($('div:nth-child(2) > .statistic-value').text().trim().split(' /')[0]));
         return App.createSourceManga({
             id: mangaId,
