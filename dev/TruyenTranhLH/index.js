@@ -1667,6 +1667,7 @@ class Parser {
         });
         let image = $('.series-cover > div > .content').css('background-image');
         image = image.replace('url(', '').replace(')', '').replace(/\"/gi, "").replace(/['"]+/g, '');
+        console.log(image);
         const titles = [this.decodeHTMLEntity($('.series-name > a').text().trim())];
         const desc = $('.series-summary > .summary-content').text();
         const rating = parseFloat(String($('div:nth-child(2) > .statistic-value').text().trim().split(' /')[0]));
