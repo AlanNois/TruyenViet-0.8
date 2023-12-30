@@ -1438,7 +1438,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.TruyenTranhLH = exports.TruyenTranhLHInfo = exports.isLastPage = void 0;
 const types_1 = require("@paperback/types");
 const TruyenTranhLHParser_1 = require("./TruyenTranhLHParser");
-const DOMAIN = 'https://truyentranhlh.net/';
+const DOMAIN = 'https://truyenlh.com/';
 const isLastPage = ($) => {
     const current = $('.pagination_wrap > a.current').text();
     const lastPage = $('.pagination_wrap > a.next').attr('href')?.split('=').pop();

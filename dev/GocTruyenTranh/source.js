@@ -1509,6 +1509,7 @@ class GocTruyenTranh {
     }
     async getChapterDetails(mangaId, chapterId) {
         const $ = await this.DOMHTML(`${DOMAIN}truyen/${mangaId.split('::')[0]}/${chapterId}`);
+        console.log(mangaId, chapterId);
         const pages = this.parser.parseChapterDetails($);
         return App.createChapterDetails({
             id: chapterId,
