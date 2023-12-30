@@ -22,7 +22,7 @@ import {
 
 import { Parser } from './NhatTruyenParser';
 
-const DOMAIN = 'https://nhattruyenplus.com/';
+const DOMAIN = 'https://nhattruyenmax.com/';
 
 export const isLastPage = ($: CheerioStatic): boolean => {
     const current = $('ul.pagination > li.active > a').text();

@@ -22,7 +22,7 @@ import {
 
 import { Parser } from './CMangaParser';
 
-const DOMAIN = 'https://cmangaaz.com/';
+const DOMAIN = 'https://cmangavn.com/';
 
 export const CMangaInfo: SourceInfo = {
     version: '1.0.1',
@@ -175,7 +175,7 @@ export class CManga implements ChapterProviding, MangaProviding, SearchResultsPr
             let url: string;
             switch (section.id) {
                 case 'new_updated':
-                    url = `${DOMAIN}api/home_album_list?num_chapter=0&sort=update&tag=all&limit=20&page=1&user=0`;
+                    url = `${DOMAIN}api/home_album_list?num_chapter=0&sort=update&tag=all&limit=20&page=1&user=0&child_protect=off`;
                     break;
                 // case 'new_added':
                 //     url = `${DOMAIN}api/list_item?page=1&limit=20&sort=new&type=all&tag=Truy%E1%BB%87n%20si%C3%AAu%20hay&child=off&status=all&num_chapter=0`;
@@ -202,7 +202,7 @@ export class CManga implements ChapterProviding, MangaProviding, SearchResultsPr
         let url = '';
         switch (homepageSectionId) {
             case 'new_updated':
-                url = `${DOMAIN}api/home_album_list?num_chapter=0&sort=update&tag=all&limit=40&page=${page}&user=0`
+                url = `${DOMAIN}api/home_album_list?num_chapter=0&sort=update&tag=all&limit=40&page=${page}&user=0&child_protect=off`
                 break;
             // case 'new_added':
             //     url = `${DOMAIN}api/list_item?page=${page}&limit=40&sort=new&type=all&tag=Truy%E1%BB%87n%20si%C3%AAu%20hay&child=off&status=all&num_chapter=0`
@@ -232,7 +232,7 @@ export class CManga implements ChapterProviding, MangaProviding, SearchResultsPr
         const updatedManga: any = [];
         const pages = 10;
         for (let page = 1; page <= pages; page++) {
-            let url = `${DOMAIN}api/list_item?page=${page}&limit=40&sort=new&type=all&tag=&child=off&status=all&num_chapter=0`
+            let url = `${DOMAIN}api/list_item?page=${page}&limit=40&sort=new&type=all&tag=&child_protect=off&status=all&num_chapter=0`
             const json = JSON.parse(await this.getAPI(url));
             const updateManga = Object.keys(json).map(key => {
                 const id = `${json[key].url}-${json[key].id_book}`;

@@ -101,6 +101,7 @@ export class GocTruyenTranh implements SearchResultsProviding, MangaProviding, C
 
     async getChapterDetails(mangaId: string, chapterId: string): Promise<ChapterDetails> {
         const $ = await this.DOMHTML(`${DOMAIN}truyen/${mangaId.split('::')[0]}/${chapterId}`);
+        console.log(mangaId, chapterId)
         const pages = this.parser.parseChapterDetails($);
         return App.createChapterDetails({
             id: chapterId,

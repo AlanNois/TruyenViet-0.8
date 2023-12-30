@@ -21,7 +21,7 @@ import {
 
 import { Parser } from './TruyenTranhLHParser';
 
-const DOMAIN = 'https://truyentranhlh.net/';
+const DOMAIN = 'https://truyenlh.com/';
 
 export const isLastPage = ($: CheerioStatic): boolean => {
     const current = $('.pagination_wrap > a.current').text();

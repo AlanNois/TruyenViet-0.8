@@ -22,7 +22,7 @@ import {
 
 import { Parser } from './DocTruyen3QParser';
 
-const DOMAIN = 'https://doctruyen3qne.com/';
+const DOMAIN = 'https://doctruyen3qmoi.com/';
 
 export const isLastPage = ($: CheerioStatic): boolean => {
     const lastPage = Number($("ul.pagination > li.page-item:not(:has(a[rel='next'])) a").last().text().trim());
