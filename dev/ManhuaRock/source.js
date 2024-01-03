@@ -460,44 +460,53 @@ __exportStar(require("./compat/DyamicUI"), exports);
 },{"./base/index":7,"./compat/DyamicUI":16,"./generated/_exports":60}],62:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.NetTruyen = exports.NetTruyenInfo = exports.isLastPage = void 0;
+exports.ManhuaRock = exports.ManhuaRockInfo = exports.isLastPage = void 0;
 const types_1 = require("@paperback/types");
-const NetTruyenParser_1 = require("./NetTruyenParser");
-const DOMAIN = 'https://www.nettruyenbing.com/';
+const ManhuaRockParser_1 = require("./ManhuaRockParser");
+const DOMAIN = 'https://manhuarockz.com/';
 const isLastPage = ($) => {
-    const current = $('ul.pagination > li.active > a').text();
-    let total = $('ul.pagination > li.PagerSSCCells:last-child').text();
-    if (current) {
-        total = total ?? '';
-        return (+total) === (+current); //+ => convert value to number
-    }
-    return true;
+    const pages = [];
+    $("li", "ul.pagination").each((_, page) => {
+        const pageNumber = Number($('a', page).text().trim());
+        if (!isNaN(pageNumber)) {
+            pages.push(pageNumber);
+        }
+    });
+    const lastPage = Math.max(...pages);
+    const currentPage = Number($("ul.pagination > li > a.active").text().trim());
+    return currentPage >= lastPage;
 };
 exports.isLastPage = isLastPage;
-exports.NetTruyenInfo = {
-    version: '1.0.1',
-    name: 'NetTruyen',
+exports.ManhuaRockInfo = {
+    version: '1.0.0',
+    name: 'ManhuaRock',
     icon: 'icon.png',
     author: 'AlanNois',
     authorWebsite: 'https://github.com/AlanNois/',
-    description: 'Extension that pulls manga from NetTruyen.',
+    description: 'Extension that pulls manga from ManhuaRock.',
     contentRating: types_1.ContentRating.EVERYONE,
     websiteBaseURL: DOMAIN,
     sourceTags: [
         {
             text: 'Recommended',
             type: types_1.BadgeColor.BLUE
-        },
-        {
-            text: 'Notifications',
-            type: types_1.BadgeColor.GREEN
-        },
+        }
     ],
     intents: types_1.SourceIntents.MANGA_CHAPTERS | types_1.SourceIntents.HOMEPAGE_SECTIONS
 };
-class NetTruyen {
+class ManhuaRock {
+    /**
+     * The constructor function takes a CheerioAPI object as a parameter and assigns it to a private
+     * property.
+     * @param {CheerioAPI} cheerio - The `cheerio` parameter is of type `CheerioAPI`. Cheerio is a
+     * fast, flexible, and lean implementation of core jQuery designed specifically for the server. It
+     * allows you to traverse and manipulate HTML and XML documents using a familiar API inspired by
+     * jQuery.
+     */
     constructor(cheerio) {
         this.cheerio = cheerio;
+        /* The `readonly requestManager` property is creating an instance of the `RequestManager` class
+        from the `App` module. */
         this.requestManager = App.createRequestManager({
             requestsPerSecond: 4,
             requestTimeout: 15000,
@@ -517,11 +526,17 @@ class NetTruyen {
                 }
             }
         });
-        this.parser = new NetTruyenParser_1.Parser();
+        this.parser = new ManhuaRockParser_1.Parser();
     }
     getMangaShareUrl(mangaId) {
-        return `${DOMAIN}truyen-tranh/${mangaId}`;
+        return `${DOMAIN}truyen/${mangaId}`;
     }
+    /**
+     * The function `DOMHTML` is a private asynchronous function that takes a URL as a parameter and
+     * returns a Promise that resolves to a CheerioStatic object.
+     * @param {string} url - The URL of the HTML page you want to load and parse.
+     * @returns a Promise that resolves to a CheerioStatic object.
+     */
     async DOMHTML(url) {
         const request = App.createRequest({
             url: url,
@@ -530,16 +545,32 @@ class NetTruyen {
         const response = await this.requestManager.schedule(request, 1);
         return this.cheerio.load(response.data);
     }
+    /**
+     * The function `getAPI` is a private asynchronous function that makes a GET request to a specified
+     * URL and returns the response data as a string.
+     * @param {string} url - The `url` parameter is a string that represents the URL of the API
+     * endpoint that you want to make a GET request to.
+     * @returns a Promise that resolves to a string.
+     */
+    async getAPI(url) {
+        const request = App.createRequest({
+            url: url,
+            method: 'GET',
+        });
+        const response = await this.requestManager.schedule(request, 1);
+        return response.data;
+    }
     async getMangaDetails(mangaId) {
-        const $ = await this.DOMHTML(`${DOMAIN}truyen-tranh/${mangaId}`);
+        const $ = await this.DOMHTML(`${DOMAIN}truyen/${mangaId}`);
         return this.parser.parseMangaDetails($, mangaId);
     }
     async getChapters(mangaId) {
-        const $ = await this.DOMHTML(`${DOMAIN}truyen-tranh/${mangaId}`);
+        const $ = await this.DOMHTML(`${DOMAIN}truyen/${mangaId}`);
         return this.parser.parseChapterList($);
     }
     async getChapterDetails(mangaId, chapterId) {
-        const $ = await this.DOMHTML(`${DOMAIN}truyen-tranh/${chapterId}`);
+        const json = await this.getAPI(`${DOMAIN}ajax/image/list/chap/${chapterId.split('/').pop()}?mode=vertical&quality=high`);
+        const $ = this.cheerio.load(JSON.parse(json).html);
         const pages = this.parser.parseChapterDetails($);
         return App.createChapterDetails({
             id: chapterId,
@@ -547,56 +578,25 @@ class NetTruyen {
             pages: pages,
         });
     }
-    async supportsTagExclusion() {
-        return true;
-    }
     async getSearchResults(query, metadata) {
         let page = metadata?.page ?? 1;
         const search = {
-            genres: '',
-            exgenres: '',
-            gender: "-1",
-            status: "-1",
-            minchapter: "1",
-            sort: "0"
+            genre: '',
+            sort: ''
         };
-        const extags = query.excludedTags?.map(tag => tag.id) ?? [];
-        const exgenres = [];
-        for (const value of extags) {
-            if (value.indexOf('.') === -1) {
-                exgenres.push(value);
-            }
-        }
         const tags = query.includedTags?.map(tag => tag.id) ?? [];
-        const genres = [];
         for (const value of tags) {
             if (value.indexOf('.') === -1) {
-                genres.push(value);
+                search.genre = value;
             }
             else {
-                const [key, val] = value.split(".");
-                switch (key) {
-                    case 'minchapter':
-                        search.minchapter = String(val);
-                        break;
-                    case 'gender':
-                        search.gender = String(val);
-                        break;
-                    case 'sort':
-                        search.sort = String(val);
-                        break;
-                    case 'status':
-                        search.status = String(val);
-                        break;
-                }
+                search.sort = String(value.split('.')[1]);
             }
         }
-        search.genres = genres.join(",");
-        search.exgenres = exgenres.join(",");
-        const paramExgenres = search.exgenres ? `&notgenres=${search.exgenres}` : '';
-        const url = `${DOMAIN}${query.title ? '/tim-truyen' : '/tim-truyen-nang-cao'}`;
-        const param = encodeURI(`?keyword=${query.title ?? ''}&genres=${search.genres}${paramExgenres}&gender=${search.gender}&status=${search.status}&minchapter=${search.minchapter}&sort=${search.sort}&page=${page}`);
-        const $ = await this.DOMHTML(url + param);
+        const url = `${DOMAIN}${query.title ? 'tim-kiem/' : 'the-loai/'}`;
+        const param_1 = encodeURI(`?keyword=${query.title ?? ''}`);
+        const param_2 = encodeURI(`${search.genre}/?sort=${search.sort ?? ''}`);
+        const $ = await this.DOMHTML(`${url}${query.title ? param_1 : param_2}`);
         const tiles = this.parser.parseSearchResults($);
         metadata = !(0, exports.isLastPage)($) ? { page: page + 1 } : undefined;
         return App.createPagedResults({
@@ -605,13 +605,11 @@ class NetTruyen {
         });
     }
     async getHomePageSections(sectionCallback) {
-        console.log('NetTruyen Running...');
+        console.log('ManhuaRock Running...');
         const sections = [
             App.createHomeSection({ id: 'featured', title: "Truyện Đề Cử", containsMoreItems: false, type: types_1.HomeSectionType.featured }),
             App.createHomeSection({ id: 'viewest', title: "Truyện Xem Nhiều Nhất", containsMoreItems: true, type: types_1.HomeSectionType.singleRowNormal }),
-            App.createHomeSection({ id: 'hot', title: "Truyện Hot Nhất", containsMoreItems: true, type: types_1.HomeSectionType.singleRowNormal }),
             App.createHomeSection({ id: 'new_updated', title: "Truyện Mới Cập Nhật", containsMoreItems: true, type: types_1.HomeSectionType.singleRowNormal }),
-            App.createHomeSection({ id: 'new_added', title: "Truyện Mới Thêm Gần Đây", containsMoreItems: true, type: types_1.HomeSectionType.singleRowNormal }),
             App.createHomeSection({ id: 'full', title: "Truyện Đã Hoàn Thành", containsMoreItems: true, type: types_1.HomeSectionType.singleRowNormal }),
         ];
         for (const section of sections) {
@@ -622,19 +620,13 @@ class NetTruyen {
                     url = `${DOMAIN}`;
                     break;
                 case 'viewest':
-                    url = `${DOMAIN}tim-truyen?status=-1&sort=10`;
-                    break;
-                case 'hot':
-                    url = `${DOMAIN}hot`;
+                    url = `${DOMAIN}xem-nhieu/`;
                     break;
                 case 'new_updated':
-                    url = `${DOMAIN}`;
-                    break;
-                case 'new_added':
-                    url = `${DOMAIN}tim-truyen?status=-1&sort=15`;
+                    url = `${DOMAIN}danh-sach-truyen/?sort=latest-updated`;
                     break;
                 case 'full':
-                    url = `${DOMAIN}truyen-full`;
+                    url = `${DOMAIN}hoan-thanh/`;
                     break;
                 default:
                     throw new Error("Invalid homepage section ID");
@@ -644,61 +636,39 @@ class NetTruyen {
                 case 'featured':
                     section.items = this.parser.parseFeaturedSection($);
                     break;
-                case 'viewest':
-                    section.items = this.parser.parsePopularSection($);
-                    break;
-                case 'hot':
-                    section.items = this.parser.parseHotSection($);
-                    break;
-                case 'new_updated':
-                    section.items = this.parser.parseNewUpdatedSection($);
-                    break;
-                case 'new_added':
-                    section.items = this.parser.parseNewAddedSection($);
-                    break;
-                case 'full':
-                    section.items = this.parser.parseFullSection($);
-                    break;
+                default:
+                    section.items = this.parser.parseSearchResults($);
             }
-            sectionCallback(section);
         }
     }
     async getViewMoreItems(homepageSectionId, metadata) {
         let page = metadata?.page ?? 1;
-        let param = "";
         let url = "";
         switch (homepageSectionId) {
-            case "viewest":
-                param = `?status=-1&sort=10&page=${page}`;
-                url = `${DOMAIN}tim-truyen`;
+            case 'featured':
+                url = `${DOMAIN}`;
                 break;
-            case "hot":
-                param = `?page=${page}`;
-                url = `${DOMAIN}hot`;
+            case 'viewest':
+                url = `${DOMAIN}xem-nhieu/${page}/`;
                 break;
-            case "new_updated":
-                param = `?page=${page}`;
-                url = DOMAIN;
+            case 'new_updated':
+                url = `${DOMAIN}danh-sach-truyen/${page}/?sort=latest-updated`;
                 break;
-            case "new_added":
-                param = `?status=-1&sort=15&page=${page}`;
-                url = `${DOMAIN}tim-truyen`;
-                break;
-            case "full":
-                param = `?page=${page}`;
-                url = `${DOMAIN}truyen-full`;
+            case 'full':
+                url = `${DOMAIN}hoan-thanh/${page}`;
                 break;
             default:
                 throw new Error("Requested to getViewMoreItems for a section ID which doesn't exist");
         }
-        const request = App.createRequest({
-            url,
-            method: 'GET',
-            param,
-        });
-        const response = await this.requestManager.schedule(request, 1);
-        const $ = this.cheerio.load(response.data);
-        const manga = this.parser.parseViewMoreItems($);
+        const $ = await this.DOMHTML(url);
+        let manga = [];
+        switch (homepageSectionId) {
+            case 'featured':
+                manga = this.parser.parseFeaturedSection($);
+                break;
+            default:
+                manga = this.parser.parseSearchResults($);
+        }
         metadata = (0, exports.isLastPage)($) ? undefined : { page: page + 1 };
         return App.createPagedResults({
             results: manga,
@@ -706,86 +676,53 @@ class NetTruyen {
         });
     }
     async getSearchTags() {
-        const url = `${DOMAIN}tim-truyen-nang-cao`;
+        const url = `${DOMAIN}`;
         const $ = await this.DOMHTML(url);
         return this.parser.parseTags($);
     }
-    async filterUpdatedManga(mangaUpdatesFoundCallback, time, ids) {
-        const updateManga = [];
-        const pages = 10;
-        for (let i = 1; i < pages + 1; i++) {
-            // const request = createRequestObject({
-            //     url: DOMAIN + '?page=' + i,
-            //     method: 'GET',
-            // })
-            // const response = await this.requestManager.schedule(request, 1)
-            // const $ = this.cheerio.load(response.data);
-            let url = `${DOMAIN}?page=${i}`;
-            const $ = await this.DOMHTML(url);
-            const updateManga = $('div.item', 'div.row').toArray().map(manga => {
-                const id = $('figure.clearfix > div.image > a', manga).attr('href')?.split('/').pop();
-                const time = $("figure.clearfix > figcaption > ul > li.chapter:nth-of-type(1) > i", manga).last().text().trim();
-                return {
-                    id: id,
-                    time: time
-                };
-            });
-            updateManga.push(...updateManga);
-        }
-        const returnObject = this.parser.parseUpdatedManga(updateManga, time, ids);
-        mangaUpdatesFoundCallback(App.createMangaUpdates(returnObject));
-    }
 }
-exports.NetTruyen = NetTruyen;
+exports.ManhuaRock = ManhuaRock;
 
-},{"./NetTruyenParser":63,"@paperback/types":61}],63:[function(require,module,exports){
+},{"./ManhuaRockParser":63,"@paperback/types":61}],63:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Parser = void 0;
 class Parser {
-    convertTime(timeAgo) {
-        let trimmed = Number((/\d*/.exec(timeAgo) ?? [])[0]);
-        trimmed = (trimmed === 0 && timeAgo.includes('a')) ? 1 : trimmed;
-        if (timeAgo.includes('giây') || timeAgo.includes('secs')) {
-            return new Date(Date.now() - trimmed * 1000);
-        }
-        else if (timeAgo.includes('phút')) {
-            return new Date(Date.now() - trimmed * 60000);
-        }
-        else if (timeAgo.includes('giờ')) {
-            return new Date(Date.now() - trimmed * 3600000);
-        }
-        else if (timeAgo.includes('ngày')) {
-            return new Date(Date.now() - trimmed * 86400000);
-        }
-        else if (timeAgo.includes('năm')) {
-            return new Date(Date.now() - trimmed * 31556952000);
-        }
-        else if (timeAgo.includes(':')) {
-            const [H, D] = timeAgo.split(' ');
-            const fixD = String(D).split('/');
-            const finalD = `${fixD[1]}/${fixD[0]}/${new Date().getFullYear()}`;
-            return new Date(`${finalD} ${H}`);
-        }
-        else {
-            const split = timeAgo.split('/');
-            return new Date(`${split[1]}/${split[0]}/20${split[2]}`);
-        }
-    }
+    /**
+     * The function `parseMangaDetails` takes in a CheerioStatic object and a mangaId string, and
+     * parses the manga details from the object to create and return a SourceManga object.
+     * @param {CheerioStatic} $ - The CheerioStatic parameter is a reference to the Cheerio library,
+     * which is used for parsing HTML.
+     * @param {string} mangaId - The mangaId parameter is a string that represents the unique
+     * identifier of a manga. It is used to fetch the details of a specific manga from a source.
+     * @returns a SourceManga object.
+     */
     parseMangaDetails($, mangaId) {
         const tags = [];
-        $('li.kind > p.col-xs-8 > a').each((_, obj) => {
-            const label = $(obj).text();
-            const id = $(obj).attr('href')?.split('/')[4] ?? label;
-            tags.push(App.createTag({ label, id }));
+        let author = '';
+        let artist = '';
+        $('.post-content > .post-content_item').each((_, obj) => {
+            switch ($('.summary-heading', obj).text().trim()) {
+                case "Tác giả":
+                    author = $('.summary-content', obj).text();
+                    break;
+                case "Hoạ sỹ":
+                    artist = $('.summary-content', obj).text();
+                    break;
+                case "Thể loại":
+                    $('.summary-content > .genres-content > a').each((_, tag) => {
+                        const label = $(tag).text();
+                        const id = $(obj).attr('href')?.split('/').pop() ?? label;
+                        tags.push(App.createTag({ label, id }));
+                    });
+                    break;
+            }
         });
-        const titles = $('h1.title-detail').text().trim();
-        const author = $('ul.list-info > li.author > p.col-xs-8').text();
-        const artist = $('ul.list-info > li.author > p.col-xs-8').text();
-        const image = 'https:' + $('div.col-image > img').attr('src');
-        const desc = $('div.detail-content > p').text();
-        const status = $('ul.list-info > li.status > p.col-xs-8').text();
-        const rating = parseFloat($('span[itemprop="ratingValue"]').text());
+        const titles = $('.post-title > h1').text().trim();
+        const image = String($('.summary_image > a > img').attr('src'));
+        const desc = $('.dsct > p').text();
+        const status = $('.post-status > div:nth-child(2) > div.summary-content').text();
+        const rating = parseFloat($('span[property="ratingValue"]').text());
         return App.createSourceManga({
             id: mangaId,
             mangaInfo: App.createMangaInfo({
@@ -800,48 +737,58 @@ class Parser {
             }),
         });
     }
+    /**
+     * The function `parseChapterList` takes a CheerioStatic object and returns an array of Chapter
+     * objects by extracting data from the HTML structure.
+     * @param {CheerioStatic} $ - The parameter `$` is a reference to the CheerioStatic object, which
+     * is a jQuery-like library for parsing HTML. It is used to select and manipulate elements in the
+     * HTML document.
+     * @returns an array of Chapter objects.
+     */
     parseChapterList($) {
         const chapters = [];
-        $('div.list-chapter > nav > ul > li.row:not(.heading)').each((_, obj) => {
-            const id = String($('div.chapter a', obj).attr('href')).split('/').slice(4).join('/');
-            const time = $('div.col-xs-4', obj).text();
-            const group = $('div.col-xs-3', obj).text();
-            let name = $('div.chapter a', obj).text();
-            const chapNum = $('div.chapter a', obj).text().split(' ')[1];
-            name = name.includes(':') ? String(name.split(':')[1]).trim() : '';
-            const timeFinal = this.convertTime(time);
+        $('.row-content-chapter > li').each((_, obj) => {
+            const id = String($('a', obj).attr('href')?.split('/').slice(4).join('/'));
+            const view_n_time = $('span', obj).text().trim().split('-');
+            const time = new Date(String(view_n_time[1]));
+            const group = view_n_time[0];
+            const name = $('a', obj).text();
+            const chapNum = $('a', obj).text().split(' ');
+            /* The code `chapters.push(App.createChapter({ id, chapNum: parseFloat(String(chapNum)),
+            name, langCode: '🇻🇳', time, group }))` is creating a new Chapter object and pushing it
+            into the `chapters` array. */
             chapters.push(App.createChapter({
-                id: id,
+                id,
                 chapNum: parseFloat(String(chapNum)),
-                name: name,
+                name,
                 langCode: '🇻🇳',
-                time: timeFinal,
-                group: `${group} lượt xem`
+                time,
+                group
             }));
         });
         if (chapters.length == 0) {
-            throw new Error('No chapters found');
+            throw new Error('No chapter found');
         }
         return chapters;
     }
     parseChapterDetails($) {
         const pages = [];
-        $('div.reading-detail > div.page-chapter > img').each((_, obj) => {
-            if (!obj.attribs['data-original'])
+        $('.image-placeholder > img').each((_, obj) => {
+            if (!obj.attribs['data-src'])
                 return;
-            const link = obj.attribs['data-original'];
-            pages.push(link.indexOf('https') === -1 ? 'https:' + link : link);
+            const link = obj.attribs['data-src'];
+            pages.push(link);
         });
         return pages;
     }
     parseSearchResults($) {
         const tiles = [];
-        $('div.item', 'div.row').each((_, manga) => {
-            const title = $('figure.clearfix > figcaption > h3 > a', manga).first().text();
-            const id = $('figure.clearfix > div.image > a', manga).attr('href')?.split('/').pop();
-            let image = $('figure.clearfix > div.image > a > img', manga).first().attr('data-original');
-            image = !image ? "https://i.imgur.com/GYUxEX8.png" : 'https:' + image;
-            const subtitle = $("figure.clearfix > figcaption > ul > li.chapter:nth-of-type(1) > a", manga).last().text().trim();
+        $('.page-item', '.listupd').each((_, manga) => {
+            const title = $('div > div > h3', manga).text().trim();
+            const id = $('div > div > h3 > a').attr('href')?.split('/').slice(4).join('/');
+            let image = $('div > div > a > img', manga).first().attr('data-src');
+            image = !image ? "https://i.imgur.com/GYUxEX8.png" : image;
+            const subtitle = $("div > div > .list-chapter > div:nth-of-type(1) > span", manga).text().trim();
             if (!id || !title)
                 return;
             tiles.push(App.createPartialSourceManga({
@@ -853,202 +800,58 @@ class Parser {
         });
         return tiles;
     }
-    parseTags($) {
-        //id tag đéo đc trùng nhau
-        const arrayTags = [];
-        const arrayTags2 = [];
-        const arrayTags3 = [];
-        const arrayTags4 = [];
-        const arrayTags5 = [];
-        //The loai
-        for (const tag of $('div.col-md-3.col-sm-4.col-xs-6.mrb10', 'div.col-sm-10 > div.row').toArray()) {
-            const label = $('div.genre-item', tag).text().trim();
-            const id = $('div.genre-item > span', tag).attr('data-id') ?? label;
-            if (!id || !label)
-                continue;
-            arrayTags.push({ id: id, label: label });
-        }
-        //Số lượng chapter
-        for (const tag of $('option', 'select.select-minchapter').toArray()) {
-            const label = $(tag).text().trim();
-            const id = 'minchapter.' + $(tag).attr('value') ?? label;
-            if (!id || !label)
-                continue;
-            arrayTags2.push({ id: id, label: label });
-        }
-        //Tình trạng
-        for (const tag of $('option', '.select-status').toArray()) {
-            const label = $(tag).text().trim();
-            const id = 'status.' + $(tag).attr('value') ?? label;
-            if (!id || !label)
-                continue;
-            arrayTags3.push({ id: id, label: label });
-        }
-        //Dành cho
-        for (const tag of $('option', '.select-gender').toArray()) {
-            const label = $(tag).text().trim();
-            const id = 'gender.' + $(tag).attr('value') ?? label;
-            if (!id || !label)
-                continue;
-            arrayTags4.push({ id: id, label: label });
-        }
-        //Sắp xếp theo
-        for (const tag of $('option', '.select-sort').toArray()) {
-            const label = $(tag).text().trim();
-            const id = 'sort.' + $(tag).attr('value') ?? label;
-            if (!id || !label)
-                continue;
-            arrayTags5.push({ id: id, label: label });
-        }
-        const tagSections = [
-            App.createTagSection({ id: '0', label: 'Thể Loại (Có thể chọn nhiều hơn 1)', tags: arrayTags.map(x => App.createTag(x)) }),
-            App.createTagSection({ id: '1', label: 'Số Lượng Chapter (Chỉ chọn 1)', tags: arrayTags2.map(x => App.createTag(x)) }),
-            App.createTagSection({ id: '2', label: 'Tình Trạng (Chỉ chọn 1)', tags: arrayTags3.map(x => App.createTag(x)) }),
-            App.createTagSection({ id: '3', label: 'Dành Cho (Chỉ chọn 1)', tags: arrayTags4.map(x => App.createTag(x)) }),
-            App.createTagSection({ id: '4', label: 'Sắp xếp theo (Chỉ chọn 1)', tags: arrayTags5.map(x => App.createTag(x)) }),
-        ];
-        return tagSections;
-    }
     parseFeaturedSection($) {
         const featuredItems = [];
-        $('div.item', 'div.altcontent1').each((_, manga) => {
-            const title = $('.slide-caption > h3 > a', manga).text();
-            const id = $('a', manga).attr('href')?.split('/').pop();
-            const image = $('a > img.lazyOwl', manga).attr('data-src');
-            const subtitle = $('.slide-caption > a', manga).text().trim() + ' - ' + $('.slide-caption > .time', manga).text().trim();
+        $('.p-item', '.sidebar > div:nth-child(5) > div.sidebar-pp').each((_, manga) => {
+            const title = $('.p-left > h4', manga).text().trim();
+            const id = $('.p-left > h4 > a').attr('href')?.split('/').slice(4).join('/');
+            let image = $('.pthumb > img', manga).first().attr('data-src');
+            image = !image ? "https://i.imgur.com/GYUxEX8.png" : image;
+            const subtitle = $(".p-left > .list-chapter > div:nth-of-type(1) > span", manga).first().text().trim();
             if (!id || !title)
                 return;
             featuredItems.push(App.createPartialSourceManga({
                 mangaId: String(id),
-                image: !image ? "https://i.imgur.com/GYUxEX8.png" : 'https:' + image,
+                image: String(image),
                 title: title,
                 subtitle: subtitle,
             }));
         });
         return featuredItems;
     }
-    parsePopularSection($) {
-        const popularItems = [];
-        $('div.item', 'div.row').slice(0, 20).each((_, manga) => {
-            const title = $('figure.clearfix > figcaption > h3 > a', manga).first().text();
-            const id = $('figure.clearfix > div.image > a', manga).attr('href')?.split('/').pop();
-            const image = $('figure.clearfix > div.image > a > img', manga).first().attr('data-original');
-            const subtitle = $("figure.clearfix > figcaption > ul > li.chapter:nth-of-type(1) > a", manga).last().text().trim();
-            if (!id || !title)
-                return;
-            popularItems.push(App.createPartialSourceManga({
-                mangaId: String(id),
-                image: !image ? "https://i.imgur.com/GYUxEX8.png" : 'https:' + image,
-                title: title,
-                subtitle: subtitle,
-            }));
-        });
-        return popularItems;
-    }
-    parseNewUpdatedSection($) {
-        const newUpdatedItems = [];
-        $('div.item', 'div.row').slice(0, 20).each((_, manga) => {
-            const title = $('figure.clearfix > figcaption > h3 > a', manga).first().text();
-            const id = $('figure.clearfix > div.image > a', manga).attr('href')?.split('/').pop();
-            const image = $('figure.clearfix > div.image > a > img', manga).first().attr('data-original');
-            const subtitle = $("figure.clearfix > figcaption > ul > li.chapter:nth-of-type(1) > a", manga).last().text().trim();
-            if (!id || !title)
-                return;
-            newUpdatedItems.push(App.createPartialSourceManga({
-                mangaId: String(id),
-                image: !image ? "https://i.imgur.com/GYUxEX8.png" : 'https:' + image,
-                title: title,
-                subtitle: subtitle,
-            }));
-        });
-        return newUpdatedItems;
-    }
-    parseHotSection($) {
-        const topWeek = [];
-        $('div.item', 'div.row').slice(0, 20).each((_, manga) => {
-            const title = $('figure.clearfix > figcaption > h3 > a', manga).first().text();
-            const id = $('figure.clearfix > div.image > a', manga).attr('href')?.split('/').pop();
-            const image = $('figure.clearfix > div.image > a > img', manga).first().attr('data-original');
-            const subtitle = $("figure.clearfix > figcaption > ul > li.chapter:nth-of-type(1) > a", manga).last().text().trim();
-            if (!id || !title)
-                return;
-            topWeek.push(App.createPartialSourceManga({
-                mangaId: String(id),
-                image: !image ? "https://i.imgur.com/GYUxEX8.png" : 'https:' + image,
-                title: title,
-                subtitle: subtitle,
-            }));
-        });
-        return topWeek;
-    }
-    parseNewAddedSection($) {
-        const newAddedItems = [];
-        $('div.item', 'div.row').slice(0, 20).each((_, manga) => {
-            const title = $('figure.clearfix > figcaption > h3 > a', manga).first().text();
-            const id = $('figure.clearfix > div.image > a', manga).attr('href')?.split('/').pop();
-            const image = $('figure.clearfix > div.image > a > img', manga).first().attr('data-original');
-            const subtitle = $("figure.clearfix > figcaption > ul > li.chapter:nth-of-type(1) > a", manga).last().text().trim();
-            if (!id || !title)
-                return;
-            newAddedItems.push(App.createPartialSourceManga({
-                mangaId: String(id),
-                image: !image ? "https://i.imgur.com/GYUxEX8.png" : 'https:' + image,
-                title: title,
-                subtitle: subtitle,
-            }));
-        });
-        return newAddedItems;
-    }
-    parseFullSection($) {
-        const fullItems = [];
-        $('div.item', 'div.row').slice(0, 20).each((_, manga) => {
-            const title = $('figure.clearfix > figcaption > h3 > a', manga).first().text();
-            const id = $('figure.clearfix > div.image > a', manga).attr('href')?.split('/').pop();
-            const image = $('figure.clearfix > div.image > a > img', manga).first().attr('data-original');
-            const subtitle = $("figure.clearfix > figcaption > ul > li.chapter:nth-of-type(1) > a", manga).last().text().trim();
-            if (!id || !title)
-                return;
-            fullItems.push(App.createPartialSourceManga({
-                mangaId: String(id),
-                image: !image ? "https://i.imgur.com/GYUxEX8.png" : 'https:' + image,
-                title: title,
-                subtitle: subtitle,
-            }));
-        });
-        return fullItems;
-    }
-    parseViewMoreItems($) {
-        const mangas = [];
-        const collectedIds = new Set();
-        $('div.item', 'div.row').each((_, manga) => {
-            const title = $('figure.clearfix > figcaption > h3 > a', manga).first().text();
-            const id = $('figure.clearfix > div.image > a', manga).attr('href')?.split('/').pop();
-            const image = $('figure.clearfix > div.image > a > img', manga).first().attr('data-original');
-            const subtitle = $("figure.clearfix > figcaption > ul > li.chapter:nth-of-type(1) > a", manga).last().text().trim();
-            if (!id || !title)
-                return;
-            if (!collectedIds.has(id)) {
-                mangas.push(App.createPartialSourceManga({
-                    mangaId: String(id),
-                    image: !image ? "https://i.imgur.com/GYUxEX8.png" : 'https:' + image,
-                    title: title,
-                    subtitle: subtitle,
-                }));
-                collectedIds.add(id);
+    parseTags($) {
+        const arrayTags = [];
+        const arrayTags2 = [
+            {
+                id: 'sort.latest-updated', label: 'Mới cập nhật'
+            },
+            {
+                id: 'sort.score', label: 'Điểm'
+            },
+            {
+                id: 'sort.name-az', label: 'Tên A-Z'
+            },
+            {
+                id: 'sort.release-date',
+                label: 'Ngày Phát Hành'
+            },
+            {
+                id: 'sort.most-viewd',
+                label: 'Xem Nhiều'
             }
+        ];
+        $('.sub-menu > ul > li').each((_, tag) => {
+            const label = $('a', tag).text().trim();
+            const id = $('a', tag).attr('href').split('/').pop() ?? label;
+            if (!id || !label)
+                return;
+            arrayTags.push({ id: id, label: label });
         });
-        return mangas;
-    }
-    parseUpdatedManga(updateManga, time, ids) {
-        const returnObject = {
-            ids: []
-        };
-        for (const elem of updateManga) {
-            if (ids.includes(elem.id) && time < this.convertTime(elem.time)) {
-                returnObject.ids.push(elem.id);
-            }
-        }
-        return returnObject;
+        const tagSections = [
+            App.createTagSection({ id: '0', label: 'Thể Loại (Chọn 1)', tags: arrayTags.map(x => App.createTag(x)) }),
+            App.createTagSection({ id: '4', label: 'Sắp xếp theo (Chỉ chọn 1)', tags: arrayTags2.map(x => App.createTag(x)) }),
+        ];
+        return tagSections;
     }
 }
 exports.Parser = Parser;

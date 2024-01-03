@@ -520,7 +520,7 @@ class NhatTruyen {
         this.parser = new NhatTruyenParser_1.Parser();
     }
     getMangaShareUrl(mangaId) {
-        return `${DOMAIN}/${mangaId}`;
+        return `${DOMAIN}truyen-tranh/${mangaId}`;
     }
     async DOMHTML(url) {
         const request = App.createRequest({
