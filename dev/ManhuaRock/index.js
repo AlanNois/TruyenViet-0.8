@@ -843,6 +843,7 @@ class Parser {
                 label: 'Xem Nhiều'
             }
         ];
+        console.log('huh?');
         $('.sub-menu > ul > li').each((_, tag) => {
             const label = $('a', tag).text().trim();
             const id = $('a', tag).attr('href').split('/').pop() ?? label;
