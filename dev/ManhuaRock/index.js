@@ -756,7 +756,7 @@ class Parser {
             const time = new Date(String(view_n_time[1]));
             const group = view_n_time[0];
             const name = $('a', obj).text();
-            const chapNum = $('a', obj).text().split(' ');
+            const chapNum = $('a', obj).text().split(' ')[1];
             /* The code `chapters.push(App.createChapter({ id, chapNum: parseFloat(String(chapNum)),
             name, langCode: '🇻🇳', time, group }))` is creating a new Chapter object and pushing it
             into the `chapters` array. */
@@ -894,9 +894,9 @@ class Parser {
             { id: "nguoc", label: "Ngược" },
             { id: "ngu-thu", label: "Ngự Thú" },
             { id: "ngot-sung", label: "Ngọt Sủng" },
-            { id: "ngon-tu-nhay-cam", label: "Ngôn Từ Nhạy Cảm" },
+            // { id: "ngon-tu-nhay-cam", label: "Ngôn Từ Nhạy Cảm" },
             { id: "ngon-tinh", label: "Ngôn Tình" },
-            { id: "ngon-t", label: "Ngôn T" },
+            // { id: "ngon-t", label: "Ngôn T" },
             { id: "net-dep", label: "Nét Đẹp" },
             { id: "nau-an", label: "Nấu Ăn" },
             { id: "mystery", label: "Mystery" },
@@ -907,14 +907,14 @@ class Parser {
             { id: "martial-arts", label: "Martial Arts" },
             { id: "mao-hiem", label: "Mạo Hiểm" },
             { id: "manhwa", label: "Manhwa" },
-            {
-                id: "manhua-ngon-tinh-thanh-xuan-vuon-truong",
-                label: "Manhua; Ngôn Tình; Thanh Xuân Vườn Trường"
-            },
+            // {
+            //     id: "manhua-ngon-tinh-thanh-xuan-vuon-truong",
+            //     label: "Manhua; Ngôn Tình; Thanh Xuân Vườn Trường"
+            // },
             { id: "manhua", label: "Manhua" },
             { id: "manga", label: "Manga" },
             { id: "magic", label: "Magic" },
-            { id: "magi", label: "Magi" },
+            // { id: "magi", label: "Magi" },
             { id: "luan-hoi", label: "Luân Hồi" },
             { id: "live-action", label: "Live Action" },
             { id: "linh-di", label: "Linh Dị" },
@@ -943,7 +943,7 @@ class Parser {
             { id: "he-thong", label: "Hệ thống" },
             { id: "hau-cung", label: "Hậu Cung" },
             { id: "harem", label: "Harem" },
-            { id: "hao-mon-the-gia", label: "Hào Môn Thế Gia" },
+            // { id: "hao-mon-the-gia", label: "Hào Môn Thế Gia" },
             { id: "hanh-dong", label: "Hành Động" },
             { id: "hanh", label: "Hành" },
             { id: "ham-nguc", label: "Hầm Ngục" },
@@ -964,14 +964,14 @@ class Parser {
             { id: "dam-my", label: "Đam Mỹ" },
             { id: "dai-nu-chu", label: "Đại Nữ Chủ" },
             { id: "dai-lao", label: "Đại Lão" },
-            { id: "du-hanh-thoi-gian", label: "Du Hành Thời Gian" },
+            // { id: "du-hanh-thoi-gian", label: "Du Hành Thời Gian" },
             { id: "drama", label: "Drama" },
             { id: "doujinshi", label: "Doujinshi" },
             { id: "di-toc", label: "Dị Tộc" },
             { id: "di-nang", label: "Dị Năng" },
             { id: "di-gioi", label: "Dị Giới" },
             { id: "detective", label: "Detective" },
-            { id: "cuoi-truoc-yeu-sau", label: "Cưới Trước Yêu Sau" },
+            // { id: "cuoi-truoc-yeu-sau", label: "Cưới Trước Yêu Sau" },
             { id: "cung-dau", label: "Cung Đấu" },
             { id: "cooking", label: "Cooking" },
             { id: "comic", label: "Comic" },
@@ -992,16 +992,16 @@ class Parser {
             { id: "au-co", label: "Âu Cổ" },
             { id: "anime", label: "Anime" },
             { id: "adventure", label: "Adventure" },
-            {
-                id: "adult-ecchi-fantasy-harem-manhua-truyen-mau-webtoon",
-                label: "Adult - Ecchi - Fantasy - Harem - Manhua - Truyện Màu - Webtoon"
-            },
+            // {
+            //     id: "adult-ecchi-fantasy-harem-manhua-truyen-mau-webtoon",
+            //     label: "Adult - Ecchi - Fantasy - Harem - Manhua - Truyện Màu - Webtoon"
+            // },
             { id: "adult", label: "Adult" },
             { id: "adaptation", label: "Adaptation" },
-            {
-                id: "action-manhua-webtoon-truyen-mau-he-thong",
-                label: "Action   Manhua   Webtoon   Truyện Màu   Hệ Thống"
-            },
+            // {
+            //     id: "action-manhua-webtoon-truyen-mau-he-thong",
+            //     label: "Action   Manhua   Webtoon   Truyện Màu   Hệ Thống"
+            // },
             { id: "action", label: "Action" },
             { id: "18", label: "18+" },
             { id: "16", label: "16+" }
