@@ -473,7 +473,7 @@ const isLastPage = ($) => {
         }
     });
     const lastPage = Math.max(...pages);
-    const currentPage = Number($("ul.pagination > li > a.active").text().trim());
+    const currentPage = Number($("ul.pagination > .active > a").text().trim());
     return currentPage >= lastPage;
 };
 exports.isLastPage = isLastPage;
@@ -594,8 +594,8 @@ class ManhuaRock {
             }
         }
         const url = `${DOMAIN}${query.title ? 'tim-kiem/' : 'the-loai/'}`;
-        const param_1 = encodeURI(`?keyword=${query.title ?? ''}`);
-        const param_2 = encodeURI(`${search.genre}/?sort=${search.sort ?? ''}`);
+        const param_1 = encodeURI(`${page}/?keyword=${query.title ?? ''}`);
+        const param_2 = encodeURI(`${search.genre}/${page}/${search.sort ? '?sort=' + search.sort : ''}`);
         const $ = await this.DOMHTML(`${url}${query.title ? param_1 : param_2}`);
         const tiles = this.parser.parseSearchResults($);
         metadata = !(0, exports.isLastPage)($) ? { page: page + 1 } : undefined;
