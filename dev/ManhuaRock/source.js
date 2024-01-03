@@ -639,6 +639,7 @@ class ManhuaRock {
                 default:
                     section.items = this.parser.parseSearchResults($);
             }
+            sectionCallback(section);
         }
     }
     async getViewMoreItems(homepageSectionId, metadata) {
