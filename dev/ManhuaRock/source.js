@@ -590,13 +590,15 @@ class ManhuaRock {
                 search.genre = value;
             }
             else {
-                search.sort = String(value.split('.')[1]);
+                const [_, val] = value.split(".");
+                search.sort = String(val);
             }
         }
         const url = `${DOMAIN}${query.title ? 'tim-kiem/' : 'the-loai/'}`;
         const param_1 = encodeURI(`${page}/?keyword=${query.title ?? ''}`);
-        const param_2 = encodeURI(`${search.genre}/${page}/${search.sort ? '?sort=' + search.sort : ''}`);
+        const param_2 = encodeURI(`${search.genre}/${page}/${search.sort ? '?sort=' : ''}${search.sort}`);
         const $ = await this.DOMHTML(`${url}${query.title ? param_1 : param_2}`);
+        console.log(`${url}${query.title ? param_1 : param_2}`);
         const tiles = this.parser.parseSearchResults($);
         metadata = !(0, exports.isLastPage)($) ? { page: page + 1 } : undefined;
         return App.createPagedResults({
