@@ -707,14 +707,14 @@ class Parser {
         $('.post-content > .post-content_item').each((_, obj) => {
             switch ($('.summary-heading', obj).text().trim()) {
                 case "Tác giả":
-                    author = $('.summary-content', obj).text();
+                    author = $('.summary-content', obj).text().trim();
                     break;
                 case "Hoạ sỹ":
-                    artist = $('.summary-content', obj).text();
+                    artist = $('.summary-content', obj).text().trim();
                     break;
                 case "Thể loại":
                     $('.summary-content > .genres-content > a').each((_, tag) => {
-                        const label = $(tag).text();
+                        const label = $(tag).text().trim();
                         const id = $(obj).attr('href')?.split('/').pop() ?? label;
                         tags.push(App.createTag({ label, id }));
                     });
@@ -724,8 +724,8 @@ class Parser {
         const titles = $('.post-title > h1').text().trim();
         const image = String($('.summary_image > a > img').attr('src'));
         const desc = $('.dsct > p').text();
-        const status = $('.post-status > div:nth-child(2) > div.summary-content').text();
-        const rating = parseFloat($('span[property="ratingValue"]').text());
+        const status = $('.post-status > div:nth-child(2) > div.summary-content').text().trim();
+        const rating = parseFloat($('span[property="ratingValue"]').text().trim());
         return App.createSourceManga({
             id: mangaId,
             mangaInfo: App.createMangaInfo({
@@ -788,7 +788,7 @@ class Parser {
         const tiles = [];
         $('.page-item', '.listupd').each((_, manga) => {
             const title = $('div > div > h3', manga).text().trim();
-            const id = $('div > div > h3 > a').attr('href')?.split('/').slice(4).join('/');
+            const id = $('div > div > h3 > a', manga).attr('href')?.split('/').slice(4).join('/');
             let image = $('div > div > a > img', manga).first().attr('data-src');
             image = !image ? "https://i.imgur.com/GYUxEX8.png" : image;
             const subtitle = $("div > div > .list-chapter > div:nth-of-type(1) > span", manga).text().trim();
@@ -807,7 +807,7 @@ class Parser {
         const featuredItems = [];
         $('.p-item', '.sidebar > div:nth-child(5) > div.sidebar-pp').each((_, manga) => {
             const title = $('.p-left > h4', manga).text().trim();
-            const id = $('.p-left > h4 > a').attr('href')?.split('/').slice(4).join('/');
+            const id = $('.p-left > h4 > a', manga).attr('href')?.split('/').slice(4).join('/');
             let image = $('.pthumb > img', manga).first().attr('data-src');
             image = !image ? "https://i.imgur.com/GYUxEX8.png" : image;
             const subtitle = $(".p-left > .list-chapter > div:nth-of-type(1) > span", manga).first().text().trim();
