@@ -475,7 +475,7 @@ const isLastPage = ($) => {
 };
 exports.isLastPage = isLastPage;
 exports.TuTienTruyenInfo = {
-    version: '1.0.1',
+    version: '1.0.2',
     name: 'TuTienTruyen',
     icon: 'icon.png',
     author: 'AlanNois',
