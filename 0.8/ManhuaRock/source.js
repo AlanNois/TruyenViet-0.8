@@ -1435,24 +1435,31 @@ Object.defineProperty(exports, "decodeXMLStrict", { enumerable: true, get: funct
 },{"./decode.js":62,"./encode.js":64,"./escape.js":65}],70:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.TruyenTranhLH = exports.TruyenTranhLHInfo = exports.isLastPage = void 0;
+exports.ManhuaRock = exports.ManhuaRockInfo = exports.isLastPage = void 0;
 const types_1 = require("@paperback/types");
-const TruyenTranhLHParser_1 = require("./TruyenTranhLHParser");
-const DOMAIN = 'https://truyenlh.com/';
+const ManhuaRockParser_1 = require("./ManhuaRockParser");
+const DOMAIN = 'https://manhuarockz.com/';
 const isLastPage = ($) => {
-    const current = $('.pagination_wrap > a.current').text();
-    const lastPage = $('.pagination_wrap > a.next').attr('href')?.split('=').pop();
-    return (+current) === (+String(lastPage));
+    const pages = [];
+    $("li", "ul.pagination").each((_, page) => {
+        const pageNumber = Number($('a', page).text().trim());
+        if (!isNaN(pageNumber)) {
+            pages.push(pageNumber);
+        }
+    });
+    const lastPage = Math.max(...pages);
+    const currentPage = Number($("ul.pagination > .active > a").text().trim());
+    return currentPage >= lastPage;
 };
 exports.isLastPage = isLastPage;
-exports.TruyenTranhLHInfo = {
-    version: '1.0.2',
-    name: 'TruyenTranhLH',
+exports.ManhuaRockInfo = {
+    version: '1.0.0',
+    name: 'ManhuaRock',
     icon: 'icon.png',
     author: 'AlanNois',
     authorWebsite: 'https://github.com/AlanNois/',
-    description: 'Extension that pulls manga from TruyenTranhLH',
-    contentRating: types_1.ContentRating.MATURE,
+    description: 'Extension that pulls manga from ManhuaRock.',
+    contentRating: types_1.ContentRating.EVERYONE,
     websiteBaseURL: DOMAIN,
     sourceTags: [
         {
@@ -1462,12 +1469,22 @@ exports.TruyenTranhLHInfo = {
     ],
     intents: types_1.SourceIntents.MANGA_CHAPTERS | types_1.SourceIntents.HOMEPAGE_SECTIONS
 };
-class TruyenTranhLH {
+class ManhuaRock {
+    /**
+     * The constructor function takes a CheerioAPI object as a parameter and assigns it to a private
+     * property.
+     * @param {CheerioAPI} cheerio - The `cheerio` parameter is of type `CheerioAPI`. Cheerio is a
+     * fast, flexible, and lean implementation of core jQuery designed specifically for the server. It
+     * allows you to traverse and manipulate HTML and XML documents using a familiar API inspired by
+     * jQuery.
+     */
     constructor(cheerio) {
         this.cheerio = cheerio;
+        /* The `readonly requestManager` property is creating an instance of the `RequestManager` class
+        from the `App` module. */
         this.requestManager = App.createRequestManager({
             requestsPerSecond: 4,
-            requestTimeout: 20000,
+            requestTimeout: 15000,
             interceptor: {
                 interceptRequest: async (request) => {
                     request.headers = {
@@ -1484,11 +1501,17 @@ class TruyenTranhLH {
                 }
             }
         });
-        this.parser = new TruyenTranhLHParser_1.Parser();
+        this.parser = new ManhuaRockParser_1.Parser();
     }
     getMangaShareUrl(mangaId) {
-        return `${DOMAIN}truyen-tranh/${mangaId}`;
+        return `${DOMAIN}truyen/${mangaId}`;
     }
+    /**
+     * The function `DOMHTML` is a private asynchronous function that takes a URL as a parameter and
+     * returns a Promise that resolves to a CheerioStatic object.
+     * @param {string} url - The URL of the HTML page you want to load and parse.
+     * @returns a Promise that resolves to a CheerioStatic object.
+     */
     async DOMHTML(url) {
         const request = App.createRequest({
             url: url,
@@ -1497,64 +1520,60 @@ class TruyenTranhLH {
         const response = await this.requestManager.schedule(request, 1);
         return this.cheerio.load(response.data);
     }
+    /**
+     * The function `getAPI` is a private asynchronous function that makes a GET request to a specified
+     * URL and returns the response data as a string.
+     * @param {string} url - The `url` parameter is a string that represents the URL of the API
+     * endpoint that you want to make a GET request to.
+     * @returns a Promise that resolves to a string.
+     */
+    async getAPI(url) {
+        const request = App.createRequest({
+            url: url,
+            method: 'GET',
+        });
+        const response = await this.requestManager.schedule(request, 1);
+        return response.data;
+    }
     async getMangaDetails(mangaId) {
-        const $ = await this.DOMHTML(`${DOMAIN}truyen-tranh/${mangaId}`);
+        const $ = await this.DOMHTML(`${DOMAIN}truyen/${mangaId}`);
         return this.parser.parseMangaDetails($, mangaId);
     }
     async getChapters(mangaId) {
-        const $ = await this.DOMHTML(`${DOMAIN}truyen-tranh/${mangaId}`);
+        const $ = await this.DOMHTML(`${DOMAIN}truyen/${mangaId}`);
         return this.parser.parseChapterList($);
     }
     async getChapterDetails(mangaId, chapterId) {
-        const $ = await this.DOMHTML(`${DOMAIN}truyen-tranh/${chapterId}`);
+        const json = await this.getAPI(`${DOMAIN}ajax/image/list/chap/${chapterId.split('/').pop()}?mode=vertical&quality=high`);
+        const $ = this.cheerio.load(JSON.parse(json).html);
         const pages = this.parser.parseChapterDetails($);
         return App.createChapterDetails({
             id: chapterId,
-            mangaId,
-            pages
+            mangaId: mangaId,
+            pages: pages,
         });
-    }
-    async supportsTagExclusion() {
-        return true;
     }
     async getSearchResults(query, metadata) {
         let page = metadata?.page ?? 1;
         const search = {
-            status: "",
-            sort: "update",
-            genres: "",
-            exgenres: ""
+            genre: '',
+            sort: ''
         };
-        const extags = query.excludedTags?.map(tag => tag.id) ?? [];
-        const exgenres = [];
-        for (const value of extags) {
-            if (value.indexOf('.') === -1) {
-                exgenres.push(value);
-            }
-        }
         const tags = query.includedTags?.map(tag => tag.id) ?? [];
-        const genres = [];
         for (const value of tags) {
             if (value.indexOf('.') === -1) {
-                genres.push(value);
+                search.genre = value;
             }
             else {
-                const [key, val] = value.split('.');
-                switch (key) {
-                    case 'sort':
-                        search.sort = String(val);
-                        break;
-                    case 'status':
-                        search.status = String(val);
-                        break;
-                }
+                const [_, val] = value.split(".");
+                search.sort = String(val);
             }
         }
-        search.genres = genres.join(",");
-        search.exgenres = exgenres.join(",");
-        const url = `${DOMAIN}tim-kiem`;
-        const param = encodeURI(`?q=${query.title ?? ''}&status=${search.status ?? ''}&sort=${search.sort}&accept_genres=${search.genres}&reject_genres=${search.exgenres}&page=${page}`);
-        const $ = await this.DOMHTML(url + param);
+        const url = `${DOMAIN}${query.title ? 'tim-kiem/' : 'the-loai/'}`;
+        const param_1 = encodeURI(`${page}/?keyword=${query.title ?? ''}`);
+        const param_2 = encodeURI(`${search.genre}/${page}/${search.sort ? '?sort=' : ''}${search.sort}`);
+        const $ = await this.DOMHTML(`${url}${query.title ? param_1 : param_2}`);
+        console.log(`${url}${query.title ? param_1 : param_2}`);
         const tiles = this.parser.parseSearchResults($);
         metadata = !(0, exports.isLastPage)($) ? { page: page + 1 } : undefined;
         return App.createPagedResults({
@@ -1563,58 +1582,71 @@ class TruyenTranhLH {
         });
     }
     async getHomePageSections(sectionCallback) {
-        console.log('TruyenTranhLH Running...');
+        console.log('ManhuaRock Running...');
         const sections = [
-            App.createHomeSection({ id: 'hot', title: "Truyện hot trong ngày", containsMoreItems: false, type: types_1.HomeSectionType.featured }),
-            App.createHomeSection({ id: 'new_updated', title: "Truyện mới cập nhật", containsMoreItems: true, type: types_1.HomeSectionType.singleRowNormal }),
-            App.createHomeSection({ id: 'new_added', title: "Truyện mới nhất", containsMoreItems: true, type: types_1.HomeSectionType.singleRowNormal })
+            App.createHomeSection({ id: 'featured', title: "Truyện Đề Cử", containsMoreItems: false, type: types_1.HomeSectionType.featured }),
+            App.createHomeSection({ id: 'viewest', title: "Truyện Xem Nhiều Nhất", containsMoreItems: true, type: types_1.HomeSectionType.singleRowNormal }),
+            App.createHomeSection({ id: 'new_updated', title: "Truyện Mới Cập Nhật", containsMoreItems: true, type: types_1.HomeSectionType.singleRowNormal }),
+            App.createHomeSection({ id: 'full', title: "Truyện Đã Hoàn Thành", containsMoreItems: true, type: types_1.HomeSectionType.singleRowNormal }),
         ];
         for (const section of sections) {
             sectionCallback(section);
             let url;
             switch (section.id) {
-                case 'hot':
+                case 'featured':
                     url = `${DOMAIN}`;
                     break;
-                case 'new_updated':
-                    url = `${DOMAIN}tim-kiem?sort=update`;
+                case 'viewest':
+                    url = `${DOMAIN}xem-nhieu/`;
                     break;
-                case 'new_added':
-                    url = `${DOMAIN}tim-kiem?sort=new`;
+                case 'new_updated':
+                    url = `${DOMAIN}danh-sach-truyen/?sort=latest-updated`;
+                    break;
+                case 'full':
+                    url = `${DOMAIN}hoan-thanh/`;
                     break;
                 default:
                     throw new Error("Invalid homepage section ID");
             }
             const $ = await this.DOMHTML(url);
             switch (section.id) {
-                case 'hot':
-                    section.items = this.parser.parseHotSection($);
+                case 'featured':
+                    section.items = this.parser.parseFeaturedSection($);
                     break;
-                case 'new_updated':
+                default:
                     section.items = this.parser.parseSearchResults($);
-                    break;
-                case 'new_added':
-                    section.items = this.parser.parseSearchResults($);
-                    break;
             }
             sectionCallback(section);
         }
     }
     async getViewMoreItems(homepageSectionId, metadata) {
         let page = metadata?.page ?? 1;
-        let url;
+        let url = "";
         switch (homepageSectionId) {
-            case "new_updated":
-                url = `${DOMAIN}tim-kiem?sort=update&page=${page}`;
+            case 'featured':
+                url = `${DOMAIN}`;
                 break;
-            case "new_added":
-                url = `${DOMAIN}tim-kiem?sort=new&page=${page}`;
+            case 'viewest':
+                url = `${DOMAIN}xem-nhieu/${page}/`;
+                break;
+            case 'new_updated':
+                url = `${DOMAIN}danh-sach-truyen/${page}/?sort=latest-updated`;
+                break;
+            case 'full':
+                url = `${DOMAIN}hoan-thanh/${page}`;
                 break;
             default:
                 throw new Error("Requested to getViewMoreItems for a section ID which doesn't exist");
         }
         const $ = await this.DOMHTML(url);
-        const manga = this.parser.parseSearchResults($);
+        let manga = [];
+        switch (homepageSectionId) {
+            case 'featured':
+                manga = this.parser.parseFeaturedSection($);
+                break;
+            default:
+                manga = this.parser.parseSearchResults($);
+        }
         metadata = (0, exports.isLastPage)($) ? undefined : { page: page + 1 };
         return App.createPagedResults({
             results: manga,
@@ -1622,59 +1654,67 @@ class TruyenTranhLH {
         });
     }
     async getSearchTags() {
-        const url = `${DOMAIN}tim-kiem`;
-        const $ = await this.DOMHTML(url);
-        return this.parser.parseTags($);
+        // const url = `${DOMAIN}`;
+        // const $ = await this.DOMHTML(url);
+        return this.parser.parseTags();
     }
 }
-exports.TruyenTranhLH = TruyenTranhLH;
+exports.ManhuaRock = ManhuaRock;
 
-},{"./TruyenTranhLHParser":71,"@paperback/types":61}],71:[function(require,module,exports){
+},{"./ManhuaRockParser":71,"@paperback/types":61}],71:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Parser = void 0;
-const entities = require("entities");
+const entities = require("entities"); //Import package for decoding HTML entities
 class Parser {
+    constructor() {
+        /* The above code is defining a private method called `decodeHTMLEntity` in a TypeScript class.
+        This method takes a string as input and returns a decoded version of the string where HTML
+        entities have been replaced with their corresponding characters. The decoding is done using the
+        `entities.decodeHTML` function. */
+        this.decodeHTMLEntity = (str) => {
+            return entities.decodeHTML(str);
+        };
+    }
+    /**
+     * The function `parseMangaDetails` takes in a CheerioStatic object and a mangaId string, and
+     * parses the manga details from the object to create and return a SourceManga object.
+     * @param {CheerioStatic} $ - The CheerioStatic parameter is a reference to the Cheerio library,
+     * which is used for parsing HTML.
+     * @param {string} mangaId - The mangaId parameter is a string that represents the unique
+     * identifier of a manga. It is used to fetch the details of a specific manga from a source.
+     * @returns a SourceManga object.
+     */
     parseMangaDetails($, mangaId) {
         const tags = [];
         let author = '';
         let artist = '';
-        let status = '';
-        let au_ar_txt = [];
-        $('.info-item', '.series-information').each((_, obj) => {
-            switch ($('.info-name', obj).text().trim()) {
-                case 'Tác giả:':
-                    for (const i of $('.info-value', obj).toArray()) {
-                        au_ar_txt.push($(i).text());
-                    }
-                    author = au_ar_txt.join(',');
-                    artist = au_ar_txt.join(',');
+        $('.post-content > .post-content_item').each((_, obj) => {
+            switch ($('.summary-heading', obj).text().trim()) {
+                case "Tác giả":
+                    author = $('.summary-content', obj).text().trim();
                     break;
-                case 'Thể loại:':
-                    $('.info-value > a', obj).each((_, obj) => {
-                        const label = $('span', obj).text().trim();
-                        const id = $(obj).attr('href') ?? label;
+                case "Hoạ sỹ":
+                    artist = $('.summary-content', obj).text().trim();
+                    break;
+                case "Thể loại":
+                    $('.summary-content > .genres-content > a').each((_, tag) => {
+                        const label = $(tag).text().trim();
+                        const id = $(obj).attr('href')?.split('/').pop() ?? label;
                         tags.push(App.createTag({ label, id }));
                     });
                     break;
-                case 'Tình trạng:':
-                    status = $('.info-value > a', obj).text();
-                    break;
-                default:
-                    break;
             }
-            ;
         });
-        let image = $('.series-cover > div > .content').css('background-image');
-        image = image.replace('url(', '').replace(')', '').replace(/\"/gi, "").replace(/['"]+/g, '');
-        image = image.indexOf('https') === -1 ? image.replace('http', 'https') : image;
-        const titles = [this.decodeHTMLEntity($('.series-name > a').text().trim())];
-        const desc = $('.series-summary > .summary-content').text();
-        const rating = parseFloat(String($('div:nth-child(2) > .statistic-value').text().trim().split(' /')[0]));
+        const titles = $('.post-title > h1').text().trim();
+        const image = String($('.summary_image > a > img').attr('src'));
+        const desc = this.decodeHTMLEntity($('.dsct > p').text());
+        const status = $('.post-status > div:nth-child(2) > div.summary-content').text().trim();
+        const rating = parseFloat($('span[property="ratingValue"]').text().trim());
         return App.createSourceManga({
             id: mangaId,
             mangaInfo: App.createMangaInfo({
-                titles,
+                titles: [titles],
                 author,
                 artist,
                 image,
@@ -1682,126 +1722,324 @@ class Parser {
                 status,
                 tags: [App.createTagSection({ id: '0', label: 'genres', tags })],
                 rating: Number.isNaN(rating) ? 0 : rating
-            })
+            }),
         });
     }
+    /**
+     * The function `parseChapterList` takes a CheerioStatic object and returns an array of Chapter
+     * objects by extracting data from the HTML structure.
+     * @param {CheerioStatic} $ - The parameter `$` is a reference to the CheerioStatic object, which
+     * is a jQuery-like library for parsing HTML. It is used to select and manipulate elements in the
+     * HTML document.
+     * @returns an array of Chapter objects.
+     */
     parseChapterList($) {
         const chapters = [];
-        $('.list-chapters.at-series > a').each((_, obj) => {
-            const id = String($(obj).first().attr('href')?.split('/').slice(-2).join('/'));
-            const name = this.decodeHTMLEntity($('li > .chapter-name', obj).text());
-            const [D, M, Y] = $('li > .chapter-time', obj).text().trim().split('/');
-            const time = new Date([M, D, Y].join('/'));
-            const chapNum = parseFloat(String($('li > .chapter-name', obj).text().trim().split(' ')[1]));
+        $('.row-content-chapter > li').each((_, obj) => {
+            const id = String($('a', obj).attr('href')?.split('/').slice(4).join('/'));
+            const view_n_time = $('span', obj).text().trim().split('-');
+            const time = new Date(String(view_n_time[1]));
+            const group = view_n_time[0];
+            const name = $('a', obj).text();
+            const chapNum = $('a', obj).text().split(' ')[1];
+            /* The code `chapters.push(App.createChapter({ id, chapNum: parseFloat(String(chapNum)),
+            name, langCode: '🇻🇳', time, group }))` is creating a new Chapter object and pushing it
+            into the `chapters` array. */
             chapters.push(App.createChapter({
                 id,
-                chapNum,
+                chapNum: parseFloat(String(chapNum)),
                 name,
                 langCode: '🇻🇳',
-                time
+                time,
+                group
             }));
         });
         if (chapters.length == 0) {
-            throw new Error('No chapters found');
+            throw new Error('No chapter found');
         }
         return chapters;
     }
+    /**
+     * The function "parseChapterDetails" takes a CheerioStatic object as input, iterates over a
+     * collection of image elements, extracts the "data-src" attribute value from each element, and
+     * returns an array of these values.
+     * @param {CheerioStatic} $ - CheerioStatic - This is a reference to the Cheerio library, which is
+     * used for parsing and manipulating HTML.
+     * @returns The function `parseChapterDetails` returns an array of strings, which represents the
+     * links to the pages of a chapter.
+     */
     parseChapterDetails($) {
         const pages = [];
-        $('#chapter-content > img').each((_, obj) => {
+        $('.image-placeholder > img').each((_, obj) => {
             if (!obj.attribs['data-src'])
                 return;
-            let link = obj.attribs['data-src'];
-            pages.push(encodeURI(link));
+            const link = obj.attribs['data-src'];
+            pages.push(link);
         });
         return pages;
     }
+    /**
+     * The function parses search results from a website and returns an array of partial manga objects.
+     * @param {CheerioStatic} $ - CheerioStatic - A reference to the Cheerio library, which is used for
+     * parsing HTML.
+     * @returns an array of objects of type PartialSourceManga.
+     */
     parseSearchResults($) {
         const tiles = [];
-        $('.container > div > div > div:nth-child(2) > div > div.row > .thumb-item-flow').each((_, obj) => {
-            const title = this.decodeHTMLEntity($('.series-title > a', obj).text().trim());
-            const mangaId = $('.series-title > a', obj).attr('href')?.split("/").pop() ?? title;
-            let image = $('.a6-ratio > div.img-in-ratio', obj).attr('data-bg');
+        $('.page-item', '.listupd').each((_, manga) => {
+            const title = $('div > div > h3', manga).text().trim();
+            const id = $('div > div > h3 > a', manga).attr('href')?.split('/').slice(4).join('/');
+            let image = $('div > div > a > img', manga).first().attr('data-src');
             image = !image ? "https://i.imgur.com/GYUxEX8.png" : image;
-            image = image.indexOf('https') === -1 ? image.replace('http', 'https') : image;
-            const subtitle = $(`.thumb-detail > div > a`, obj).text().trim();
-            if (!mangaId || !title)
+            const subtitle = $("div > div > .list-chapter > div:nth-of-type(1) > span", manga).text().trim();
+            if (!id || !title)
                 return;
             tiles.push(App.createPartialSourceManga({
-                mangaId,
-                image,
-                title,
-                subtitle
+                mangaId: String(id),
+                image: String(image),
+                title: title,
+                subtitle: subtitle,
             }));
         });
         return tiles;
     }
-    parseHotSection($) {
-        const tiles = [];
-        $('.owl-stage > .owl-item:not(.cloned)').each((_, obj) => {
-            const title = this.decodeHTMLEntity($('.series-title > a', obj).text().trim());
-            const mangaId = $('.series-title > a', obj).attr('href')?.split("/").pop() ?? title;
-            let image = $('.a6-ratio > div.img-in-ratio', obj).css('background-image').replace('url(', '').replace(')', '').replace(/\"/gi, "").replace(/['"]+/g, '');
+    parseFeaturedSection($) {
+        const featuredItems = [];
+        $('.p-item', '.sidebar > div:nth-child(5) > div.sidebar-pp').each((_, manga) => {
+            const title = $('.p-left > h4', manga).text().trim();
+            const id = $('.p-left > h4 > a', manga).attr('href')?.split('/').slice(4).join('/');
+            let image = $('.pthumb > img', manga).first().attr('data-src');
             image = !image ? "https://i.imgur.com/GYUxEX8.png" : image;
-            image = image.indexOf('https') === -1 ? image.replace('http', 'https') : image;
-            const subtitle = $(`.thumb-detail > div > a`, obj).text().trim();
-            if (!mangaId || !title)
+            const subtitle = $(".p-left > .list-chapter > div:nth-of-type(1) > span", manga).first().text().trim();
+            if (!id || !title)
                 return;
-            tiles.push(App.createPartialSourceManga({
-                mangaId,
-                image,
-                title,
-                subtitle
+            featuredItems.push(App.createPartialSourceManga({
+                mangaId: String(id),
+                image: String(image),
+                title: title,
+                subtitle: subtitle,
             }));
         });
-        return tiles;
+        return featuredItems;
     }
-    parseTags($) {
-        const arrayTags = [];
+    parseTags() {
+        const arrayTags = [
+            { id: "yuri", label: "Yuri" },
+            { id: "yaoi", label: "Yaoi" },
+            { id: "xuyen-sach", label: "Xuyên Sách" },
+            { id: "xuyen-nhanh", label: "Xuyên Nhanh" },
+            { id: "xuyen-khong", label: "Xuyên Không" },
+            { id: "webtoons", label: "Webtoons" },
+            { id: "webtoon", label: "Webtoon" },
+            { id: "vuong-gia", label: "Vương Gia" },
+            { id: "vuon-truong", label: "Vườn Trường" },
+            { id: "vo-thuat", label: "Võ Thuật" },
+            { id: "vo-hiep", label: "Võ Hiệp" },
+            { id: "vien-tuong", label: "Viễn Tưởng" },
+            { id: "tu-tien", label: "Tu Tiên" },
+            { id: "tu-luyen", label: "Tu Luyện" },
+            { id: "truyen-tranh", label: "Truyện Tranh" },
+            { id: "truyen-nhat-manga", label: "Truyện Nhật (Manga)" },
+            { id: "truyen-nam", label: "Truyện Nam" },
+            { id: "truyen-mau", label: "Truyện Màu" },
+            { id: "truyen-ma", label: "Truyện Ma" },
+            { id: "trung-sinh", label: "Trùng Sinh" },
+            { id: "trong-sinh", label: "Trọng Sinh" },
+            { id: "trinh-tham", label: "Trinh Thám" },
+            { id: "tragedy", label: "Tragedy" },
+            { id: "tra-thu", label: "Trả Thù" },
+            { id: "tong-tai", label: "Tổng Tài" },
+            { id: "tinh-yeu", label: "Tình Yêu" },
+            { id: "tinh-cam", label: "Tình Cảm" },
+            { id: "thuan-phuc-thu", label: "Thuần Phục Thú" },
+            { id: "thieu-nhi", label: "Thiếu Nhi" },
+            { id: "thien-tai", label: "Thiên Tài" },
+            { id: "the-thao", label: "Thể Thao" },
+            { id: "thanh-xuan-vuon-truong", label: "Thanh Xuân Vườn Trường" },
+            { id: "thanh-xuan", label: "Thanh Xuân" },
+            { id: "thai-giam", label: "Thái Giám" },
+            { id: "tap-chi-truyen-t", label: "Tạp Chí Truyện T" },
+            { id: "supernatural", label: "Supernatural" },
+            { id: "sung-vat", label: "Sủng Vật" },
+            { id: "sung", label: "Sủng" },
+            { id: "sports", label: "Sports" },
+            { id: "soft-yuri", label: "Soft Yuri" },
+            { id: "smut", label: "Smut" },
+            { id: "slice-of-life", label: "Slice of life" },
+            { id: "sieu-nhien", label: "Siêu Nhiên" },
+            { id: "showbiz", label: "Showbiz" },
+            { id: "shounen-ai", label: "Shounen Ai" },
+            { id: "shounen", label: "Shounen" },
+            { id: "shoujo-ai", label: "Shoujo Ai" },
+            { id: "shoujo", label: "Shoujo" },
+            { id: "series", label: "Series" },
+            { id: "seinen", label: "Seinen" },
+            { id: "sci-fi", label: "Sci-Fi" },
+            { id: "school-life", label: "School Life" },
+            { id: "sang-van", label: "Sảng Văn" },
+            { id: "san-ban", label: "Săn Bắn" },
+            { id: "romance", label: "Romance" },
+            { id: "quai-vat", label: "Quái Vật" },
+            { id: "psychological", label: "Psychological" },
+            { id: "phieu-luu", label: "Phiêu Lưu" },
+            { id: "phep-thuat", label: "Phép Thuật" },
+            { id: "phap-y", label: "Pháp Y" },
+            { id: "phan-dien", label: "Phản Diện" },
+            { id: "one-shot", label: "One Shot" },
+            { id: "nu-phu", label: "Nữ Phụ" },
+            { id: "nu-gia-nam", label: "Nữ Giả Nam" },
+            { id: "nu-cuong", label: "Nữ Cường" },
+            { id: "nhiet-huyet", label: "Nhiệt Huyết" },
+            { id: "nguoi-lon", label: "Người Lớn" },
+            { id: "nguoc", label: "Ngược" },
+            { id: "ngu-thu", label: "Ngự Thú" },
+            { id: "ngot-sung", label: "Ngọt Sủng" },
+            // { id: "ngon-tu-nhay-cam", label: "Ngôn Từ Nhạy Cảm" },
+            { id: "ngon-tinh", label: "Ngôn Tình" },
+            // { id: "ngon-t", label: "Ngôn T" },
+            { id: "net-dep", label: "Nét Đẹp" },
+            { id: "nau-an", label: "Nấu Ăn" },
+            { id: "mystery", label: "Mystery" },
+            { id: "murim", label: "Murim" },
+            { id: "mecha", label: "Mecha" },
+            { id: "mature", label: "Mature" },
+            { id: "mat-the", label: "Mạt Thế" },
+            { id: "martial-arts", label: "Martial Arts" },
+            { id: "mao-hiem", label: "Mạo Hiểm" },
+            { id: "manhwa", label: "Manhwa" },
+            // {
+            //     id: "manhua-ngon-tinh-thanh-xuan-vuon-truong",
+            //     label: "Manhua; Ngôn Tình; Thanh Xuân Vườn Trường"
+            // },
+            { id: "manhua", label: "Manhua" },
+            { id: "manga", label: "Manga" },
+            { id: "magic", label: "Magic" },
+            // { id: "magi", label: "Magi" },
+            { id: "luan-hoi", label: "Luân Hồi" },
+            { id: "live-action", label: "Live Action" },
+            { id: "linh-di", label: "Linh Dị" },
+            { id: "lich-su", label: "Lịch Sử" },
+            { id: "lgbt", label: "Lgbt+" },
+            { id: "leo-thap", label: "Leo Tháp" },
+            { id: "lang-man", label: "Lãng Mạn" },
+            { id: "ky-ao", label: "Kỳ Ảo" },
+            { id: "kinh-di", label: "Kinh Dị" },
+            { id: "kiem-hiep", label: "Kiếm Hiệp" },
+            { id: "kich-tinh", label: "Kịch Tính." },
+            { id: "khong-gian", label: "Không Gian" },
+            { id: "khong-che", label: "Không Che" },
+            { id: "khoa-hoc", label: "Khoa Học" },
+            { id: "josei", label: "Josei" },
+            { id: "isekai", label: "Isekai" },
+            { id: "huyen-huyen", label: "Huyền Huyễn" },
+            { id: "huyen-bi", label: "Huyền Bí" },
+            { id: "horror", label: "Horror" },
+            { id: "hoc-duong", label: "Học Đường" },
+            { id: "hoang-cung", label: "Hoàng Cung" },
+            { id: "historical", label: "Historical" },
+            { id: "hien-dai", label: "Hiện Đại" },
+            { id: "hentaiz", label: "Hentaiz" },
+            { id: "hentai", label: "Hentai" },
+            { id: "he-thong", label: "Hệ thống" },
+            { id: "hau-cung", label: "Hậu Cung" },
+            { id: "harem", label: "Harem" },
+            // { id: "hao-mon-the-gia", label: "Hào Môn Thế Gia" },
+            { id: "hanh-dong", label: "Hành Động" },
+            { id: "hanh", label: "Hành" },
+            { id: "ham-nguc", label: "Hầm Ngục" },
+            { id: "hai-huoc", label: "Hài Hước." },
+            { id: "hai-huoc", label: "Hài Hước" },
+            { id: "h", label: "H" },
+            { id: "gioi-giai-tri", label: "Giới Giải Trí" },
+            { id: "gender-bender", label: "Gender Bender" },
+            { id: "game", label: "Game" },
+            { id: "full-color", label: "Full Color" },
+            { id: "fantasy", label: "Fantasy" },
+            { id: "ep-hon", label: "Ép Hôn" },
+            { id: "em-gai-no", label: "Em Gái Nô" },
+            { id: "ecchi", label: "Ecchi" },
+            { id: "do-thi", label: "Đô Thị" },
+            { id: "dich-nu", label: "Đích Nữ" },
+            { id: "dao-si", label: "Đạo Sĩ" },
+            { id: "dam-my", label: "Đam Mỹ" },
+            { id: "dai-nu-chu", label: "Đại Nữ Chủ" },
+            { id: "dai-lao", label: "Đại Lão" },
+            // { id: "du-hanh-thoi-gian", label: "Du Hành Thời Gian" },
+            { id: "drama", label: "Drama" },
+            { id: "doujinshi", label: "Doujinshi" },
+            { id: "di-toc", label: "Dị Tộc" },
+            { id: "di-nang", label: "Dị Năng" },
+            { id: "di-gioi", label: "Dị Giới" },
+            { id: "detective", label: "Detective" },
+            // { id: "cuoi-truoc-yeu-sau", label: "Cưới Trước Yêu Sau" },
+            { id: "cung-dau", label: "Cung Đấu" },
+            { id: "cooking", label: "Cooking" },
+            { id: "comic", label: "Comic" },
+            { id: "comedy", label: "Comedy" },
+            { id: "co-trang", label: "Cổ Trang" },
+            { id: "co-dai", label: "Cổ Đại" },
+            { id: "co", label: "Cổ" },
+            { id: "chuyen-sinh", label: "Chuyển Sinh" },
+            { id: "boylove", label: "BoyLove" },
+            { id: "bi-kich", label: "Bi Kịch" },
+            { id: "benh-kieu", label: "Bệnh Kiều" },
+            { id: "beeng-net", label: "Beeng.net" },
+            { id: "bathutong", label: "Bathutong" },
+            { id: "bao-thu", label: "Báo Thù" },
+            { id: "bao-luc", label: "Bạo Lực" },
+            { id: "bach-hop", label: "Bách Hợp" },
+            { id: "ba-dao", label: "Bá Đạo" },
+            { id: "au-co", label: "Âu Cổ" },
+            { id: "anime", label: "Anime" },
+            { id: "adventure", label: "Adventure" },
+            // {
+            //     id: "adult-ecchi-fantasy-harem-manhua-truyen-mau-webtoon",
+            //     label: "Adult - Ecchi - Fantasy - Harem - Manhua - Truyện Màu - Webtoon"
+            // },
+            { id: "adult", label: "Adult" },
+            { id: "adaptation", label: "Adaptation" },
+            // {
+            //     id: "action-manhua-webtoon-truyen-mau-he-thong",
+            //     label: "Action   Manhua   Webtoon   Truyện Màu   Hệ Thống"
+            // },
+            { id: "action", label: "Action" },
+            { id: "18", label: "18+" },
+            { id: "16", label: "16+" }
+        ];
         const arrayTags2 = [
             {
-                label: 'Tất cả',
-                id: 'status.'
+                id: 'sort.latest-updated',
+                label: 'Mới cập nhật'
             },
             {
-                label: 'Đang tiến hành',
-                id: 'status.1'
+                id: 'sort.score',
+                label: 'Điểm'
             },
             {
-                label: 'Tạm ngưng',
-                id: 'status.2'
+                id: 'sort.name-az',
+                label: 'Tên A-Z'
             },
             {
-                label: 'Hoàn thành',
-                id: 'status.3'
+                id: 'sort.release-date',
+                label: 'Ngày Phát Hành'
+            },
+            {
+                id: 'sort.most-viewd',
+                label: 'Xem Nhiều'
             }
         ];
-        const arrayTags3 = [];
-        //the loai
-        for (const tag of $('div.search-gerne_item', 'div.form-group').toArray()) {
-            const label = $('.gerne-name', tag).text().trim();
-            const id = $('label', tag).attr('data-genre-id') ?? label;
-            if (!id || !label)
-                continue;
-            arrayTags.push({ id: id, label: label });
-        }
-        //sap xep
-        for (const tag of $('option', 'select#list-sort').toArray()) {
-            const label = $(tag).text().trim();
-            const id = 'sort.' + $(tag).attr('value') ?? label;
-            if (!id || !label)
-                continue;
-            arrayTags3.push({ id: id, label: label });
-        }
+        // console.log('huh?')
+        // $('.sub-menu > ul > li').each((_: any, tag: any) => {
+        //     const label = $('a', tag).text().trim();
+        //     const id = $('a', tag).attr('href').split('/').pop() ?? label;
+        //     if (!id || !label) return;
+        //     arrayTags.push({ id: id, label: label });
+        // })
         const tagSections = [
-            App.createTagSection({ id: '0', label: 'Thể loại', tags: arrayTags.map(x => App.createTag(x)) }),
-            App.createTagSection({ id: '1', label: 'Tình trạng', tags: arrayTags2.map(x => App.createTag(x)) }),
-            App.createTagSection({ id: '2', label: 'Sắp xếp', tags: arrayTags3.map(x => App.createTag(x)) }),
+            App.createTagSection({ id: '0', label: 'Thể Loại (Chọn 1)', tags: arrayTags.map(x => App.createTag(x)) }),
+            App.createTagSection({ id: '1', label: 'Sắp xếp theo (Chỉ chọn 1)', tags: arrayTags2.map(x => App.createTag(x)) }),
         ];
         return tagSections;
-    }
-    decodeHTMLEntity(str) {
-        return entities.decodeHTML(str);
     }
 }
 exports.Parser = Parser;

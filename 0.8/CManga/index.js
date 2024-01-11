@@ -1440,7 +1440,7 @@ const types_1 = require("@paperback/types");
 const CMangaParser_1 = require("./CMangaParser");
 const DOMAIN = 'https://cmangavn.com/';
 exports.CMangaInfo = {
-    version: '1.0.1',
+    version: '1.0.2',
     name: 'CManga',
     icon: 'icon.png',
     author: 'AlanNois',

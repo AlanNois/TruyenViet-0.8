@@ -463,7 +463,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.TuTienTruyen = exports.TuTienTruyenInfo = exports.isLastPage = void 0;
 const types_1 = require("@paperback/types");
 const TuTienTruyenParser_1 = require("./TuTienTruyenParser");
-const DOMAIN = 'https://tutientruyen.xyz/';
+const DOMAIN = 'https://tutientruyen2.xyz/';
 const isLastPage = ($) => {
     const current = $('ul.pagination > li.active > a').text();
     let total = $('ul.pagination > li.PagerSSCCells:last-child').text();
@@ -475,7 +475,7 @@ const isLastPage = ($) => {
 };
 exports.isLastPage = isLastPage;
 exports.TuTienTruyenInfo = {
-    version: '1.0.1',
+    version: '1.0.2',
     name: 'TuTienTruyen',
     icon: 'icon.png',
     author: 'AlanNois',
