@@ -30,7 +30,7 @@ export const isLastPage = ($: CheerioStatic): boolean => {
 }
 
 export const TruyenTranhLHInfo: SourceInfo = {
-    version: '1.0.0',
+    version: '1.0.2',
     name: 'TruyenTranhLH',
     icon: 'icon.png',
     author: 'AlanNois',

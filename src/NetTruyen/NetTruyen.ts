@@ -22,7 +22,7 @@ import {
 
 import { Parser } from './NetTruyenParser';
 
-const DOMAIN = 'https://www.nettruyenbing.com/';
+const DOMAIN = 'https://www.nettruyenss.com/';
 
 export const isLastPage = ($: CheerioStatic): boolean => {
     const current = $('ul.pagination > li.active > a').text();
@@ -36,7 +36,7 @@ export const isLastPage = ($: CheerioStatic): boolean => {
 }
 
 export const NetTruyenInfo: SourceInfo = {
-    version: '1.0.1',
+    version: '1.0.2',
     name: 'NetTruyen',
     icon: 'icon.png',
     author: 'AlanNois',
@@ -82,7 +82,7 @@ export class NetTruyen implements SearchResultsProviding, MangaProviding, Chapte
     });
 
     getMangaShareUrl(mangaId: string): string {
-        return `${DOMAIN}/${mangaId}`;
+        return `${DOMAIN}truyen-tranh/${mangaId}`;
     }
 
     parser = new Parser();

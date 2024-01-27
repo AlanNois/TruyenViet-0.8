@@ -22,7 +22,7 @@ import {
 
 import { Parser } from './NhatTruyenParser';
 
-const DOMAIN = 'https://nhattruyenmax.com/';
+const DOMAIN = 'https://nhattruyento.com/';
 
 export const isLastPage = ($: CheerioStatic): boolean => {
     const current = $('ul.pagination > li.active > a').text();
@@ -36,7 +36,7 @@ export const isLastPage = ($: CheerioStatic): boolean => {
 }
 
 export const NhatTruyenInfo: SourceInfo = {
-    version: '1.0.0',
+    version: '1.0.2',
     name: 'NhatTruyen',
     icon: 'icon.png',
     author: 'AlanNois',
@@ -82,7 +82,7 @@ export class NhatTruyen implements SearchResultsProviding, MangaProviding, Chapt
     });
 
     getMangaShareUrl(mangaId: string): string {
-        return `${DOMAIN}/${mangaId}`;
+        return `${DOMAIN}truyen-tranh/${mangaId}`;
     }
 
     parser = new Parser();

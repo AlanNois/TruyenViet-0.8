@@ -23,7 +23,7 @@ import {
 
 import { Parser } from './BaoTangTruyenTranhParser';
 
-const DOMAIN = 'https://baotangtruyen4.com/';
+const DOMAIN = 'https://baotangtruyen5.com/';
 
 export const isLastPage = ($: CheerioStatic): boolean => {
     const pages: number[] = [];
@@ -39,7 +39,7 @@ export const isLastPage = ($: CheerioStatic): boolean => {
 }
 
 export const BaoTangTruyenTranhInfo: SourceInfo = {
-    version: '1.0.1',
+    version: '1.0.2',
     name: 'BaoTangTruyenTranh',
     icon: 'icon.png',
     author: 'AlanNois',

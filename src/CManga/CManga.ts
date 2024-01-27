@@ -25,7 +25,7 @@ import { Parser } from './CMangaParser';
 const DOMAIN = 'https://cmangavn.com/';
 
 export const CMangaInfo: SourceInfo = {
-    version: '1.0.1',
+    version: '1.0.2',
     name: 'CManga',
     icon: 'icon.png',
     author: 'AlanNois',
