@@ -460,10 +460,10 @@ __exportStar(require("./compat/DyamicUI"), exports);
 },{"./base/index":7,"./compat/DyamicUI":16,"./generated/_exports":60}],62:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.TuTienTruyen = exports.TuTienTruyenInfo = exports.isLastPage = void 0;
+exports.TuTienTruyen = exports.isLastPage = void 0;
 const types_1 = require("@paperback/types");
 const TuTienTruyenParser_1 = require("./TuTienTruyenParser");
-const DOMAIN = 'https://tutientruyen2.xyz/';
+const DOMAIN = 'https://tutientruyen4.xyz/';
 const isLastPage = ($) => {
     const current = $('ul.pagination > li.active > a').text();
     let total = $('ul.pagination > li.PagerSSCCells:last-child').text();
@@ -474,27 +474,27 @@ const isLastPage = ($) => {
     return true;
 };
 exports.isLastPage = isLastPage;
-exports.TuTienTruyenInfo = {
-    version: '1.0.2',
-    name: 'TuTienTruyen',
-    icon: 'icon.png',
-    author: 'AlanNois',
-    authorWebsite: 'https://github.com/AlanNois',
-    description: 'Extension that pulls manga from TuTienTruyen',
-    contentRating: types_1.ContentRating.EVERYONE,
-    websiteBaseURL: DOMAIN,
-    sourceTags: [
-        {
-            text: 'Recommended',
-            type: types_1.BadgeColor.BLUE
-        },
-        {
-            text: 'Notifications',
-            type: types_1.BadgeColor.GREEN
-        }
-    ],
-    intents: types_1.SourceIntents.MANGA_CHAPTERS | types_1.SourceIntents.HOMEPAGE_SECTIONS | types_1.SourceIntents.CLOUDFLARE_BYPASS_REQUIRED
-};
+// export const TuTienTruyenInfo: SourceInfo = {
+//     version: '1.0.2',
+//     name: 'TuTienTruyen',
+//     icon: 'icon.png',
+//     author: 'AlanNois',
+//     authorWebsite: 'https://github.com/AlanNois',
+//     description: 'Extension that pulls manga from TuTienTruyen',
+//     contentRating: ContentRating.EVERYONE,
+//     websiteBaseURL: DOMAIN,
+//     sourceTags: [
+//         {
+//             text: 'Recommended',
+//             type: BadgeColor.BLUE
+//         },
+//         {
+//             text: 'Notifications',
+//             type: BadgeColor.GREEN
+//         }
+//     ],
+//     intents: SourceIntents.MANGA_CHAPTERS | SourceIntents.HOMEPAGE_SECTIONS | SourceIntents.CLOUDFLARE_BYPASS_REQUIRED
+// };
 class TuTienTruyen {
     constructor(cheerio) {
         this.cheerio = cheerio;
@@ -552,8 +552,8 @@ class TuTienTruyen {
         let page = metadata?.page ?? 1;
         const search = {
             genres: '',
-            gender: "-1",
-            status: "-1",
+            gender: "",
+            status: "",
             minchapter: "1",
             sort: "0"
         };
@@ -582,9 +582,10 @@ class TuTienTruyen {
             }
         }
         search.genres = genres.join(",");
-        const url = `${DOMAIN}${query.title ? '/tim-truyen' : '/tim-truyen-nang-cao'}`;
-        const param = encodeURI(`?keyword=${query.title ?? ''}&genres=${search.genres}&gender=${search.gender}&status=${search.status}&minchapter=${search.minchapter}&sort=${search.sort}&page=${page}`);
+        const url = `${DOMAIN}${query.title ? 'tim-truyen' : 'tim-truyen-nang-cao'}`;
+        const param = encodeURI(`?${query.title ? 'keyword=' + query.title + '&' : ''}genres=${search.genres}&gender=${search.gender}&status=${search.status}&minchapter=${search.minchapter}&sort=${search.sort}&page=${page}`);
         const $ = await this.DOMHTML(url + param);
+        console.log(url + param);
         const tiles = this.parser.parseSearchResults($, DOMAIN);
         metadata = !(0, exports.isLastPage)($) ? { page: page + 1 } : undefined;
         return App.createPagedResults({
@@ -844,6 +845,7 @@ class Parser {
             const subtitle = $("figure.clearfix > figcaption > ul > li.chapter:nth-of-type(1) > a", manga).last().text().trim();
             if (!mangaId || !title)
                 return;
+            console.log(title, mangaId, image, subtitle);
             tiles.push(App.createPartialSourceManga({
                 mangaId,
                 image: !image ? "https://i.imgur.com/GYUxEX8.png" : image.includes('http') ? image : `${DOMAIN}${image}`,
