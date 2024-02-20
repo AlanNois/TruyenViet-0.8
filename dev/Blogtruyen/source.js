@@ -1446,7 +1446,7 @@ const isLastPage = ($) => {
 };
 exports.isLastPage = isLastPage;
 exports.BlogtruyenInfo = {
-    version: '1.0.1',
+    version: '1.0.3',
     name: 'Blogtruyen',
     icon: 'icon.png',
     author: 'AlanNois',
