@@ -1435,7 +1435,7 @@ Object.defineProperty(exports, "decodeXMLStrict", { enumerable: true, get: funct
 },{"./decode.js":62,"./encode.js":64,"./escape.js":65}],70:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.TruyenTranhLH = exports.TruyenTranhLHInfo = exports.isLastPage = void 0;
+exports.TruyenTranhLH = exports.isLastPage = void 0;
 const types_1 = require("@paperback/types");
 const TruyenTranhLHParser_1 = require("./TruyenTranhLHParser");
 const DOMAIN = 'https://truyenlh.com/';
@@ -1445,23 +1445,23 @@ const isLastPage = ($) => {
     return (+current) === (+String(lastPage));
 };
 exports.isLastPage = isLastPage;
-exports.TruyenTranhLHInfo = {
-    version: '1.0.3',
-    name: 'TruyenTranhLH',
-    icon: 'icon.png',
-    author: 'AlanNois',
-    authorWebsite: 'https://github.com/AlanNois/',
-    description: 'Extension that pulls manga from TruyenTranhLH',
-    contentRating: types_1.ContentRating.MATURE,
-    websiteBaseURL: DOMAIN,
-    sourceTags: [
-        {
-            text: 'Recommended',
-            type: types_1.BadgeColor.BLUE
-        }
-    ],
-    intents: types_1.SourceIntents.MANGA_CHAPTERS | types_1.SourceIntents.HOMEPAGE_SECTIONS
-};
+// export const TruyenTranhLHInfo: SourceInfo = {
+//     version: '1.0.3',
+//     name: 'TruyenTranhLH',
+//     icon: 'icon.png',
+//     author: 'AlanNois',
+//     authorWebsite: 'https://github.com/AlanNois/',
+//     description: 'Extension that pulls manga from TruyenTranhLH',
+//     contentRating: ContentRating.MATURE,
+//     websiteBaseURL: DOMAIN,
+//     sourceTags: [
+//         {
+//             text: 'Recommended',
+//             type: BadgeColor.BLUE
+//         }
+//     ],
+//     intents: SourceIntents.MANGA_CHAPTERS | SourceIntents.HOMEPAGE_SECTIONS
+// };
 class TruyenTranhLH {
     constructor(cheerio) {
         this.cheerio = cheerio;
