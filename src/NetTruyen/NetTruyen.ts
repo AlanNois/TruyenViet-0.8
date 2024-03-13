@@ -22,7 +22,7 @@ import {
 
 import { Parser } from './NetTruyenParser';
 
-const DOMAIN = 'https://www.nettruyenss.com/';
+const DOMAIN = 'https://www.nettruyenee.com/';
 
 export const isLastPage = ($: CheerioStatic): boolean => {
     const current = $('ul.pagination > li.active > a').text();
@@ -36,7 +36,7 @@ export const isLastPage = ($: CheerioStatic): boolean => {
 }
 
 export const NetTruyenInfo: SourceInfo = {
-    version: '1.0.2',
+    version: '1.0.5',
     name: 'NetTruyen',
     icon: 'icon.png',
     author: 'AlanNois',

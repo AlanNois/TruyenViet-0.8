@@ -40,7 +40,7 @@ export const isLastPage = ($: CheerioStatic): boolean => {
 };
 
 export const ManhuaRockInfo: SourceInfo = {
-    version: '1.0.0',
+    version: '1.0.3',
     name: 'ManhuaRock',
     icon: 'icon.png',
     author: 'AlanNois',
@@ -171,7 +171,6 @@ export class ManhuaRock implements SearchResultsProviding, MangaProviding, Chapt
         const param_1 = encodeURI(`${page}/?keyword=${query.title ?? ''}`)
         const param_2 = encodeURI(`${search.genre}/${page}/${search.sort ? '?sort=' : ''}${search.sort}`)
         const $ = await this.DOMHTML(`${url}${query.title ? param_1 : param_2}`)
-        console.log(`${url}${query.title ? param_1 : param_2}`)
         const tiles = this.parser.parseSearchResults($);
         metadata = !isLastPage($) ? { page: page + 1 } : undefined;
 

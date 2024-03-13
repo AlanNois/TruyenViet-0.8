@@ -118,6 +118,8 @@ export class Parser {
             const subtitle = $("figure.clearfix > figcaption > ul > li.chapter:nth-of-type(1) > a", manga).last().text().trim();
             if (!mangaId || !title) return;
 
+            console.log(title, mangaId, image, subtitle)
+
             tiles.push(App.createPartialSourceManga({
                 mangaId,
                 image: !image ? "https://i.imgur.com/GYUxEX8.png" : image.includes('http') ? image : `${DOMAIN}${image}`,

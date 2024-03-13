@@ -21,10 +21,10 @@ import {
 
 import { Parser } from './GocTruyenTranhParser';
 
-const DOMAIN = 'https://goctruyentranhvui.com/';
+const DOMAIN = 'https://goctruyentranhvui1.com/';
 
 export const GocTruyenTranhInfo: SourceInfo = {
-    version: '1.0.1',
+    version: '1.0.3',
     name: 'GocTruyenTranh',
     icon: 'icon.png',
     author: 'AlanNois',
@@ -101,7 +101,6 @@ export class GocTruyenTranh implements SearchResultsProviding, MangaProviding, C
 
     async getChapterDetails(mangaId: string, chapterId: string): Promise<ChapterDetails> {
         const $ = await this.DOMHTML(`${DOMAIN}truyen/${mangaId.split('::')[0]}/${chapterId}`);
-        console.log(mangaId, chapterId)
         const pages = this.parser.parseChapterDetails($);
         return App.createChapterDetails({
             id: chapterId,

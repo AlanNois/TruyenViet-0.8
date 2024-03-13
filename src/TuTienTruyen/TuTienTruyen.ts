@@ -22,7 +22,7 @@ import {
 
 import { Parser } from './TuTienTruyenParser';
 
-const DOMAIN = 'https://tutientruyen2.xyz/';
+const DOMAIN = 'https://tutientruyen4.xyz/';
 
 export const isLastPage = ($: CheerioStatic): boolean => {
     const current = $('ul.pagination > li.active > a').text();
@@ -35,27 +35,27 @@ export const isLastPage = ($: CheerioStatic): boolean => {
     return true;
 }
 
-export const TuTienTruyenInfo: SourceInfo = {
-    version: '1.0.2',
-    name: 'TuTienTruyen',
-    icon: 'icon.png',
-    author: 'AlanNois',
-    authorWebsite: 'https://github.com/AlanNois',
-    description: 'Extension that pulls manga from TuTienTruyen',
-    contentRating: ContentRating.EVERYONE,
-    websiteBaseURL: DOMAIN,
-    sourceTags: [
-        {
-            text: 'Recommended',
-            type: BadgeColor.BLUE
-        },
-        {
-            text: 'Notifications',
-            type: BadgeColor.GREEN
-        }
-    ],
-    intents: SourceIntents.MANGA_CHAPTERS | SourceIntents.HOMEPAGE_SECTIONS | SourceIntents.CLOUDFLARE_BYPASS_REQUIRED
-};
+// export const TuTienTruyenInfo: SourceInfo = {
+//     version: '1.0.3',
+//     name: 'TuTienTruyen',
+//     icon: 'icon.png',
+//     author: 'AlanNois',
+//     authorWebsite: 'https://github.com/AlanNois',
+//     description: 'Extension that pulls manga from TuTienTruyen',
+//     contentRating: ContentRating.EVERYONE,
+//     websiteBaseURL: DOMAIN,
+//     sourceTags: [
+//         {
+//             text: 'Recommended',
+//             type: BadgeColor.BLUE
+//         },
+//         {
+//             text: 'Notifications',
+//             type: BadgeColor.GREEN
+//         }
+//     ],
+//     intents: SourceIntents.MANGA_CHAPTERS | SourceIntents.HOMEPAGE_SECTIONS | SourceIntents.CLOUDFLARE_BYPASS_REQUIRED
+// };
 
 export class TuTienTruyen implements ChapterProviding, MangaProviding, SearchResultsProviding, HomePageSectionsProviding {
 
@@ -122,8 +122,8 @@ export class TuTienTruyen implements ChapterProviding, MangaProviding, SearchRes
 
         const search = {
             genres: '',
-            gender: "-1",
-            status: "-1",
+            gender: "",
+            status: "",
             minchapter: "1",
             sort: "0"
         };
@@ -153,9 +153,10 @@ export class TuTienTruyen implements ChapterProviding, MangaProviding, SearchRes
         }
         search.genres = genres.join(",");
 
-        const url = `${DOMAIN}${query.title ? '/tim-truyen' : '/tim-truyen-nang-cao'}`;
-        const param = encodeURI(`?keyword=${query.title ?? ''}&genres=${search.genres}&gender=${search.gender}&status=${search.status}&minchapter=${search.minchapter}&sort=${search.sort}&page=${page}`);
+        const url = `${DOMAIN}${query.title ? 'tim-truyen' : 'tim-truyen-nang-cao'}`;
+        const param = encodeURI(`?${query.title ? 'keyword=' + query.title + '&' : ''}genres=${search.genres}&gender=${search.gender}&status=${search.status}&minchapter=${search.minchapter}&sort=${search.sort}&page=${page}`);
         const $ = await this.DOMHTML(url + param);
+        console.log(url + param)
         const tiles = this.parser.parseSearchResults($, DOMAIN);
         metadata = !isLastPage($) ? { page: page + 1 } : undefined;
 

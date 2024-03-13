@@ -29,23 +29,23 @@ export const isLastPage = ($: CheerioStatic): boolean => {
     return (+current) === (+String(lastPage))
 }
 
-export const TruyenTranhLHInfo: SourceInfo = {
-    version: '1.0.2',
-    name: 'TruyenTranhLH',
-    icon: 'icon.png',
-    author: 'AlanNois',
-    authorWebsite: 'https://github.com/AlanNois/',
-    description: 'Extension that pulls manga from TruyenTranhLH',
-    contentRating: ContentRating.MATURE,
-    websiteBaseURL: DOMAIN,
-    sourceTags: [
-        {
-            text: 'Recommended',
-            type: BadgeColor.BLUE
-        }
-    ],
-    intents: SourceIntents.MANGA_CHAPTERS | SourceIntents.HOMEPAGE_SECTIONS
-};
+// export const TruyenTranhLHInfo: SourceInfo = {
+//     version: '1.0.3',
+//     name: 'TruyenTranhLH',
+//     icon: 'icon.png',
+//     author: 'AlanNois',
+//     authorWebsite: 'https://github.com/AlanNois/',
+//     description: 'Extension that pulls manga from TruyenTranhLH',
+//     contentRating: ContentRating.MATURE,
+//     websiteBaseURL: DOMAIN,
+//     sourceTags: [
+//         {
+//             text: 'Recommended',
+//             type: BadgeColor.BLUE
+//         }
+//     ],
+//     intents: SourceIntents.MANGA_CHAPTERS | SourceIntents.HOMEPAGE_SECTIONS
+// };
 
 export class TruyenTranhLH implements SearchResultsProviding, MangaProviding, ChapterProviding, HomePageSectionsProviding {
     constructor(private cheerio: CheerioAPI) { }

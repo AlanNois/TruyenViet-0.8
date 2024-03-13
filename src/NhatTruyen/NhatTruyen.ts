@@ -22,7 +22,7 @@ import {
 
 import { Parser } from './NhatTruyenParser';
 
-const DOMAIN = 'https://nhattruyento.com/';
+const DOMAIN = 'https://nhattruyenbing.com/';
 
 export const isLastPage = ($: CheerioStatic): boolean => {
     const current = $('ul.pagination > li.active > a').text();
@@ -36,7 +36,7 @@ export const isLastPage = ($: CheerioStatic): boolean => {
 }
 
 export const NhatTruyenInfo: SourceInfo = {
-    version: '1.0.2',
+    version: '1.0.4',
     name: 'NhatTruyen',
     icon: 'icon.png',
     author: 'AlanNois',
@@ -57,8 +57,8 @@ export const NhatTruyenInfo: SourceInfo = {
     intents: SourceIntents.MANGA_CHAPTERS | SourceIntents.HOMEPAGE_SECTIONS
 };
 
-export class NhatTruyen implements SearchResultsProviding, MangaProviding, ChapterProviding, HomePageSectionsProviding{
-    
+export class NhatTruyen implements SearchResultsProviding, MangaProviding, ChapterProviding, HomePageSectionsProviding {
+
     constructor(private cheerio: CheerioAPI) { }
 
     readonly requestManager = App.createRequestManager({
@@ -75,8 +75,8 @@ export class NhatTruyen implements SearchResultsProviding, MangaProviding, Chapt
                 };
                 return request;
             },
-            interceptResponse: async (response: Response): Promise<Response> => { 
-                return response; 
+            interceptResponse: async (response: Response): Promise<Response> => {
+                return response;
             }
         }
     });
@@ -105,7 +105,7 @@ export class NhatTruyen implements SearchResultsProviding, MangaProviding, Chapt
         const $ = await this.DOMHTML(`${DOMAIN}truyen-tranh/${mangaId}`);
         return this.parser.parseChapterList($);
     }
-    
+
     async getChapterDetails(mangaId: string, chapterId: string): Promise<ChapterDetails> {
         const $ = await this.DOMHTML(`${DOMAIN}truyen-tranh/${chapterId}`);
         const pages = this.parser.parseChapterDetails($);

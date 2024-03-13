@@ -22,10 +22,10 @@ import {
 
 import { Parser } from './CMangaParser';
 
-const DOMAIN = 'https://cmangavn.com/';
+const DOMAIN = 'https://cmangaot.com/';
 
 export const CMangaInfo: SourceInfo = {
-    version: '1.0.2',
+    version: '1.0.5',
     name: 'CManga',
     icon: 'icon.png',
     author: 'AlanNois',
@@ -143,8 +143,8 @@ export class CManga implements ChapterProviding, MangaProviding, SearchResultsPr
         // });
 
         const url = /*query.title ?*/ encodeURI(`${DOMAIN}api/search?string=${query.title}`)
-            // : (search.top !== '' ? `${DOMAIN}api/top?data=book_top`
-                // : encodeURI(`${DOMAIN}api/list_item?page=${page}&limit=40&sort=${search.sort}&type=all&tag=${search.tag}&child=off&status=${search.status}&num_chapter=${search.num_chapter}`))
+        // : (search.top !== '' ? `${DOMAIN}api/top?data=book_top`
+        // : encodeURI(`${DOMAIN}api/list_item?page=${page}&limit=40&sort=${search.sort}&type=all&tag=${search.tag}&child=off&status=${search.status}&num_chapter=${search.num_chapter}`))
 
         // const request = App.createRequest({
         //     url: url,
