@@ -463,7 +463,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.NetTruyen = exports.NetTruyenInfo = exports.isLastPage = void 0;
 const types_1 = require("@paperback/types");
 const NetTruyenParser_1 = require("./NetTruyenParser");
-const DOMAIN = 'https://www.nettruyenhh.com/';
+const DOMAIN = 'https://www.nettruyentt.com/';
 const isLastPage = ($) => {
     const current = $('ul.pagination > li.active > a').text();
     let total = $('ul.pagination > li.PagerSSCCells:last-child').text();
