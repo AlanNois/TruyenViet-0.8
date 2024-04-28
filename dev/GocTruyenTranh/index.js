@@ -1438,9 +1438,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.GocTruyenTranh = exports.GocTruyenTranhInfo = void 0;
 const types_1 = require("@paperback/types");
 const GocTruyenTranhParser_1 = require("./GocTruyenTranhParser");
-const DOMAIN = 'https://goctruyentranhvui1.com/';
+const DOMAIN = 'https://goctruyentranhvui2.com/';
 exports.GocTruyenTranhInfo = {
-    version: '1.0.3',
+    version: '1.0.4',
     name: 'GocTruyenTranh',
     icon: 'icon.png',
     author: 'AlanNois',
