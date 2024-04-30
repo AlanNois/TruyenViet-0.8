@@ -1440,7 +1440,7 @@ const types_1 = require("@paperback/types");
 const GocTruyenTranhParser_1 = require("./GocTruyenTranhParser");
 const DOMAIN = 'https://goctruyentranhvui2.com/';
 exports.GocTruyenTranhInfo = {
-    version: '1.0.4',
+    version: '1.0.5',
     name: 'GocTruyenTranh',
     icon: 'icon.png',
     author: 'AlanNois',
@@ -1468,7 +1468,7 @@ class GocTruyenTranh {
                         ...(request.headers ?? {}),
                         ...{
                             'referer': DOMAIN,
-                            'user-agent': await this.requestManager.getDefaultUserAgent()
+                            'user-agent': 'A'
                         }
                     };
                     return request;
@@ -1647,23 +1647,28 @@ class Parser {
     }
     parseMangaDetails($, mangaId) {
         const tags = [];
-        $('.detail-section .category a').each((_, obj) => {
-            const label = $(obj).text().trim();
+        $('.group-content a').each((_, obj) => {
+            const label = $('span:nth-child(2)', obj).text().trim();
             const id = $(obj).attr('href')?.trim() ?? label;
             tags.push(App.createTag({ label, id }));
         });
-        const titles = [this.decodeHTMLEntity($('.detail-section .title h1').text().trim())];
-        const author = $('.detail-section .author').clone().children().remove().end().text().trim();
-        const artist = $('.detail-section .author').clone().children().remove().end().text().trim();
-        const image = String($('.detail-section .photo > img').attr('src'));
-        const desc = $('.detail-section .description .content').text();
-        const status = $('.detail-section .status')
-            .clone() //clone the element
-            .children() //select all the children
-            .remove() //remove all the children
-            .end() //again go back to selected element
-            .text(); // get the text of element
-        const rating = parseFloat($('.evaluate > div > span:nth-child(2) > span:nth-child(1)').text().trim());
+        const titles = [this.decodeHTMLEntity($('.v-card-title').text().trim())];
+        let author, artist;
+        let status = '';
+        $('.information-section > div').each((_, obj) => {
+            switch ($(obj).text().trim().split('\n')[0]) {
+                case "Tác giả:":
+                    author = String($(obj).text().split('\n')[1]).trim();
+                    artist = String($(obj).text().split('\n')[1]).trim();
+                    break;
+                case "Trạng thái:":
+                    status = String($(obj).text().split('\n')[1]).trim();
+                    break;
+            }
+        });
+        const image = String($('.v-image > img').attr('src'));
+        const desc = $('.v-card-text.pt-1.px-4.pb-4.text-secondary.font-weight-medium').text();
+        const rating = parseFloat($('.pr-3 > b').text().trim());
         return App.createSourceManga({
             id: mangaId,
             mangaInfo: App.createMangaInfo({
@@ -1700,7 +1705,7 @@ class Parser {
     }
     parseChapterDetails($) {
         const pages = [];
-        $('.view-section > .viewer > img').each((_, obj) => {
+        $('.image-section > .img-block > img').each((_, obj) => {
             if (!obj.attribs['src'])
                 return;
             let link = obj.attribs['src'];
