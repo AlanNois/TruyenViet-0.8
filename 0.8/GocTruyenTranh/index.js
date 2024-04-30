@@ -1440,7 +1440,7 @@ const types_1 = require("@paperback/types");
 const GocTruyenTranhParser_1 = require("./GocTruyenTranhParser");
 const DOMAIN = 'https://goctruyentranhvui2.com/';
 exports.GocTruyenTranhInfo = {
-    version: '1.0.6',
+    version: '1.0.7',
     name: 'GocTruyenTranh',
     icon: 'icon.png',
     author: 'AlanNois',
@@ -1718,7 +1718,7 @@ class Parser {
         const array = json.result.data ?? json.result;
         for (let obj of array) {
             let title = obj.name;
-            let subtitle = `Chương ${obj.numberChapter}`;
+            let subtitle = `Chương ${obj.chapterLatest[0]}`;
             const image = obj.photo;
             let mangaId = `${obj.nameEn}::${obj.id}`;
             tiles.push(App.createPartialSourceManga({
