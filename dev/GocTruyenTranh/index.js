@@ -1440,7 +1440,7 @@ const types_1 = require("@paperback/types");
 const GocTruyenTranhParser_1 = require("./GocTruyenTranhParser");
 const DOMAIN = 'https://goctruyentranhvui2.com/';
 exports.GocTruyenTranhInfo = {
-    version: '1.0.5',
+    version: '1.0.6',
     name: 'GocTruyenTranh',
     icon: 'icon.png',
     author: 'AlanNois',
@@ -1649,7 +1649,7 @@ class Parser {
         const tags = [];
         $('.group-content a').each((_, obj) => {
             const label = $('span:nth-child(2)', obj).text().trim();
-            const id = $(obj).attr('href')?.trim() ?? label;
+            const id = $(obj).attr('href')?.trim().split('=')[1] ?? label;
             tags.push(App.createTag({ label, id }));
         });
         const titles = [this.decodeHTMLEntity($('.v-card-title').text().trim())];
