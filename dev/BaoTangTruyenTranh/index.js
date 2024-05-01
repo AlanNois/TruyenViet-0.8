@@ -1438,7 +1438,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.BaoTangTruyenTranh = exports.BaoTangTruyenTranhInfo = exports.isLastPage = void 0;
 const types_1 = require("@paperback/types");
 const BaoTangTruyenTranhParser_1 = require("./BaoTangTruyenTranhParser");
-const DOMAIN = 'https://baotangtruyen9.com/';
+const DOMAIN = 'https://baotangtruyen11.com/';
 const isLastPage = ($) => {
     const pages = [];
     $("li", "ul.pagination").each((_, page) => {
@@ -1453,7 +1453,7 @@ const isLastPage = ($) => {
 };
 exports.isLastPage = isLastPage;
 exports.BaoTangTruyenTranhInfo = {
-    version: '1.0.5',
+    version: '1.0.6',
     name: 'BaoTangTruyenTranh',
     icon: 'icon.png',
     author: 'AlanNois',
@@ -1524,6 +1524,7 @@ class BaoTangTruyenTranh {
         });
         const response = await this.requestManager.schedule(request, 1);
         const $ = this.cheerio.load(response.data);
+        console.log(this.parser.parseChapterList($, mangaId));
         return this.parser.parseChapterList($, mangaId);
     }
     async getChapterDetails(mangaId, chapterId) {
