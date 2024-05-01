@@ -1438,7 +1438,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.CManga = exports.CMangaInfo = void 0;
 const types_1 = require("@paperback/types");
 const CMangaParser_1 = require("./CMangaParser");
-const DOMAIN = 'https://cmangaot.com/';
+const DOMAIN = 'https://cmangaog.com/';
 exports.CMangaInfo = {
     version: '1.0.5',
     name: 'CManga',
