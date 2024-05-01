@@ -1453,7 +1453,7 @@ const isLastPage = ($) => {
 };
 exports.isLastPage = isLastPage;
 exports.BaoTangTruyenTranhInfo = {
-    version: '1.0.6',
+    version: '1.0.7',
     name: 'BaoTangTruyenTranh',
     icon: 'icon.png',
     author: 'AlanNois',
@@ -1524,7 +1524,6 @@ class BaoTangTruyenTranh {
         });
         const response = await this.requestManager.schedule(request, 1);
         const $ = this.cheerio.load(response.data);
-        console.log(this.parser.parseChapterList($, mangaId));
         return this.parser.parseChapterList($, mangaId);
     }
     async getChapterDetails(mangaId, chapterId) {
@@ -1740,7 +1739,7 @@ class Parser {
     parseMangaDetails($, mangaId) {
         const tags = [];
         $('.kind a').each((_, obj) => {
-            const label = $(obj).text().trim();
+            const label = this.decodeHTMLEntity($(obj).text().trim());
             const id = $(obj).attr('href')?.split('/').pop() ?? label;
             tags.push(App.createTag({ label, id }));
         });

@@ -463,7 +463,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.NhatTruyen = exports.NhatTruyenInfo = exports.isLastPage = void 0;
 const types_1 = require("@paperback/types");
 const NhatTruyenParser_1 = require("./NhatTruyenParser");
-const DOMAIN = 'https://nhattruyenbing.com/';
+const DOMAIN = 'https://nhattruyenss.com/';
 const isLastPage = ($) => {
     const current = $('ul.pagination > li.active > a').text();
     let total = $('ul.pagination > li.PagerSSCCells:last-child').text();
@@ -475,7 +475,7 @@ const isLastPage = ($) => {
 };
 exports.isLastPage = isLastPage;
 exports.NhatTruyenInfo = {
-    version: '1.0.4',
+    version: '1.0.5',
     name: 'NhatTruyen',
     icon: 'icon.png',
     author: 'AlanNois',
