@@ -471,7 +471,7 @@ const isLastPage = ($) => {
 };
 exports.isLastPage = isLastPage;
 exports.DocTruyen3QInfo = {
-    version: '1.0.7',
+    version: '1.0.8',
     name: 'DocTruyen3Q',
     icon: 'icon.png',
     author: 'AlanNois',
@@ -727,7 +727,7 @@ class Parser {
             id: mangaId,
             mangaInfo: App.createMangaInfo({
                 titles,
-                image,
+                image: image.indexOf('https') === -1 ? 'https:' + image : image,
                 desc,
                 status,
                 tags: [App.createTagSection({ id: '0', label: 'genres', tags: tags })],
@@ -777,7 +777,7 @@ class Parser {
                 return;
             tiles.push(App.createPartialSourceManga({
                 mangaId,
-                image,
+                image: image.indexOf('https') === -1 ? 'https:' + image : image,
                 title,
                 subtitle
             }));
@@ -796,7 +796,7 @@ class Parser {
                 return;
             featuredItems.push(App.createPartialSourceManga({
                 mangaId,
-                image,
+                image: image.indexOf('https') === -1 ? 'https:' + image : image,
                 title,
                 subtitle
             }));
@@ -815,7 +815,7 @@ class Parser {
                 return;
             homeItems.push(App.createPartialSourceManga({
                 mangaId,
-                image,
+                image: image.indexOf('https') === -1 ? 'https:' + image : image,
                 title,
                 subtitle
             }));
