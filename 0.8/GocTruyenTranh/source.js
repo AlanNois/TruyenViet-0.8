@@ -1508,7 +1508,7 @@ class GocTruyenTranh {
         return this.parser.parseChapterList(json);
     }
     async getChapterDetails(mangaId, chapterId) {
-        console.log({
+        console.log(`${{
             url: `${DOMAIN}api/chapter/auth`,
             method: 'POST',
             headers: {
@@ -1517,7 +1517,7 @@ class GocTruyenTranh {
                 'x-requested-with': 'XMLHttpRequest'
             },
             data: { comicId: mangaId.split('::')[1], chapterNumber: chapterId.split('-')[1] }
-        });
+        }}`);
         const request = App.createRequest({
             url: `${DOMAIN}api/chapter/auth`,
             method: 'POST',
@@ -1746,7 +1746,6 @@ class Parser {
                 pages.push(img);
             }
         }
-        console.log(pages);
         return pages;
     }
     parseSearchResults(json) {
