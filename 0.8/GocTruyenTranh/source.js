@@ -1516,7 +1516,7 @@ class GocTruyenTranh {
                 'content-type': 'application/x-www-form-urlencoded; charset=UTF-8',
                 'x-requested-with': 'XMLHttpRequest'
             },
-            data: { comicId: mangaId.split('::')[1], chapterNumber: chapterId.split('-')[1] }
+            data: { comicId: '0000018219', chapterNumber: '297' }
         });
         const response = await this.requestManager.schedule(request, 1);
         const json = JSON.parse(response.data);
@@ -1736,6 +1736,7 @@ class Parser {
                 pages.push(img);
             }
         }
+        console.log(pages);
         return pages;
     }
     parseSearchResults(json) {
