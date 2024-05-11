@@ -1438,7 +1438,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.BaoTangTruyenTranh = exports.BaoTangTruyenTranhInfo = exports.isLastPage = void 0;
 const types_1 = require("@paperback/types");
 const BaoTangTruyenTranhParser_1 = require("./BaoTangTruyenTranhParser");
-const DOMAIN = 'https://baotangtruyen11.com/';
+const DOMAIN = 'https://baotangtruyen12.com/';
 const isLastPage = ($) => {
     const pages = [];
     $("li", "ul.pagination").each((_, page) => {
@@ -1518,7 +1518,6 @@ class BaoTangTruyenTranh {
             method: 'POST',
             headers: {
                 'content-type': 'application/x-www-form-urlencoded',
-                'referer': DOMAIN,
             },
             data: { StoryID }
         });
