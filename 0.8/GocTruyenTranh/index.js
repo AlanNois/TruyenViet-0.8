@@ -1508,6 +1508,8 @@ class GocTruyenTranh {
         return this.parser.parseChapterList(json);
     }
     async getChapterDetails(mangaId, chapterId) {
+        let comicId = mangaId.split('::')[1];
+        let chapterNumber = chapterId.split('-')[1];
         const request = App.createRequest({
             url: `${DOMAIN}api/chapter/auth`,
             method: 'POST',
@@ -1516,7 +1518,7 @@ class GocTruyenTranh {
                 'content-type': 'application/x-www-form-urlencoded; charset=UTF-8',
                 'x-requested-with': 'XMLHttpRequest'
             },
-            data: { comicId: mangaId.split('::')[1], chapterNumber: chapterId.split('-')[1] }
+            data: { comicId, chapterNumber }
         });
         const response = await this.requestManager.schedule(request, 1);
         const json = JSON.parse(response.data);
@@ -1524,7 +1526,7 @@ class GocTruyenTranh {
         if (json.result.state == false) {
             const $ = await this.DOMHTML(`${DOMAIN}truyen/${mangaId.split('::')[0]}/${chapterId}`);
             pages = this.parser.parseChapterDetails(null, $);
-            throw Error(String(json));
+            throw Error(String(json.status));
         }
         else {
             pages = this.parser.parseChapterDetails(json, null);
