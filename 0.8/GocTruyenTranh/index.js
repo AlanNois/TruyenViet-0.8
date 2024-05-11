@@ -1508,9 +1508,9 @@ class GocTruyenTranh {
         return this.parser.parseChapterList(json);
     }
     async getChapterDetails(mangaId, chapterId) {
-        let comicId = `${mangaId.split('::')[1]}`;
+        let comicid = `${mangaId.split('::')[1]}`;
         let chapterNumber = `${chapterId.split('-')[1]}`;
-        // let data = `comicId=${comicId}&chapterNumber=${chapterNumber}`
+        let comicId = `${comicid}&chapterNumber=${chapterNumber}`;
         const request = App.createRequest({
             url: `${DOMAIN}api/chapter/auth`,
             method: 'POST',
@@ -1527,7 +1527,7 @@ class GocTruyenTranh {
         if (json.result.state == false) {
             const $ = await this.DOMHTML(`${DOMAIN}truyen/${mangaId.split('::')[0]}/${chapterId}`);
             pages = this.parser.parseChapterDetails(null, $);
-            throw Error(`${comicId}, ${chapterNumber} ,${json.status}, ${json.code}, ${json.result.stage}, ${json.result.block}, ${json.result.data}, ${json.result.message}`);
+            throw Error(`${comicid}, ${chapterNumber} ,${json.status}, ${json.code}, ${json.result.stage}, ${json.result.block}, ${json.result.data}, ${json.result.message}`);
         }
         else {
             pages = this.parser.parseChapterDetails(json, null);
