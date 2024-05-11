@@ -1508,8 +1508,26 @@ class GocTruyenTranh {
         return this.parser.parseChapterList(json);
     }
     async getChapterDetails(mangaId, chapterId) {
-        const $ = await this.DOMHTML(`${DOMAIN}truyen/${mangaId.split('::')[0]}/${chapterId}`);
-        const pages = this.parser.parseChapterDetails($);
+        const request = App.createRequest({
+            url: `${DOMAIN}api/chapter/auth`,
+            method: 'POST',
+            headers: {
+                'authorization': 'Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJWxINuIEhvw6BuZyDEkGluaCIsImNvbWljSWRzIjpbXSwicm9sZUlkIjpudWxsLCJncm91cElkIjpudWxsLCJhZG1pbiI6ZmFsc2UsInJhbmsiOjAsInBlcm1pc3Npb24iOltdLCJpZCI6IjAwMDA1MjYzNzAiLCJ0ZWFtIjpmYWxzZSwiaWF0IjoxNzE1NDI0NDU3LCJlbWFpbCI6Im51bGwifQ.EjYw-HvoWM6RhbNzJkp06sSh61leaPcND0gb94PlDKeTYxfxU-f6WaxINAVjVYOP0pcVcG3YmfBVb4FVEBqPxQ',
+                'content-type': 'application/x-www-form-urlencoded; charset=UTF-8',
+                'x-requested-with': 'XMLHttpRequest'
+            },
+            data: { comicId: mangaId.split('::')[1], chapterNumber: chapterId.split('-')[1] }
+        });
+        const response = await this.requestManager.schedule(request, 1);
+        const json = JSON.parse(response.data);
+        let pages = [];
+        if (json.result.state == false) {
+            const $ = await this.DOMHTML(`${DOMAIN}truyen/${mangaId.split('::')[0]}/${chapterId}`);
+            pages = this.parser.parseChapterDetails(null, $);
+        }
+        else {
+            pages = this.parser.parseChapterDetails(json, null);
+        }
         return App.createChapterDetails({
             id: chapterId,
             mangaId: mangaId,
@@ -1703,14 +1721,21 @@ class Parser {
         }
         return chapters;
     }
-    parseChapterDetails($) {
+    parseChapterDetails(json, $) {
         const pages = [];
-        $('.image-section > .img-block > img').each((_, obj) => {
-            if (!obj.attribs['src'])
-                return;
-            let link = obj.attribs['src'];
-            pages.push(encodeURI(link));
-        });
+        if (json == null) {
+            $('.image-section > .img-block > img').each((_, obj) => {
+                if (!obj.attribs['src'])
+                    return;
+                let link = obj.attribs['src'];
+                pages.push(encodeURI(link));
+            });
+        }
+        else {
+            for (const img of json.result.data) {
+                pages.push(img);
+            }
+        }
         return pages;
     }
     parseSearchResults(json) {
