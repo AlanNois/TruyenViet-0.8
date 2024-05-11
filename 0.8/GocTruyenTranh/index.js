@@ -1524,6 +1524,7 @@ class GocTruyenTranh {
         if (json.result.state == false) {
             const $ = await this.DOMHTML(`${DOMAIN}truyen/${mangaId.split('::')[0]}/${chapterId}`);
             pages = this.parser.parseChapterDetails(null, $);
+            throw Error(json);
         }
         else {
             pages = this.parser.parseChapterDetails(json, null);
@@ -1730,7 +1731,6 @@ class Parser {
                 let link = obj.attribs['src'];
                 pages.push(encodeURI(link));
             });
-            throw Error('where is json?');
         }
         else {
             for (const img of json.result.data) {
