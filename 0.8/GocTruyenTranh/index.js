@@ -1510,6 +1510,7 @@ class GocTruyenTranh {
     async getChapterDetails(mangaId, chapterId) {
         let comicId = `${mangaId.split('::')[1]}`;
         let chapterNumber = `${chapterId.split('-')[1]}`;
+        // let data = `${comicId}&${chapterNumber}`
         const request = App.createRequest({
             url: `${DOMAIN}api/chapter/auth`,
             method: 'POST',
