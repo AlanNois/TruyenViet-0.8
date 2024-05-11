@@ -1440,7 +1440,7 @@ const types_1 = require("@paperback/types");
 const GocTruyenTranhParser_1 = require("./GocTruyenTranhParser");
 const DOMAIN = 'https://goctruyentranhvui2.com/';
 exports.GocTruyenTranhInfo = {
-    version: '1.0.8',
+    version: '1.1.0',
     name: 'GocTruyenTranh',
     icon: 'icon.png',
     author: 'AlanNois',
@@ -1527,7 +1527,6 @@ class GocTruyenTranh {
         if (json.result.state == false) {
             const $ = await this.DOMHTML(`${DOMAIN}truyen/${mangaId.split('::')[0]}/${chapterId}`);
             pages = this.parser.parseChapterDetails(null, $);
-            throw Error(`${comicid}, ${chapterNumber} ,${json.status}, ${json.code}, ${json.result.stage}, ${json.result.block}, ${json.result.data}, ${json.result.message}`);
         }
         else {
             pages = this.parser.parseChapterDetails(json, null);
