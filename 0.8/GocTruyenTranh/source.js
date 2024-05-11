@@ -1508,8 +1508,8 @@ class GocTruyenTranh {
         return this.parser.parseChapterList(json);
     }
     async getChapterDetails(mangaId, chapterId) {
-        let comicId = mangaId.split('::')[1];
-        let chapterNumber = chapterId.split('-')[1];
+        let comicId = `${mangaId.split('::')[1]}`;
+        let chapterNumber = `${chapterId.split('-')[1]}`;
         const request = App.createRequest({
             url: `${DOMAIN}api/chapter/auth`,
             method: 'POST',
