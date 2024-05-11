@@ -1440,7 +1440,7 @@ const types_1 = require("@paperback/types");
 const GocTruyenTranhParser_1 = require("./GocTruyenTranhParser");
 const DOMAIN = 'https://goctruyentranhvui2.com/';
 exports.GocTruyenTranhInfo = {
-    version: '1.0.7',
+    version: '1.0.8',
     name: 'GocTruyenTranh',
     icon: 'icon.png',
     author: 'AlanNois',
