@@ -14,7 +14,7 @@ export class Parser {
         const tags: Tag[] = [];
 
         $('.kind a').each((_: any, obj: any) => {
-            const label = $(obj).text().trim();
+            const label = this.decodeHTMLEntity($(obj).text().trim());
             const id = $(obj).attr('href')?.split('/').pop() ?? label;
             tags.push(App.createTag({ label, id }));
         });

@@ -22,7 +22,7 @@ import {
 
 import { Parser } from './NhatTruyenParser';
 
-const DOMAIN = 'https://nhattruyenbing.com/';
+const DOMAIN = 'https://nhattruyenss.com/';
 
 export const isLastPage = ($: CheerioStatic): boolean => {
     const current = $('ul.pagination > li.active > a').text();
@@ -36,7 +36,7 @@ export const isLastPage = ($: CheerioStatic): boolean => {
 }
 
 export const NhatTruyenInfo: SourceInfo = {
-    version: '1.0.4',
+    version: '1.0.5',
     name: 'NhatTruyen',
     icon: 'icon.png',
     author: 'AlanNois',

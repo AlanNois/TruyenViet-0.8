@@ -22,7 +22,7 @@ import {
 
 import { Parser } from './CMangaParser';
 
-const DOMAIN = 'https://cmangaot.com/';
+const DOMAIN = 'https://cmangaog.com/';
 
 export const CMangaInfo: SourceInfo = {
     version: '1.0.5',

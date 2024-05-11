@@ -21,10 +21,10 @@ import {
 
 import { Parser } from './GocTruyenTranhParser';
 
-const DOMAIN = 'https://goctruyentranhvui1.com/';
+const DOMAIN = 'https://goctruyentranhvui2.com/';
 
 export const GocTruyenTranhInfo: SourceInfo = {
-    version: '1.0.3',
+    version: '1.0.7',
     name: 'GocTruyenTranh',
     icon: 'icon.png',
     author: 'AlanNois',
@@ -54,7 +54,7 @@ export class GocTruyenTranh implements SearchResultsProviding, MangaProviding, C
                     ...(request.headers ?? {}),
                     ...{
                         'referer': DOMAIN,
-                        'user-agent': await this.requestManager.getDefaultUserAgent()
+                        'user-agent': 'A'
                     }
                 }
                 return request;
@@ -100,8 +100,25 @@ export class GocTruyenTranh implements SearchResultsProviding, MangaProviding, C
     }
 
     async getChapterDetails(mangaId: string, chapterId: string): Promise<ChapterDetails> {
-        const $ = await this.DOMHTML(`${DOMAIN}truyen/${mangaId.split('::')[0]}/${chapterId}`);
-        const pages = this.parser.parseChapterDetails($);
+        const request = App.createRequest({
+            url: `${DOMAIN}api/chapter/auth`,
+            method: 'POST',
+            headers: {
+                'authorization': 'Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJWxINuIEhvw6BuZyDEkGluaCIsImNvbWljSWRzIjpbXSwicm9sZUlkIjpudWxsLCJncm91cElkIjpudWxsLCJhZG1pbiI6ZmFsc2UsInJhbmsiOjAsInBlcm1pc3Npb24iOltdLCJpZCI6IjAwMDA1MjYzNzAiLCJ0ZWFtIjpmYWxzZSwiaWF0IjoxNzE1NDI0NDU3LCJlbWFpbCI6Im51bGwifQ.EjYw-HvoWM6RhbNzJkp06sSh61leaPcND0gb94PlDKeTYxfxU-f6WaxINAVjVYOP0pcVcG3YmfBVb4FVEBqPxQ',
+                'content-type': 'application/x-www-form-urlencoded; charset=UTF-8',
+                'x-requested-with': 'XMLHttpRequest'
+            },
+            data: { comicId: mangaId.split('::')[1], chapterNumber: chapterId.split('-')[1] }
+        })
+        const response = await this.requestManager.schedule(request, 1)
+        const json = JSON.parse(response.data as string)
+        let pages: string[] = [];
+        if (json.result.state == false) {
+            const $ = await this.DOMHTML(`${DOMAIN}truyen/${mangaId.split('::')[0]}/${chapterId}`);
+            pages = this.parser.parseChapterDetails(null, $);
+        } else {
+            pages = this.parser.parseChapterDetails(json, null)
+        }
         return App.createChapterDetails({
             id: chapterId,
             mangaId: mangaId,

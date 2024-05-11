@@ -62,7 +62,7 @@ export class Parser {
             id: mangaId,
             mangaInfo: App.createMangaInfo({
                 titles,
-                image,
+                image: image.indexOf('https') === -1 ? 'https:' + image : image,
                 desc,
                 status,
                 tags: [App.createTagSection({ id: '0', label: 'genres', tags: tags })],
@@ -102,8 +102,8 @@ export class Parser {
         const pages: string[] = [];
 
         $('.list-image-detail img').each((_: any, obj: any) => {
-            const link = $(obj).attr('src') ?? $(obj).attr('data-src');
-            pages.push(String(link));
+            const link = String($(obj).attr('src') ?? $(obj).attr('data-src'));
+            pages.push(link.indexOf('https') === -1 ? 'https:' + link : link);
         });
 
         return pages
@@ -122,7 +122,7 @@ export class Parser {
 
             tiles.push(App.createPartialSourceManga({
                 mangaId,
-                image,
+                image: image.indexOf('https') === -1 ? 'https:' + image : image,
                 title,
                 subtitle
             }));
@@ -143,7 +143,7 @@ export class Parser {
             if (!mangaId || !title) return;
             featuredItems.push(App.createPartialSourceManga({
                 mangaId,
-                image,
+                image: image.indexOf('https') === -1 ? 'https:' + image : image,
                 title,
                 subtitle
             }));
@@ -165,7 +165,7 @@ export class Parser {
 
             homeItems.push(App.createPartialSourceManga({
                 mangaId,
-                image,
+                image: image.indexOf('https') === -1 ? 'https:' + image : image,
                 title,
                 subtitle
             }));
