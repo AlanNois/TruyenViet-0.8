@@ -1510,7 +1510,7 @@ class GocTruyenTranh {
     async getChapterDetails(mangaId, chapterId) {
         let comicId = `${mangaId.split('::')[1]}`;
         let chapterNumber = `${chapterId.split('-')[1]}`;
-        // let data = `${comicId}&${chapterNumber}`
+        let data = `comicId=${comicId}&chapterNumber=${chapterNumber}`;
         const request = App.createRequest({
             url: `${DOMAIN}api/chapter/auth`,
             method: 'POST',
@@ -1519,7 +1519,7 @@ class GocTruyenTranh {
                 'content-type': 'application/x-www-form-urlencoded; charset=UTF-8',
                 'x-requested-with': 'XMLHttpRequest'
             },
-            data: { comicId, chapterNumber }
+            data: { data }
         });
         const response = await this.requestManager.schedule(request, 1);
         const json = JSON.parse(response.data);
