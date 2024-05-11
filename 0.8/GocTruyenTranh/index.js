@@ -1524,7 +1524,7 @@ class GocTruyenTranh {
         if (json.result.state == false) {
             const $ = await this.DOMHTML(`${DOMAIN}truyen/${mangaId.split('::')[0]}/${chapterId}`);
             pages = this.parser.parseChapterDetails(null, $);
-            throw Error(json);
+            throw Error(String(json));
         }
         else {
             pages = this.parser.parseChapterDetails(json, null);
