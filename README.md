@@ -9,7 +9,7 @@
 
 ## Important Notice: Extension Updates for [Nettruyen](https://www.nettruyenvv.com/) and [Nhattruyen](https://nhattruyenss.com/)
 
-Those currently undergoing down on the main website for [Nettruyen](https://www.nettruyenvv.com/) and [Nhattruyen](https://nhattruyenss.com/). This situation may temporarily affect the functionality of the following extensions:
+There is currently downtime on the main website for [Nettruyen](https://www.nettruyenvv.com/) and [Nhattruyen](https://nhattruyenss.com/). This situation may temporarily affect the functionality of the following extensions:
 
 * **[Nettruyen]**
 * **[Nhattruyen]**
