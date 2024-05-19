@@ -1541,9 +1541,9 @@ class GocTruyenTranh {
             const $ = await this.DOMHTML(`${DOMAIN}truyen/${mangaId.split('::')[0]}/${chapterId}`);
             pages = this.parser.parseChapterDetails(null, $);
         }
-        else if (!jsonLimAuth.result.state) {
+        else if (!jsonLimAuth.status) {
             // Use data from successful authentication response
-            throw Error(JSON.stringify(jsonLimAuth));
+            throw Error(`${JSON.stringify(jsonLimAuth)}, ${mangaId}, ${chapterId}`);
             pages = this.parser.parseChapterDetails(jsonAuth, null);
         }
         else {
