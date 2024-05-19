@@ -1536,20 +1536,22 @@ class GocTruyenTranh {
         // console.log(jsonAuth, jsonLimAuth)
         // Determine page parsing method based on authentication results
         let pages;
-        if (!jsonAuth.status && !jsonLimAuth.status) {
-            // Fallback to scraping if authentication fails
-            const $ = await this.DOMHTML(`${DOMAIN}truyen/${mangaId.split('::')[0]}/${chapterId}`);
-            pages = this.parser.parseChapterDetails(null, $);
-        }
-        else if (!jsonLimAuth.status) {
-            // Use data from successful authentication response
-            throw Error(`${JSON.stringify(jsonLimAuth)}, ${mangaId}, ${chapterId}`);
-            pages = this.parser.parseChapterDetails(jsonAuth, null);
-        }
-        else {
-            throw Error(`${JSON.stringify(jsonLimAuth)}, ${mangaId}, ${chapterId}`);
+        if (jsonLimAuth) {
             pages = this.parser.parseChapterDetails(jsonLimAuth, null);
+            // throw Error(`${JSON.stringify(jsonLimAuth)}, ${comicdata}`)
         }
+        // if (!jsonAuth.status && !jsonLimAuth.status) {
+        //     // Fallback to scraping if authentication fails
+        //     const $ = await this.DOMHTML(`${DOMAIN}truyen/${mangaId.split('::')[0]}/${chapterId}`);
+        //     pages = this.parser.parseChapterDetails(null, $);
+        // } else if (!jsonLimAuth.status) {
+        //     // Use data from successful authentication response
+        //     throw Error(`${JSON.stringify(jsonLimAuth)}, ${mangaId}, ${chapterId}`)
+        //     pages = this.parser.parseChapterDetails(jsonAuth, null);
+        // } else {
+        //     throw Error(`${JSON.stringify(jsonLimAuth)}, ${mangaId}, ${chapterId}`)
+        //     pages = this.parser.parseChapterDetails(jsonLimAuth, null)
+        // }
         return App.createChapterDetails({
             id: chapterId,
             mangaId: mangaId,
