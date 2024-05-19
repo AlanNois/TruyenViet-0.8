@@ -1469,7 +1469,8 @@ class GocTruyenTranh {
                         ...(request.headers ?? {}),
                         ...{
                             'referer': DOMAIN,
-                            'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36'
+                            'user-agent': await this.requestManager.getDefaultUserAgent()
+                            // 'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36'
                         }
                     };
                     return request;
@@ -1506,7 +1507,7 @@ class GocTruyenTranh {
             method: 'POST',
             headers: {
                 'authorization': Auth,
-                'content-type': 'application/x-www-form-urlencoded',
+                'content-type': 'application/x-www-form-urlencoded; charset=UTF-8',
                 'x-requested-with': 'XMLHttpRequest'
             },
             data: { comicId }
@@ -1542,6 +1543,7 @@ class GocTruyenTranh {
         else if (!jsonLimAuth.result.state) {
             // Use data from successful authentication response
             pages = this.parser.parseChapterDetails(jsonAuth, null);
+            throw Error(jsonLimAuth);
         }
         else {
             pages = this.parser.parseChapterDetails(jsonLimAuth, null);
