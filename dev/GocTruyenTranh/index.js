@@ -1439,8 +1439,9 @@ exports.GocTruyenTranh = exports.GocTruyenTranhInfo = void 0;
 const types_1 = require("@paperback/types");
 const GocTruyenTranhParser_1 = require("./GocTruyenTranhParser");
 const DOMAIN = 'https://goctruyentranhvui2.com/';
+const Auth = 'Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJWxINuIEhvw6BuZyDEkGluaCIsImNvbWljSWRzIjpbXSwicm9sZUlkIjpudWxsLCJncm91cElkIjpudWxsLCJhZG1pbiI6ZmFsc2UsInJhbmsiOjAsInBlcm1pc3Npb24iOltdLCJpZCI6IjAwMDA1MjYzNzAiLCJ0ZWFtIjpmYWxzZSwiaWF0IjoxNzE1NDI0NDU3LCJlbWFpbCI6Im51bGwifQ.EjYw-HvoWM6RhbNzJkp06sSh61leaPcND0gb94PlDKeTYxfxU-f6WaxINAVjVYOP0pcVcG3YmfBVb4FVEBqPxQ';
 exports.GocTruyenTranhInfo = {
-    version: '1.1.0',
+    version: '1.1.1',
     name: 'GocTruyenTranh',
     icon: 'icon.png',
     author: 'AlanNois',
@@ -1499,6 +1500,20 @@ class GocTruyenTranh {
         const response = await this.requestManager.schedule(request, 1);
         return JSON.parse(response.data);
     }
+    async callAPI_w_auth(url, comicId) {
+        const request = App.createRequest({
+            url: url,
+            method: 'POST',
+            headers: {
+                'authorization': Auth,
+                'content-type': 'application/x-www-form-urlencoded',
+                'x-requested-with': 'XMLHttpRequest'
+            },
+            data: { comicId }
+        });
+        const response = await this.requestManager.schedule(request, 1);
+        return JSON.parse(response.data);
+    }
     async getMangaDetails(mangaId) {
         const $ = await this.DOMHTML(`${DOMAIN}truyen/${mangaId.split('::')[0]}`);
         return this.parser.parseMangaDetails($, mangaId);
@@ -1508,28 +1523,28 @@ class GocTruyenTranh {
         return this.parser.parseChapterList(json);
     }
     async getChapterDetails(mangaId, chapterId) {
-        let comicid = `${mangaId.split('::')[1]}`;
-        let chapterNumber = `${chapterId.split('-')[1]}`;
-        let comicId = `${comicid}&chapterNumber=${chapterNumber}`;
-        const request = App.createRequest({
-            url: `${DOMAIN}api/chapter/auth`,
-            method: 'POST',
-            headers: {
-                'authorization': 'Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJWxINuIEhvw6BuZyDEkGluaCIsImNvbWljSWRzIjpbXSwicm9sZUlkIjpudWxsLCJncm91cElkIjpudWxsLCJhZG1pbiI6ZmFsc2UsInJhbmsiOjAsInBlcm1pc3Npb24iOltdLCJpZCI6IjAwMDA1MjYzNzAiLCJ0ZWFtIjpmYWxzZSwiaWF0IjoxNzE1NDI0NDU3LCJlbWFpbCI6Im51bGwifQ.EjYw-HvoWM6RhbNzJkp06sSh61leaPcND0gb94PlDKeTYxfxU-f6WaxINAVjVYOP0pcVcG3YmfBVb4FVEBqPxQ',
-                'content-type': 'application/x-www-form-urlencoded',
-                'x-requested-with': 'XMLHttpRequest'
-            },
-            data: { comicId }
-        });
-        const response = await this.requestManager.schedule(request, 1);
-        const json = JSON.parse(response.data);
-        let pages = [];
-        if (json.result.state == false) {
+        // Extract manga ID and chapter number using destructuring
+        const [mangaNumber, chapterNumber] = [mangaId.split('::')[1], chapterId.split('-')[1]];
+        // Combine manga ID and chapter number into a single query parameter
+        const comicdata = `${mangaNumber}&chapterNumber=${chapterNumber}`;
+        // Make concurrent API calls with authentication
+        const [jsonAuth, jsonLimAuth] = await Promise.all([
+            this.callAPI_w_auth(`${DOMAIN}api/chapter/auth`, comicdata),
+            this.callAPI_w_auth(`${DOMAIN}api/chapter/limitation`, comicdata),
+        ]);
+        // Determine page parsing method based on authentication results
+        let pages;
+        if (!jsonAuth.result.state) {
+            // Fallback to scraping if authentication fails
             const $ = await this.DOMHTML(`${DOMAIN}truyen/${mangaId.split('::')[0]}/${chapterId}`);
             pages = this.parser.parseChapterDetails(null, $);
         }
+        else if (!jsonLimAuth.result.state) {
+            // Use data from successful authentication response
+            pages = this.parser.parseChapterDetails(jsonAuth, null);
+        }
         else {
-            pages = this.parser.parseChapterDetails(json, null);
+            pages = this.parser.parseChapterDetails(jsonLimAuth, null);
         }
         return App.createChapterDetails({
             id: chapterId,

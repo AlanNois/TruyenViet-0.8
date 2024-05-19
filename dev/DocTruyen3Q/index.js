@@ -729,20 +729,6 @@ class Parser {
         const desc = $('.summary-content > p').text();
         const status = $('.status > .detail-info > span').text();
         const rating = parseFloat(String($('.star').attr('data-rating')));
-        if (!image) {
-            throw Error(`${$('.image-info img.image-comic').first().attr('src')}`);
-        }
-        console.log({
-            id: mangaId,
-            mangaInfo: App.createMangaInfo({
-                titles,
-                image: image.indexOf('https') === -1 ? 'https:' + image : image,
-                desc,
-                status,
-                tags: [App.createTagSection({ id: '0', label: 'genres', tags: tags })],
-                rating
-            })
-        });
         return App.createSourceManga({
             id: mangaId,
             mangaInfo: App.createMangaInfo({
@@ -795,9 +781,6 @@ class Parser {
             const subtitle = $('ul > li:first-child > a', obj).text().trim();
             if (!mangaId || !title)
                 return;
-            if (!image) {
-                throw Error(`${$('.image-item > a > img.image-item', obj).attr('data-original') ?? $('.image-item > a > img', obj).attr('src')}`);
-            }
             tiles.push(App.createPartialSourceManga({
                 mangaId,
                 image: image.indexOf('https') === -1 ? 'https:' + image : image,
@@ -817,9 +800,6 @@ class Parser {
             const subtitle = $('.detail-slide > a', obj).text().trim();
             if (!mangaId || !title)
                 return;
-            if (!image) {
-                throw Error(`${$('a > img', obj).attr('src') ?? $('a > img', obj).attr('data-src')}`);
-            }
             featuredItems.push(App.createPartialSourceManga({
                 mangaId,
                 image: image.indexOf('https') === -1 ? 'https:' + image : image,
@@ -839,9 +819,6 @@ class Parser {
             const subtitle = $('ul > li:first-child > a', obj).text().trim();
             if (!mangaId || !title)
                 return;
-            if (!image) {
-                throw Error(`${$('.image-item > a > img', obj).attr('data-original') ?? $('.image-item > a > img', obj).attr('src')}`);
-            }
             homeItems.push(App.createPartialSourceManga({
                 mangaId,
                 image: image.indexOf('https') === -1 ? 'https:' + image : image,

@@ -729,17 +729,6 @@ class Parser {
         const desc = $('.summary-content > p').text();
         const status = $('.status > .detail-info > span').text();
         const rating = parseFloat(String($('.star').attr('data-rating')));
-        console.log({
-            id: mangaId,
-            mangaInfo: App.createMangaInfo({
-                titles,
-                image: image.indexOf('https') === -1 ? 'https:' + image : image,
-                desc,
-                status,
-                tags: [App.createTagSection({ id: '0', label: 'genres', tags: tags })],
-                rating
-            })
-        });
         return App.createSourceManga({
             id: mangaId,
             mangaInfo: App.createMangaInfo({
