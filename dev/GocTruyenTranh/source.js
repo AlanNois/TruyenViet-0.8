@@ -1533,13 +1533,13 @@ class GocTruyenTranh {
             this.callAPI_w_auth(`${DOMAIN}api/chapter/auth`, comicdata),
             this.callAPI_w_auth(`${DOMAIN}api/chapter/limitation`, comicdata),
         ]);
+        // console.log(jsonAuth, jsonLimAuth)
         // Determine page parsing method based on authentication results
         let pages;
-        if (!jsonAuth.result.state && !jsonLimAuth.result.state) {
+        if (!jsonAuth.status && !jsonLimAuth.status) {
             // Fallback to scraping if authentication fails
             const $ = await this.DOMHTML(`${DOMAIN}truyen/${mangaId.split('::')[0]}/${chapterId}`);
             pages = this.parser.parseChapterDetails(null, $);
-            throw Error(jsonLimAuth);
         }
         else if (!jsonLimAuth.result.state) {
             // Use data from successful authentication response
