@@ -1507,7 +1507,7 @@ class GocTruyenTranh {
             method: 'POST',
             headers: {
                 'authorization': Auth,
-                'content-type': 'application/x-www-form-urlencoded; charset=UTF-8',
+                'content-type': 'application/x-www-form-urlencoded',
                 'x-requested-with': 'XMLHttpRequest'
             },
             data: { comicId }
@@ -1527,20 +1527,29 @@ class GocTruyenTranh {
         // Extract manga ID and chapter number using destructuring
         const [mangaNumber, chapterNumber] = [mangaId.split('::')[1], chapterId.split('-')[1]];
         // Combine manga ID and chapter number into a single query parameter
-        const comicdata = `${mangaNumber}&chapterNumber=${chapterNumber}`;
+        const comicId = `${mangaNumber}&chapterNumber=${chapterNumber}`;
         // Make concurrent API calls with authentication
         // const [jsonAuth, jsonLimAuth] = await Promise.all([
         //     this.callAPI_w_auth(`${DOMAIN}api/chapter/auth`, comicdata),
         //     this.callAPI_w_auth(`${DOMAIN}api/chapter/limitation`, comicdata),
         // ]);
-        const jsonLimAuth = await this.callAPI_w_auth(`${DOMAIN}api/chapter/limitation`, comicdata);
+        // const jsonLimAuth = await this.callAPI_w_auth(`${DOMAIN}api/chapter/limitation`, comicdata)
         // console.log(jsonAuth, jsonLimAuth)
         // Determine page parsing method based on authentication results
         let pages;
-        if (jsonLimAuth) {
-            // pages = this.parser.parseChapterDetails(jsonLimAuth,null)
-            throw Error(`${JSON.stringify(jsonLimAuth)}, ${comicdata}`);
-        }
+        const request = App.createRequest({
+            url: `${DOMAIN}api/chapter/limitation`,
+            method: 'POST',
+            headers: {
+                'authorization': Auth,
+                'content-type': 'application/x-www-form-urlencoded',
+                'x-requested-with': 'XMLHttpRequest'
+            },
+            data: { comicId }
+        });
+        const response = await this.requestManager.schedule(request, 1);
+        const json = JSON.parse(response.data);
+        pages = this.parser.parseChapterDetails(json, null);
         // if (!jsonAuth.status && !jsonLimAuth.status) {
         //     // Fallback to scraping if authentication fails
         //     const $ = await this.DOMHTML(`${DOMAIN}truyen/${mangaId.split('::')[0]}/${chapterId}`);
