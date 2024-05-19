@@ -471,7 +471,7 @@ const isLastPage = ($) => {
 };
 exports.isLastPage = isLastPage;
 exports.DocTruyen3QInfo = {
-    version: '1.0.8',
+    version: '1.0.9',
     name: 'DocTruyen3Q',
     icon: 'icon.png',
     author: 'AlanNois',
@@ -499,7 +499,8 @@ class DocTruyen3Q {
                         ...(request.headers ?? {}),
                         ...{
                             'referer': DOMAIN,
-                            'user-agent': await this.requestManager.getDefaultUserAgent(),
+                            // 'user-agent': await this.requestManager.getDefaultUserAgent(),
+                            'user-agent': 'S|',
                         }
                     };
                     return request;
@@ -608,18 +609,23 @@ class DocTruyen3Q {
             switch (section.id) {
                 case 'featured':
                     section.items = this.parser.parseFeaturedSection($);
+                    console.log(section.items);
                     break;
                 case 'viewest':
                     section.items = this.parser.parseSearchResults($);
+                    console.log(section.items);
                     break;
                 case 'hot':
                     section.items = this.parser.parseHomeTemplate($, '#hot');
+                    console.log(section.items);
                     break;
                 case 'new_updated':
                     section.items = this.parser.parseHomeTemplate($, '#home');
+                    console.log(section.items);
                     break;
                 case 'full':
                     section.items = this.parser.parseSearchResults($);
+                    console.log(section.items);
                     break;
             }
             sectionCallback(section);
@@ -719,10 +725,21 @@ class Parser {
             tags.push(App.createTag({ label, id }));
         });
         const titles = [$('.title-manga').text().trim()];
-        const image = $('.image-info img').attr('src') ?? '';
+        const image = $('.image-info img.image-comic').first().attr('src') ?? '';
         const desc = $('.summary-content > p').text();
         const status = $('.status > .detail-info > span').text();
         const rating = parseFloat(String($('.star').attr('data-rating')));
+        console.log({
+            id: mangaId,
+            mangaInfo: App.createMangaInfo({
+                titles,
+                image: image.indexOf('https') === -1 ? 'https:' + image : image,
+                desc,
+                status,
+                tags: [App.createTagSection({ id: '0', label: 'genres', tags: tags })],
+                rating
+            })
+        });
         return App.createSourceManga({
             id: mangaId,
             mangaInfo: App.createMangaInfo({
@@ -769,7 +786,7 @@ class Parser {
         const tiles = [];
         $('.content-search-left > .main-left .item-manga > .item').each((_, obj) => {
             const title = $('.caption > h3 > a', obj).text().trim();
-            let image = $('.image-item > a > img', obj).attr('data-original') ?? $('.image-item > a > img', obj).attr('src');
+            let image = $('.image-item > a > img.image-item', obj).attr('data-original') ?? $('.image-item > a > img', obj).attr('src');
             image = !image ? "https://i.imgur.com/GYUxEX8.png" : image;
             const mangaId = String($('.caption > h3 > a', obj).attr('href')?.split('/').slice(4).join('/'));
             const subtitle = $('ul > li:first-child > a', obj).text().trim();
