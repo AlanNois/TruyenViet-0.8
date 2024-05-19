@@ -1535,7 +1535,7 @@ class GocTruyenTranh {
         ]);
         // Determine page parsing method based on authentication results
         let pages;
-        if (!jsonAuth.result.state) {
+        if (!jsonAuth.result.state && !jsonLimAuth.result.state) {
             // Fallback to scraping if authentication fails
             const $ = await this.DOMHTML(`${DOMAIN}truyen/${mangaId.split('::')[0]}/${chapterId}`);
             pages = this.parser.parseChapterDetails(null, $);
