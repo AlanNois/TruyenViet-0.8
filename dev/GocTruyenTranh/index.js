@@ -1547,6 +1547,7 @@ class GocTruyenTranh {
         }
         else {
             pages = this.parser.parseChapterDetails(jsonLimAuth, null);
+            throw Error(JSON.stringify(jsonLimAuth));
         }
         return App.createChapterDetails({
             id: chapterId,
