@@ -1537,8 +1537,8 @@ class GocTruyenTranh {
         // Determine page parsing method based on authentication results
         let pages;
         if (jsonLimAuth) {
-            pages = this.parser.parseChapterDetails(jsonLimAuth, null);
-            // throw Error(`${JSON.stringify(jsonLimAuth)}, ${comicdata}`)
+            // pages = this.parser.parseChapterDetails(jsonLimAuth,null)
+            throw Error(`${JSON.stringify(jsonLimAuth)}, ${comicdata}`);
         }
         // if (!jsonAuth.status && !jsonLimAuth.status) {
         //     // Fallback to scraping if authentication fails
