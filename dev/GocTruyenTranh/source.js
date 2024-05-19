@@ -1539,11 +1539,11 @@ class GocTruyenTranh {
             // Fallback to scraping if authentication fails
             const $ = await this.DOMHTML(`${DOMAIN}truyen/${mangaId.split('::')[0]}/${chapterId}`);
             pages = this.parser.parseChapterDetails(null, $);
+            throw Error(jsonLimAuth);
         }
         else if (!jsonLimAuth.result.state) {
             // Use data from successful authentication response
             pages = this.parser.parseChapterDetails(jsonAuth, null);
-            throw Error(jsonLimAuth);
         }
         else {
             pages = this.parser.parseChapterDetails(jsonLimAuth, null);
