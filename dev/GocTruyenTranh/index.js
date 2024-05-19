@@ -1543,6 +1543,7 @@ class GocTruyenTranh {
         }
         else if (!jsonLimAuth.result.state) {
             // Use data from successful authentication response
+            throw Error(JSON.stringify(jsonLimAuth));
             pages = this.parser.parseChapterDetails(jsonAuth, null);
         }
         else {
