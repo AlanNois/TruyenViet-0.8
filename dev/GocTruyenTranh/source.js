@@ -1529,10 +1529,11 @@ class GocTruyenTranh {
         // Combine manga ID and chapter number into a single query parameter
         const comicdata = `${mangaNumber}&chapterNumber=${chapterNumber}`;
         // Make concurrent API calls with authentication
-        const [jsonAuth, jsonLimAuth] = await Promise.all([
-            this.callAPI_w_auth(`${DOMAIN}api/chapter/auth`, comicdata),
-            this.callAPI_w_auth(`${DOMAIN}api/chapter/limitation`, comicdata),
-        ]);
+        // const [jsonAuth, jsonLimAuth] = await Promise.all([
+        //     this.callAPI_w_auth(`${DOMAIN}api/chapter/auth`, comicdata),
+        //     this.callAPI_w_auth(`${DOMAIN}api/chapter/limitation`, comicdata),
+        // ]);
+        const jsonLimAuth = await this.callAPI_w_auth(`${DOMAIN}api/chapter/limitation`, comicdata);
         // console.log(jsonAuth, jsonLimAuth)
         // Determine page parsing method based on authentication results
         let pages;
