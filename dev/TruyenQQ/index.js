@@ -505,8 +505,8 @@ class TruyenQQ {
                         ...(request.headers ?? {}),
                         ...{
                             'referer': DOMAIN,
-                            // 'user-agent': await this.requestManager.getDefaultUserAgent(),
-                            'user-agent': 'a',
+                            'user-agent': await this.requestManager.getDefaultUserAgent(),
+                            // 'user-agent': 'a',
                         }
                     };
                     return request;
@@ -694,7 +694,7 @@ class TruyenQQ {
         });
     }
     async getSearchTags() {
-        const url = `${DOMAIN}tim-truyen-nang-cao.html`;
+        const url = `${DOMAIN}tim-kiem-nang-cao.html`;
         const $ = await this.DOMHTML(url);
         return this.parser.parseTags($);
     }
