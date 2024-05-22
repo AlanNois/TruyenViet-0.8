@@ -505,7 +505,8 @@ class TruyenQQ {
                         ...(request.headers ?? {}),
                         ...{
                             'referer': DOMAIN,
-                            'user-agent': await this.requestManager.getDefaultUserAgent(),
+                            // 'user-agent': await this.requestManager.getDefaultUserAgent(),
+                            'user-agent': 'a',
                         }
                     };
                     return request;
@@ -665,14 +666,14 @@ class TruyenQQ {
                 break;
             case "new_updated":
                 param = `trang-${page}.html`;
-                url = `${DOMAIN}truyen-tranh-moi`;
+                url = `${DOMAIN}truyen-moi-cap-nhat`;
                 break;
             case "new_added":
                 param = `trang-${page}.html`;
                 url = `${DOMAIN}truyen-tranh-moi`;
                 break;
             case "full":
-                param = `trang-${page}.html`;
+                param = `trang-${page}.html?status=2`;
                 url = `${DOMAIN}truyen-hoan-thanh`;
                 break;
             default:
