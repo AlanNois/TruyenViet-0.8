@@ -795,7 +795,7 @@ class Parser {
         const tiles = [];
         $('.list_grid li').each((_, manga) => {
             const title = $('.book_name > h3 > a', manga).text().trim();
-            const id = $('.book_name > h3 > a').attr('href')?.split('/').pop();
+            const id = $('.book_name > h3 > a', manga).attr('href')?.split('/').pop();
             let image = $('.book_avatar > a > img', manga).attr("src") ?? "";
             image = !image ? "https://i.imgur.com/GYUxEX8.png" : image;
             const subtitle = $('.last_chapter > a', manga).text().trim();
@@ -868,7 +868,7 @@ class Parser {
         const featuredItems = [];
         $('#div_suggest .list_grid li').each((_, manga) => {
             const title = $('.book_name > h3 > a', manga).text().trim();
-            const id = $('.book_name > h3 > a').attr('href')?.split('/').pop();
+            const id = $('.book_name > h3 > a', manga).attr('href')?.split('/').pop();
             let image = $('.book_avatar > a > img', manga).attr("src") ?? "";
             image = !image ? "https://i.imgur.com/GYUxEX8.png" : image;
             const subtitle = $('.last_chapter > a', manga).text().trim();
