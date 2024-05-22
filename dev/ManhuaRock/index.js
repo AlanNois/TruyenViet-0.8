@@ -1537,7 +1537,7 @@ class ManhuaRock {
     }
     async getMangaDetails(mangaId) {
         const $ = await this.DOMHTML(`${DOMAIN}truyen/${mangaId}`);
-        return this.parser.parseMangaDetails($, mangaId);
+        return this.parser.parseMangaDetails($, mangaId, DOMAIN);
     }
     async getChapters(mangaId) {
         const $ = await this.DOMHTML(`${DOMAIN}truyen/${mangaId}`);
@@ -1573,7 +1573,7 @@ class ManhuaRock {
         const param_1 = encodeURI(`${page}/?keyword=${query.title ?? ''}`);
         const param_2 = encodeURI(`${search.genre}/${page}/${search.sort ? '?sort=' : ''}${search.sort}`);
         const $ = await this.DOMHTML(`${url}${query.title ? param_1 : param_2}`);
-        const tiles = this.parser.parseSearchResults($);
+        const tiles = this.parser.parseSearchResults($, DOMAIN);
         metadata = !(0, exports.isLastPage)($) ? { page: page + 1 } : undefined;
         return App.createPagedResults({
             results: tiles,
@@ -1610,10 +1610,10 @@ class ManhuaRock {
             const $ = await this.DOMHTML(url);
             switch (section.id) {
                 case 'featured':
-                    section.items = this.parser.parseFeaturedSection($);
+                    section.items = this.parser.parseFeaturedSection($, DOMAIN);
                     break;
                 default:
-                    section.items = this.parser.parseSearchResults($);
+                    section.items = this.parser.parseSearchResults($, DOMAIN);
             }
             sectionCallback(section);
         }
@@ -1641,10 +1641,10 @@ class ManhuaRock {
         let manga = [];
         switch (homepageSectionId) {
             case 'featured':
-                manga = this.parser.parseFeaturedSection($);
+                manga = this.parser.parseFeaturedSection($, DOMAIN);
                 break;
             default:
-                manga = this.parser.parseSearchResults($);
+                manga = this.parser.parseSearchResults($, DOMAIN);
         }
         metadata = (0, exports.isLastPage)($) ? undefined : { page: page + 1 };
         return App.createPagedResults({
@@ -1684,7 +1684,7 @@ class Parser {
      * identifier of a manga. It is used to fetch the details of a specific manga from a source.
      * @returns a SourceManga object.
      */
-    parseMangaDetails($, mangaId) {
+    parseMangaDetails($, mangaId, DOMAIN) {
         const tags = [];
         let author = '';
         let artist = '';
@@ -1706,7 +1706,7 @@ class Parser {
             }
         });
         const titles = $('.post-title > h1').text().trim();
-        const image = String($('.summary_image > a > img').attr('src'));
+        const image = `${DOMAIN}${$('.summary_image > a > img').attr('src')}`;
         const desc = this.decodeHTMLEntity($('.dsct > p').text());
         const status = $('.post-status > div:nth-child(2) > div.summary-content').text().trim();
         const rating = parseFloat($('span[property="ratingValue"]').text().trim());
@@ -1783,12 +1783,12 @@ class Parser {
      * parsing HTML.
      * @returns an array of objects of type PartialSourceManga.
      */
-    parseSearchResults($) {
+    parseSearchResults($, DOMAIN) {
         const tiles = [];
         $('.page-item', '.listupd').each((_, manga) => {
             const title = $('div > div > h3', manga).text().trim();
             const id = $('div > div > h3 > a', manga).attr('href')?.split('/').slice(4).join('/');
-            let image = $('div > div > a > img', manga).first().attr('data-src');
+            let image = `${DOMAIN}${$('div > div > a > img', manga).first().attr('data-src')}`;
             image = !image ? "https://i.imgur.com/GYUxEX8.png" : image;
             const subtitle = $("div > div > .list-chapter > div:nth-of-type(1) > span", manga).text().trim();
             if (!id || !title)
@@ -1802,12 +1802,12 @@ class Parser {
         });
         return tiles;
     }
-    parseFeaturedSection($) {
+    parseFeaturedSection($, DOMAIN) {
         const featuredItems = [];
         $('.p-item', '.sidebar > div:nth-child(5) > div.sidebar-pp').each((_, manga) => {
             const title = $('.p-left > h4', manga).text().trim();
             const id = $('.p-left > h4 > a', manga).attr('href')?.split('/').slice(4).join('/');
-            let image = $('.pthumb > img', manga).first().attr('data-src');
+            let image = `${DOMAIN}${$('.pthumb > img', manga).first().attr('data-src')}`;
             image = !image ? "https://i.imgur.com/GYUxEX8.png" : image;
             const subtitle = $(".p-left > .list-chapter > div:nth-of-type(1) > span", manga).first().text().trim();
             if (!id || !title)

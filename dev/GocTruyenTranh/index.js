@@ -1685,7 +1685,7 @@ class Parser {
             }
         });
         const image = String($('.v-image > img').attr('src'));
-        const desc = $('.v-card-text.pt-1.px-4.pb-4.text-secondary.font-weight-medium').text();
+        const desc = this.decodeHTMLEntity($('.v-card-text.pt-1.px-4.pb-4.text-secondary.font-weight-medium').text());
         const rating = parseFloat($('.pr-3 > b').text().trim());
         return App.createSourceManga({
             id: mangaId,
