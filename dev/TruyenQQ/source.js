@@ -666,15 +666,15 @@ class TruyenQQ {
                 break;
             case "new_updated":
                 param = `trang-${page}.html`;
-                url = `${DOMAIN}truyen-moi-cap-nhat`;
+                url = `${DOMAIN}truyen-moi-cap-nhat/`;
                 break;
             case "new_added":
                 param = `trang-${page}.html`;
-                url = `${DOMAIN}truyen-tranh-moi`;
+                url = `${DOMAIN}truyen-tranh-moi/`;
                 break;
             case "full":
                 param = `trang-${page}.html?status=2`;
-                url = `${DOMAIN}truyen-hoan-thanh`;
+                url = `${DOMAIN}truyen-hoan-thanh/`;
                 break;
             default:
                 throw new Error("Requested to getViewMoreItems for a section ID which doesn't exist");
@@ -694,7 +694,7 @@ class TruyenQQ {
         });
     }
     async getSearchTags() {
-        const url = `${DOMAIN}tim-truyen-nang-cao`;
+        const url = `${DOMAIN}tim-truyen-nang-cao.html`;
         const $ = await this.DOMHTML(url);
         return this.parser.parseTags($);
     }
