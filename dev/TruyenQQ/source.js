@@ -592,9 +592,9 @@ class TruyenQQ {
         }
         search.genres = genres.join(",");
         search.exgenres = exgenres.join(",");
-        const paramExgenres = search.exgenres ? `&notgenres=${search.exgenres}` : '';
+        const paramExgenres = search.exgenres ? `&notcategory==${search.exgenres}` : '';
         const url = `${DOMAIN}${query.title ? 'tim-kiem' : 'tim-kiem-nang-cao'}/trang-${page}.html`;
-        const param = encodeURI(`?q=${query.title ?? ''}&genres=${search.genres}${paramExgenres}&country=${search.country}&status=${search.status}&minchapter=${search.minchapter}&sort=${search.sort}`);
+        const param = encodeURI(`?q=${query.title ?? ''}&category=${search.genres}${paramExgenres}&country=${search.country}&status=${search.status}&minchapter=${search.minchapter}&sort=${search.sort}`);
         const $ = await this.DOMHTML(url + param);
         const tiles = this.parser.parseSearchResults($);
         metadata = !(0, exports.isLastPage)($) ? { page: page + 1 } : undefined;
