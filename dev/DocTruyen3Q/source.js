@@ -471,7 +471,7 @@ const isLastPage = ($) => {
 };
 exports.isLastPage = isLastPage;
 exports.DocTruyen3QInfo = {
-    version: '1.0.10',
+    version: '1.0.11',
     name: 'DocTruyen3Q',
     icon: 'icon.png',
     author: 'AlanNois',
@@ -499,8 +499,8 @@ class DocTruyen3Q {
                         ...(request.headers ?? {}),
                         ...{
                             'referer': DOMAIN,
-                            // 'user-agent': await this.requestManager.getDefaultUserAgent(),
-                            'user-agent': 'S|',
+                            'user-agent': await this.requestManager.getDefaultUserAgent(),
+                            // 'user-agent': 'S|',
                         }
                     };
                     return request;
