@@ -477,7 +477,7 @@ const isLastPage = ($) => {
 };
 exports.isLastPage = isLastPage;
 exports.TruyenQQInfo = {
-    version: '1.0.0',
+    version: '1.0.1',
     name: 'TruyenQQ',
     icon: 'icon.png',
     author: 'AlanNois',
@@ -491,7 +491,7 @@ exports.TruyenQQInfo = {
             type: types_1.BadgeColor.BLUE
         }
     ],
-    intents: types_1.SourceIntents.MANGA_CHAPTERS | types_1.SourceIntents.HOMEPAGE_SECTIONS
+    intents: types_1.SourceIntents.MANGA_CHAPTERS | types_1.SourceIntents.HOMEPAGE_SECTIONS | types_1.SourceIntents.CLOUDFLARE_BYPASS_REQUIRED
 };
 class TruyenQQ {
     constructor(cheerio) {
@@ -527,6 +527,7 @@ class TruyenQQ {
             method: 'GET',
         });
         const response = await this.requestManager.schedule(request, 1);
+        this.CloudFlareError(response.status);
         return this.cheerio.load(response.data);
     }
     async getMangaDetails(mangaId) {
@@ -697,6 +698,22 @@ class TruyenQQ {
         const url = `${DOMAIN}tim-kiem-nang-cao.html`;
         const $ = await this.DOMHTML(url);
         return this.parser.parseTags($);
+    }
+    CloudFlareError(status) {
+        if (status == 503 || status == 403) {
+            throw new Error(`CLOUDFLARE BYPASS ERROR:\nPlease go to home page ${TruyenQQ.name} source and press the cloud icon.`);
+        }
+    }
+    async getCloudflareBypassRequestAsync() {
+        return App.createRequest({
+            url: DOMAIN,
+            method: 'GET',
+            headers: {
+                'referer': `${DOMAIN}/`,
+                'origin': `${DOMAIN}/`,
+                'user-agent': await this.requestManager.getDefaultUserAgent()
+            }
+        });
     }
 }
 exports.TruyenQQ = TruyenQQ;

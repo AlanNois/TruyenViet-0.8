@@ -471,7 +471,7 @@ const isLastPage = ($) => {
 };
 exports.isLastPage = isLastPage;
 exports.DocTruyen3QInfo = {
-    version: '1.0.9',
+    version: '1.0.10',
     name: 'DocTruyen3Q',
     icon: 'icon.png',
     author: 'AlanNois',
@@ -485,7 +485,7 @@ exports.DocTruyen3QInfo = {
             type: types_1.BadgeColor.BLUE
         },
     ],
-    intents: types_1.SourceIntents.MANGA_CHAPTERS | types_1.SourceIntents.HOMEPAGE_SECTIONS
+    intents: types_1.SourceIntents.MANGA_CHAPTERS | types_1.SourceIntents.HOMEPAGE_SECTIONS | types_1.SourceIntents.CLOUDFLARE_BYPASS_REQUIRED
 };
 class DocTruyen3Q {
     constructor(cheerio) {
@@ -520,8 +520,9 @@ class DocTruyen3Q {
             url: url,
             method: 'GET',
         });
-        const resquest = await this.requestManager.schedule(request, 1);
-        return this.cheerio.load(resquest.data);
+        const response = await this.requestManager.schedule(request, 1);
+        this.CloudFlareError(response.status);
+        return this.cheerio.load(response.data);
     }
     async getMangaDetails(mangaId) {
         const $ = await this.DOMHTML(`${DOMAIN}truyen-tranh/${mangaId}`);
@@ -667,6 +668,22 @@ class DocTruyen3Q {
         const url = `${DOMAIN}tim-truyen`;
         const $ = await this.DOMHTML(url);
         return this.parser.parseTags($);
+    }
+    CloudFlareError(status) {
+        if (status == 503 || status == 403) {
+            throw new Error(`CLOUDFLARE BYPASS ERROR:\nPlease go to home page ${DocTruyen3Q.name} source and press the cloud icon.`);
+        }
+    }
+    async getCloudflareBypassRequestAsync() {
+        return App.createRequest({
+            url: DOMAIN,
+            method: 'GET',
+            headers: {
+                'referer': `${DOMAIN}/`,
+                'origin': `${DOMAIN}/`,
+                'user-agent': await this.requestManager.getDefaultUserAgent()
+            }
+        });
     }
 }
 exports.DocTruyen3Q = DocTruyen3Q;
