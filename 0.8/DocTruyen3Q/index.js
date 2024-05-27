@@ -471,7 +471,7 @@ const isLastPage = ($) => {
 };
 exports.isLastPage = isLastPage;
 exports.DocTruyen3QInfo = {
-    version: '1.0.12',
+    version: '1.0.13',
     name: 'DocTruyen3Q',
     icon: 'icon.png',
     author: 'AlanNois',
@@ -783,7 +783,7 @@ class Parser {
     parseChapterDetails($) {
         const pages = [];
         $('.list-image-detail img').each((_, obj) => {
-            const link = String($(obj).attr('src') ?? $(obj).attr('data-src'));
+            const link = String($(obj).attr('src') ?? $(obj).attr('data-cfsrc'));
             pages.push(link.indexOf('https') === -1 ? 'https:' + link : link);
         });
         console.log(pages);
