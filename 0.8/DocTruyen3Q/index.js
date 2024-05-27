@@ -471,7 +471,7 @@ const isLastPage = ($) => {
 };
 exports.isLastPage = isLastPage;
 exports.DocTruyen3QInfo = {
-    version: '1.0.11',
+    version: '1.0.12',
     name: 'DocTruyen3Q',
     icon: 'icon.png',
     author: 'AlanNois',
@@ -500,7 +500,7 @@ class DocTruyen3Q {
                         ...{
                             'referer': DOMAIN,
                             'user-agent': await this.requestManager.getDefaultUserAgent(),
-                            // 'user-agent': 'S|',
+                            //'user-agent': 'S|',
                         }
                     };
                     return request;
@@ -786,6 +786,7 @@ class Parser {
             const link = String($(obj).attr('src') ?? $(obj).attr('data-src'));
             pages.push(link.indexOf('https') === -1 ? 'https:' + link : link);
         });
+        console.log(pages);
         return pages;
     }
     parseSearchResults($) {
