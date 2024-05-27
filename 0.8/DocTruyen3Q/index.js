@@ -471,7 +471,7 @@ const isLastPage = ($) => {
 };
 exports.isLastPage = isLastPage;
 exports.DocTruyen3QInfo = {
-    version: '1.1.1',
+    version: '1.1.2',
     name: 'DocTruyen3Q',
     icon: 'icon.png',
     author: 'AlanNois',
@@ -742,7 +742,7 @@ class Parser {
             tags.push(App.createTag({ label, id }));
         });
         const titles = [$('.title-manga').text().trim()];
-        const image = $('.image-info img.image-comic').first().attr('src') ?? '';
+        const image = $('.image-info img.image-comic').first().attr('src') ?? $('.image-info img.image-comic').first().attr('data-src') ?? $('.image-info img.image-comic').first().attr('data-cfsrc') ?? $('.image-info img.image-comic').first().attr('data-original') ?? '';
         const desc = $('.summary-content > p').text();
         const status = $('.status > .detail-info > span').text();
         const rating = parseFloat(String($('.star').attr('data-rating')));
