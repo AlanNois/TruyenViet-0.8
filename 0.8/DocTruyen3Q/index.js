@@ -471,7 +471,7 @@ const isLastPage = ($) => {
 };
 exports.isLastPage = isLastPage;
 exports.DocTruyen3QInfo = {
-    version: '1.1.0',
+    version: '1.1.1',
     name: 'DocTruyen3Q',
     icon: 'icon.png',
     author: 'AlanNois',
@@ -793,7 +793,7 @@ class Parser {
         const tiles = [];
         $('.content-search-left > .main-left .item-manga > .item').each((_, obj) => {
             const title = $('.caption > h3 > a', obj).text().trim();
-            let image = $('.image-item > a > img.image-item', obj).attr('data-original') ?? $('.image-item > a > img', obj).attr('src');
+            let image = $('.image-item > a > img.image-item', obj).attr('data-original') ?? $('.image-item > a > img', obj).attr('src') ?? $('.image-item > a > img', obj).attr('data-cfsrc');
             image = !image ? "https://i.imgur.com/GYUxEX8.png" : image;
             const mangaId = String($('.caption > h3 > a', obj).attr('href')?.split('/').slice(4).join('/'));
             const subtitle = $('ul > li:first-child > a', obj).text().trim();
@@ -812,7 +812,7 @@ class Parser {
         const featuredItems = [];
         $('.owl-carousel .slide-item').each((_, obj) => {
             const title = $('.slide-info > h3 > a', obj).text().trim();
-            let image = $('a > img', obj).attr('src') ?? $('a > img', obj).attr('data-cfsrc');
+            let image = $('a > img', obj).attr('data-cfsrc') ?? $('a > img', obj).attr('src') ?? $('a > img', obj).attr('data-src');
             image = !image ? "https://i.imgur.com/GYUxEX8.png" : image;
             const mangaId = String($('.slide-info > h3 > a', obj).attr('href')?.split('/').slice(4).join('/'));
             const subtitle = $('.detail-slide > a', obj).text().trim();
@@ -831,7 +831,7 @@ class Parser {
         const homeItems = [];
         $(`${id} > .body > .main-left .item-manga > .item`).each((_, obj) => {
             const title = $('.caption > h3 > a', obj).text().trim();
-            let image = $('.image-item > a > img', obj).attr('data-cfsrc') ?? $('.image-item > a > img', obj).attr('src');
+            let image = $('.image-item > a > img', obj).attr('data-cfsrc') ?? $('.image-item > a > img', obj).attr('src') ?? $('.image-item > a > img', obj).attr('data-original');
             image = !image ? "https://i.imgur.com/GYUxEX8.png" : image;
             const mangaId = String($('.caption > h3 > a', obj).attr('href')?.split('/').slice(4).join('/'));
             const subtitle = $('ul > li:first-child > a', obj).text().trim();
