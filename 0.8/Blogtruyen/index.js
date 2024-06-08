@@ -1438,7 +1438,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Blogtruyen = exports.BlogtruyenInfo = exports.isLastPage = void 0;
 const types_1 = require("@paperback/types");
 const BlogtruyenParser_1 = require("./BlogtruyenParser");
-const DOMAIN = 'https://blogtruyen.vn/';
+const DOMAIN = 'https://blogtruyenmoi.com/';
 const isLastPage = ($) => {
     const lastPage = Number($('ul.pagination > li:last-child > a').attr('href')?.split('-').pop());
     const currentPage = Number($('ul.pagination > li > select > option').find(':selected').text().split(' ')[1]);
@@ -1446,7 +1446,7 @@ const isLastPage = ($) => {
 };
 exports.isLastPage = isLastPage;
 exports.BlogtruyenInfo = {
-    version: '1.0.3',
+    version: '1.0.4',
     name: 'Blogtruyen',
     icon: 'icon.png',
     author: 'AlanNois',
