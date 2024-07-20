@@ -27,7 +27,7 @@ export class Parser {
      * identifier of a manga. It is used to fetch the details of a specific manga from a source.
      * @returns a SourceManga object.
      */
-    parseMangaDetails($: CheerioStatic, mangaId: string): SourceManga {
+    parseMangaDetails($: CheerioStatic, mangaId: string, DOMAIN: string): SourceManga {
         const tags: Tag[] = [];
 
         let author = '';
@@ -52,7 +52,7 @@ export class Parser {
         })
 
         const titles = $('.post-title > h1').text().trim();
-        const image = String($('.summary_image > a > img').attr('src'));
+        const image = `${DOMAIN}${$('.summary_image > a > img').attr('src')}`;
         const desc = this.decodeHTMLEntity($('.dsct > p').text());
         const status = $('.post-status > div:nth-child(2) > div.summary-content').text().trim();
         const rating = parseFloat($('span[property="ratingValue"]').text().trim())
@@ -138,13 +138,13 @@ export class Parser {
      * parsing HTML.
      * @returns an array of objects of type PartialSourceManga.
      */
-    parseSearchResults($: CheerioStatic): PartialSourceManga[] {
+    parseSearchResults($: CheerioStatic, DOMAIN: string): PartialSourceManga[] {
         const tiles: PartialSourceManga[] = [];
 
         $('.page-item', '.listupd').each((_: any, manga: any) => {
             const title = $('div > div > h3', manga).text().trim();
             const id = $('div > div > h3 > a', manga).attr('href')?.split('/').slice(4).join('/');
-            let image = $('div > div > a > img', manga).first().attr('data-src');
+            let image = `${DOMAIN}${$('div > div > a > img', manga).first().attr('data-src')}`;
             image = !image ? "https://i.imgur.com/GYUxEX8.png" : image
             const subtitle = $("div > div > .list-chapter > div:nth-of-type(1) > span", manga).text().trim();
             if (!id || !title) return;
@@ -160,13 +160,13 @@ export class Parser {
         return tiles
     }
 
-    parseFeaturedSection($: CheerioStatic): PartialSourceManga[] {
+    parseFeaturedSection($: CheerioStatic, DOMAIN: string): PartialSourceManga[] {
         const featuredItems: PartialSourceManga[] = [];
 
         $('.p-item', '.sidebar > div:nth-child(5) > div.sidebar-pp').each((_: any, manga: any) => {
             const title = $('.p-left > h4', manga).text().trim();
             const id = $('.p-left > h4 > a', manga).attr('href')?.split('/').slice(4).join('/');
-            let image = $('.pthumb > img', manga).first().attr('data-src');
+            let image = `${DOMAIN}${$('.pthumb > img', manga).first().attr('data-src')}`;
             image = !image ? "https://i.imgur.com/GYUxEX8.png" : image
             const subtitle = $(".p-left > .list-chapter > div:nth-of-type(1) > span", manga).first().text().trim();
             if (!id || !title) return;

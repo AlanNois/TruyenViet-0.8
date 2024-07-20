@@ -22,7 +22,7 @@ import {
 
 import { Parser } from './DocTruyen3QParser';
 
-const DOMAIN = 'https://doctruyen3qvi.pro/';
+const DOMAIN = 'https://doctruyen3qvn.pro/';
 
 export const isLastPage = ($: CheerioStatic): boolean => {
     const lastPage = Number($("ul.pagination > li.page-item:not(:has(a[rel='next'])) a").last().text().trim());
@@ -32,7 +32,7 @@ export const isLastPage = ($: CheerioStatic): boolean => {
 }
 
 export const DocTruyen3QInfo: SourceInfo = {
-    version: '1.0.8',
+    version: '1.1.4',
     name: 'DocTruyen3Q',
     icon: 'icon.png',
     author: 'AlanNois',
@@ -46,7 +46,7 @@ export const DocTruyen3QInfo: SourceInfo = {
             type: BadgeColor.BLUE
         },
     ],
-    intents: SourceIntents.MANGA_CHAPTERS | SourceIntents.HOMEPAGE_SECTIONS
+    intents: SourceIntents.MANGA_CHAPTERS | SourceIntents.HOMEPAGE_SECTIONS | SourceIntents.CLOUDFLARE_BYPASS_REQUIRED
 };
 
 export class DocTruyen3Q implements SearchResultsProviding, MangaProviding, ChapterProviding, HomePageSectionsProviding {
@@ -64,6 +64,7 @@ export class DocTruyen3Q implements SearchResultsProviding, MangaProviding, Chap
                     ...{
                         'referer': DOMAIN,
                         'user-agent': await this.requestManager.getDefaultUserAgent(),
+                        //'user-agent': 'S|',
                     }
                 };
                 return request;
@@ -85,8 +86,9 @@ export class DocTruyen3Q implements SearchResultsProviding, MangaProviding, Chap
             url: url,
             method: 'GET',
         });
-        const resquest = await this.requestManager.schedule(request, 1);
-        return this.cheerio.load(resquest.data as string);
+        const response = await this.requestManager.schedule(request, 1);
+        this.CloudFlareError(response.status)
+        return this.cheerio.load(response.data as string);
     }
 
     async getMangaDetails(mangaId: string): Promise<SourceManga> {
@@ -184,18 +186,23 @@ export class DocTruyen3Q implements SearchResultsProviding, MangaProviding, Chap
             switch (section.id) {
                 case 'featured':
                     section.items = this.parser.parseFeaturedSection($);
+                    console.log(section.items);
                     break;
                 case 'viewest':
                     section.items = this.parser.parseSearchResults($);
+                    console.log(section.items);
                     break;
                 case 'hot':
                     section.items = this.parser.parseHomeTemplate($, '#hot');
+                    console.log(section.items)
                     break;
                 case 'new_updated':
                     section.items = this.parser.parseHomeTemplate($, '#home');
+                    console.log(section.items)
                     break;
                 case 'full':
                     section.items = this.parser.parseSearchResults($);
+                    console.log(section.items)
                     break;
             }
             sectionCallback(section);
@@ -241,5 +248,23 @@ export class DocTruyen3Q implements SearchResultsProviding, MangaProviding, Chap
         const url = `${DOMAIN}tim-truyen`;
         const $ = await this.DOMHTML(url);
         return this.parser.parseTags($);
+    }
+
+    CloudFlareError(status: number): void {
+        if (status == 503 || status == 403) {
+            throw new Error(`CLOUDFLARE BYPASS ERROR:\nPlease go to home page ${DocTruyen3Q.name} source and press the cloud icon.`)
+        }
+    }
+
+    async getCloudflareBypassRequestAsync() {
+        return App.createRequest({
+            url: DOMAIN,
+            method: 'GET',
+            headers: {
+                'referer': `${DOMAIN}/`,
+                'origin': `${DOMAIN}/`,
+                'user-agent': await this.requestManager.getDefaultUserAgent()
+            }
+        })
     }
 }

@@ -22,9 +22,10 @@ import {
 import { Parser } from './GocTruyenTranhParser';
 
 const DOMAIN = 'https://goctruyentranhvui2.com/';
+const Auth = 'Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJWxINuIEhvw6BuZyDEkGluaCIsImNvbWljSWRzIjpbXSwicm9sZUlkIjpudWxsLCJncm91cElkIjpudWxsLCJhZG1pbiI6ZmFsc2UsInJhbmsiOjAsInBlcm1pc3Npb24iOltdLCJpZCI6IjAwMDA1MjYzNzAiLCJ0ZWFtIjpmYWxzZSwiaWF0IjoxNzE1NDI0NDU3LCJlbWFpbCI6Im51bGwifQ.EjYw-HvoWM6RhbNzJkp06sSh61leaPcND0gb94PlDKeTYxfxU-f6WaxINAVjVYOP0pcVcG3YmfBVb4FVEBqPxQ'
 
 export const GocTruyenTranhInfo: SourceInfo = {
-    version: '1.0.7',
+    version: '1.1.2',
     name: 'GocTruyenTranh',
     icon: 'icon.png',
     author: 'AlanNois',
@@ -54,7 +55,8 @@ export class GocTruyenTranh implements SearchResultsProviding, MangaProviding, C
                     ...(request.headers ?? {}),
                     ...{
                         'referer': DOMAIN,
-                        'user-agent': 'A'
+                        // 'user-agent': await this.requestManager.getDefaultUserAgent()
+                        'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36'
                     }
                 }
                 return request;
@@ -100,31 +102,35 @@ export class GocTruyenTranh implements SearchResultsProviding, MangaProviding, C
     }
 
     async getChapterDetails(mangaId: string, chapterId: string): Promise<ChapterDetails> {
+        // Extract manga ID and chapter number using destructuring
+        const [mangaNumber, chapterNumber] = [mangaId.split('::')[1], chapterId.split('-')[1]];
+
+        // Combine manga ID and chapter number into a single query parameter
+        const comicId = `${mangaNumber}&chapterNumber=${chapterNumber}`;
+        let pages: string[];
+
         const request = App.createRequest({
-            url: `${DOMAIN}api/chapter/auth`,
+            url: `${DOMAIN}api/chapter/limitation`,
             method: 'POST',
             headers: {
-                'authorization': 'Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJWxINuIEhvw6BuZyDEkGluaCIsImNvbWljSWRzIjpbXSwicm9sZUlkIjpudWxsLCJncm91cElkIjpudWxsLCJhZG1pbiI6ZmFsc2UsInJhbmsiOjAsInBlcm1pc3Npb24iOltdLCJpZCI6IjAwMDA1MjYzNzAiLCJ0ZWFtIjpmYWxzZSwiaWF0IjoxNzE1NDI0NDU3LCJlbWFpbCI6Im51bGwifQ.EjYw-HvoWM6RhbNzJkp06sSh61leaPcND0gb94PlDKeTYxfxU-f6WaxINAVjVYOP0pcVcG3YmfBVb4FVEBqPxQ',
-                'content-type': 'application/x-www-form-urlencoded; charset=UTF-8',
+                'authorization': Auth,
+                'content-type': 'application/x-www-form-urlencoded',
                 'x-requested-with': 'XMLHttpRequest'
             },
-            data: { comicId: mangaId.split('::')[1], chapterNumber: chapterId.split('-')[1] }
+            data: { comicId }
         })
         const response = await this.requestManager.schedule(request, 1)
         const json = JSON.parse(response.data as string)
-        let pages: string[] = [];
-        if (json.result.state == false) {
-            const $ = await this.DOMHTML(`${DOMAIN}truyen/${mangaId.split('::')[0]}/${chapterId}`);
-            pages = this.parser.parseChapterDetails(null, $);
-        } else {
-            pages = this.parser.parseChapterDetails(json, null)
-        }
+
+        pages = this.parser.parseChapterDetails(json, null)
+
         return App.createChapterDetails({
             id: chapterId,
             mangaId: mangaId,
             pages: pages,
-        })
+        });
     }
+
 
     async getSearchResults(query: SearchRequest, metadata: any): Promise<PagedResults> {
         let page = metadata?.page ?? 0;

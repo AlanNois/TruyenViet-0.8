@@ -53,7 +53,7 @@ export class Parser {
         })
 
         const titles = [$('.title-manga').text().trim()];
-        const image = $('.image-info img').attr('src') ?? '';
+        const image = $('.image-info img.image-comic').first().attr('src') ?? $('.image-info img.image-comic').first().attr('data-src') ?? $('.image-info img.image-comic').first().attr('data-cfsrc') ?? $('.image-info img.image-comic').first().attr('data-original') ?? '';
         const desc = $('.summary-content > p').text();
         const status = $('.status > .detail-info > span').text();
         const rating = parseFloat(String($('.star').attr('data-rating')))
@@ -102,9 +102,11 @@ export class Parser {
         const pages: string[] = [];
 
         $('.list-image-detail img').each((_: any, obj: any) => {
-            const link = String($(obj).attr('src') ?? $(obj).attr('data-src'));
+            const link = String($(obj).attr('src') ?? $(obj).attr('data-cfsrc'));
             pages.push(link.indexOf('https') === -1 ? 'https:' + link : link);
         });
+
+        console.log(pages)
 
         return pages
     }
@@ -114,7 +116,7 @@ export class Parser {
 
         $('.content-search-left > .main-left .item-manga > .item').each((_: any, obj: any) => {
             const title = $('.caption > h3 > a', obj).text().trim();
-            let image = $('.image-item > a > img', obj).attr('data-original') ?? $('.image-item > a > img', obj).attr('src');
+            let image = $('.image-item > a > img.image-item', obj).attr('data-original') ?? $('.image-item > a > img', obj).attr('src') ?? $('.image-item > a > img', obj).attr('data-cfsrc');
             image = !image ? "https://i.imgur.com/GYUxEX8.png" : image;
             const mangaId = String($('.caption > h3 > a', obj).attr('href')?.split('/').slice(4).join('/'));
             const subtitle = $('ul > li:first-child > a', obj).text().trim();
@@ -136,11 +138,12 @@ export class Parser {
 
         $('.owl-carousel .slide-item').each((_: any, obj: any) => {
             const title = $('.slide-info > h3 > a', obj).text().trim();
-            let image = $('a > img', obj).attr('src') ?? $('a > img', obj).attr('data-src');
+            let image = $('a > img', obj).attr('data-cfsrc') ?? $('a > img', obj).attr('src') ?? $('a > img', obj).attr('data-src');
             image = !image ? "https://i.imgur.com/GYUxEX8.png" : image;
             const mangaId = String($('.slide-info > h3 > a', obj).attr('href')?.split('/').slice(4).join('/'));
             const subtitle = $('.detail-slide > a', obj).text().trim();
             if (!mangaId || !title) return;
+
             featuredItems.push(App.createPartialSourceManga({
                 mangaId,
                 image: image.indexOf('https') === -1 ? 'https:' + image : image,
@@ -157,7 +160,7 @@ export class Parser {
 
         $(`${id} > .body > .main-left .item-manga > .item`).each((_: any, obj: any) => {
             const title = $('.caption > h3 > a', obj).text().trim();
-            let image = $('.image-item > a > img', obj).attr('data-original') ?? $('.image-item > a > img', obj).attr('src');
+            let image = $('.image-item > a > img', obj).attr('data-cfsrc') ?? $('.image-item > a > img', obj).attr('src') ?? $('.image-item > a > img', obj).attr('data-original');
             image = !image ? "https://i.imgur.com/GYUxEX8.png" : image;
             const mangaId = String($('.caption > h3 > a', obj).attr('href')?.split('/').slice(4).join('/'));
             const subtitle = $('ul > li:first-child > a', obj).text().trim();

@@ -130,7 +130,7 @@ export class ManhuaRock implements SearchResultsProviding, MangaProviding, Chapt
 
     async getMangaDetails(mangaId: string): Promise<SourceManga> {
         const $ = await this.DOMHTML(`${DOMAIN}truyen/${mangaId}`);
-        return this.parser.parseMangaDetails($, mangaId);
+        return this.parser.parseMangaDetails($, mangaId, DOMAIN);
     }
 
     async getChapters(mangaId: string): Promise<Chapter[]> {
@@ -171,7 +171,7 @@ export class ManhuaRock implements SearchResultsProviding, MangaProviding, Chapt
         const param_1 = encodeURI(`${page}/?keyword=${query.title ?? ''}`)
         const param_2 = encodeURI(`${search.genre}/${page}/${search.sort ? '?sort=' : ''}${search.sort}`)
         const $ = await this.DOMHTML(`${url}${query.title ? param_1 : param_2}`)
-        const tiles = this.parser.parseSearchResults($);
+        const tiles = this.parser.parseSearchResults($, DOMAIN);
         metadata = !isLastPage($) ? { page: page + 1 } : undefined;
 
         return App.createPagedResults({
@@ -212,10 +212,10 @@ export class ManhuaRock implements SearchResultsProviding, MangaProviding, Chapt
             const $ = await this.DOMHTML(url);
             switch (section.id) {
                 case 'featured':
-                    section.items = this.parser.parseFeaturedSection($);
+                    section.items = this.parser.parseFeaturedSection($, DOMAIN);
                     break;
                 default:
-                    section.items = this.parser.parseSearchResults($)
+                    section.items = this.parser.parseSearchResults($, DOMAIN)
             }
             sectionCallback(section);
         }
@@ -246,10 +246,10 @@ export class ManhuaRock implements SearchResultsProviding, MangaProviding, Chapt
         let manga = []
         switch (homepageSectionId) {
             case 'featured':
-                manga = this.parser.parseFeaturedSection($);
+                manga = this.parser.parseFeaturedSection($, DOMAIN);
                 break;
             default:
-                manga = this.parser.parseSearchResults($)
+                manga = this.parser.parseSearchResults($, DOMAIN)
         }
         metadata = isLastPage($) ? undefined : { page: page + 1 };
 

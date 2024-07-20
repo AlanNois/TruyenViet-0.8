@@ -23,7 +23,7 @@ import {
 
 import { Parser } from './BaoTangTruyenTranhParser';
 
-const DOMAIN = 'https://baotangtruyen11.com/';
+const DOMAIN = 'https://baotangtruyen13.com/';
 
 export const isLastPage = ($: CheerioStatic): boolean => {
     const pages: number[] = [];
@@ -39,7 +39,7 @@ export const isLastPage = ($: CheerioStatic): boolean => {
 }
 
 export const BaoTangTruyenTranhInfo: SourceInfo = {
-    version: '1.0.8',
+    version: '1.0.10',
     name: 'BaoTangTruyenTranh',
     icon: 'icon.png',
     author: 'AlanNois',
@@ -110,7 +110,6 @@ export class BaoTangTruyenTranh implements ChapterProviding, MangaProviding, Sea
             method: 'POST',
             headers: {
                 'content-type': 'application/x-www-form-urlencoded',
-                'referer': DOMAIN,
             },
             data: { StoryID }
         });
