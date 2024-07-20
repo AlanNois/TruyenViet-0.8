@@ -477,7 +477,7 @@ const isLastPage = ($) => {
 };
 exports.isLastPage = isLastPage;
 exports.TruyenQQInfo = {
-    version: '1.0.3',
+    version: '1.0.4',
     name: 'TruyenQQ',
     icon: 'icon.png',
     author: 'AlanNois',
@@ -802,9 +802,9 @@ class Parser {
     parseChapterDetails($) {
         const pages = [];
         $('.chapter_content div .page-chapter img').each((_, obj) => {
-            if (!obj.attribs['src'])
+            if (!obj.attribs['src'] && !obj.attribs['data-cdn'])
                 return;
-            const link = obj.attribs['src'];
+            const link = !obj.attribs['data-cdn'] ? obj.attribs['src'] : obj.attribs['data-cdn'];
             pages.push(link);
         });
         return pages;
