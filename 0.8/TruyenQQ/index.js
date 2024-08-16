@@ -463,7 +463,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.TruyenQQ = exports.TruyenQQInfo = exports.isLastPage = void 0;
 const types_1 = require("@paperback/types");
 const TruyenQQParser_1 = require("./TruyenQQParser");
-const DOMAIN = 'https://truyenqqviet.com/';
+const DOMAIN = 'https://truyenqqto.com/';
 const isLastPage = ($) => {
     const current = $('div.page_redirect > a > p.active').text();
     const lastLinkHref = $('div.page_redirect > a').last().attr('href');
@@ -477,7 +477,7 @@ const isLastPage = ($) => {
 };
 exports.isLastPage = isLastPage;
 exports.TruyenQQInfo = {
-    version: '1.0.4',
+    version: '1.0.5',
     name: 'TruyenQQ',
     icon: 'icon.png',
     author: 'AlanNois',

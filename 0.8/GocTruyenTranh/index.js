@@ -1441,7 +1441,7 @@ const GocTruyenTranhParser_1 = require("./GocTruyenTranhParser");
 const DOMAIN = 'https://goctruyentranhvui2.com/';
 const Auth = 'Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJWxINuIEhvw6BuZyDEkGluaCIsImNvbWljSWRzIjpbXSwicm9sZUlkIjpudWxsLCJncm91cElkIjpudWxsLCJhZG1pbiI6ZmFsc2UsInJhbmsiOjAsInBlcm1pc3Npb24iOltdLCJpZCI6IjAwMDA1MjYzNzAiLCJ0ZWFtIjpmYWxzZSwiaWF0IjoxNzE1NDI0NDU3LCJlbWFpbCI6Im51bGwifQ.EjYw-HvoWM6RhbNzJkp06sSh61leaPcND0gb94PlDKeTYxfxU-f6WaxINAVjVYOP0pcVcG3YmfBVb4FVEBqPxQ';
 exports.GocTruyenTranhInfo = {
-    version: '1.1.2',
+    version: '1.1.3',
     name: 'GocTruyenTranh',
     icon: 'icon.png',
     author: 'AlanNois',
@@ -1455,7 +1455,7 @@ exports.GocTruyenTranhInfo = {
             type: types_1.BadgeColor.BLUE
         },
     ],
-    intents: types_1.SourceIntents.MANGA_CHAPTERS | types_1.SourceIntents.HOMEPAGE_SECTIONS
+    intents: types_1.SourceIntents.MANGA_CHAPTERS | types_1.SourceIntents.HOMEPAGE_SECTIONS | types_1.SourceIntents.CLOUDFLARE_BYPASS_REQUIRED
 };
 class GocTruyenTranh {
     constructor(cheerio) {
@@ -1491,6 +1491,7 @@ class GocTruyenTranh {
             method: 'GET',
         });
         const response = await this.requestManager.schedule(request, 1);
+        this.CloudFlareError(response.status);
         return this.cheerio.load(response.data);
     }
     async callAPI(url) {
@@ -1499,6 +1500,7 @@ class GocTruyenTranh {
             method: 'GET',
         });
         const response = await this.requestManager.schedule(request, 1);
+        this.CloudFlareError(response.status);
         return JSON.parse(response.data);
     }
     async getMangaDetails(mangaId) {
@@ -1612,6 +1614,22 @@ class GocTruyenTranh {
         const url = `${DOMAIN}api/category`;
         const json = await this.callAPI(url);
         return this.parser.parseTags(json);
+    }
+    CloudFlareError(status) {
+        if (status == 503 || status == 403) {
+            throw new Error(`CLOUDFLARE BYPASS ERROR:\nPlease go to home page ${GocTruyenTranh.name} source and press the cloud icon.`);
+        }
+    }
+    async getCloudflareBypassRequestAsync() {
+        return App.createRequest({
+            url: DOMAIN,
+            method: 'GET',
+            headers: {
+                'referer': `${DOMAIN}/`,
+                'origin': `${DOMAIN}/`,
+                'user-agent': await this.requestManager.getDefaultUserAgent()
+            }
+        });
     }
 }
 exports.GocTruyenTranh = GocTruyenTranh;
