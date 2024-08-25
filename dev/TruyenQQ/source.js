@@ -477,7 +477,7 @@ const isLastPage = ($) => {
 };
 exports.isLastPage = isLastPage;
 exports.TruyenQQInfo = {
-    version: '1.0.5',
+    version: '1.0.6',
     name: 'TruyenQQ',
     icon: 'icon.png',
     author: 'AlanNois',
@@ -802,10 +802,15 @@ class Parser {
     parseChapterDetails($) {
         const pages = [];
         $('.chapter_content div .page-chapter img').each((_, obj) => {
-            if (!obj.attribs['src'] && !obj.attribs['data-cdn'])
-                return;
-            const link = !obj.attribs['data-cdn'] ? obj.attribs['src'] : obj.attribs['data-cdn'];
-            pages.push(link);
+            const src = obj.attribs['src'];
+            const dataOriginal = obj.attribs['data-original'];
+            const dataCdn = obj.attribs['data-cdn'];
+            const urls = [src, dataOriginal, dataCdn];
+            // Find the first URL that doesn't include the excluded domain
+            const validUrl = urls.find(url => url && !url.includes('tintruyen'));
+            if (validUrl) {
+                pages.push(validUrl);
+            }
         });
         return pages;
     }
