@@ -1469,8 +1469,8 @@ class GocTruyenTranh {
                         ...(request.headers ?? {}),
                         ...{
                             'referer': DOMAIN,
-                            // 'user-agent': await this.requestManager.getDefaultUserAgent()
-                            'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36'
+                            'user-agent': await this.requestManager.getDefaultUserAgent()
+                            // 'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36'
                         }
                     };
                     return request;
