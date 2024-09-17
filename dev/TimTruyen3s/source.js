@@ -78,9 +78,45 @@
 //         const $ = await this.DOMHTML(`${DOMAIN}${mangaId}`);
 //         return this.parser.parseMangaDetails($, mangaId, DOMAIN);
 //     }
-//     async async getChapters(mangaId: string): Promise<Chapter[]> {
+//     async getChapters(mangaId: string): Promise<Chapter[]> {
 //         const $= await this.DOMHTML(`${DOMAIN}${mangaId}`);
 //         return this.parser.parseChapterList($);
+//     }
+//     async getChapterDetails(mangaId: string, chapterId: string): Promise<ChapterDetails> {
+//         const $ = await this.DOMHTML(`${DOMAIN}${mangaId}`);
+//         const pages = this.parser.parseChapterDetails($);
+//         return App.createChapterDetails({
+//             id: chapterId,
+//             mangaId,
+//             pages
+//         })
+//     }
+//     async getSearchResults(query: SearchRequest, metadata: any): Promise<PagedResults> {
+//         let page = metadata?.page ?? 1;
+//         const search = {
+//             genres:'',
+//             status: '',
+//             sort: '',
+//         };
+//         const tags = query.includedTags?.map(tag => tag.id) ?? [];
+//         const genres: string[] = [];
+//         for (const value of tags) {
+//             if (value.indexOf('.') === -1) {
+//                 genres.push(value);
+//             } else {
+//                 const [key, val] = value.split(".");
+//                 switch (key) {
+//                     case 'status':
+//                         search.status = String(val);
+//                         break;
+//                     case 'sort':
+//                         search.sort = String(val);
+//                         break;
+//                 }
+//             }
+//         }
+//         search.genres = genres.join("%2C");
+//         const url = 
 //     }
 // }
 
