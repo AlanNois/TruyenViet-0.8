@@ -693,7 +693,7 @@ class Parser {
         $('div.item-spc', 'div.mls-wrap').each((_, manga) => {
             const title = $('div > h3 > a', manga).text().trim();
             const id = $('div > h3 > a', manga).attr('href');
-            let image = $('manga-poster img', manga).attr('data-src');
+            let image = $('.manga-poster img', manga).attr('data-src');
             image = !image ? "https://i.imgur.com/GYUxEX8.png" : DOMAIN + image;
             const subtitle = $('div > .fd-list > div', manga).first().text().trim();
             if (!id || !title)
