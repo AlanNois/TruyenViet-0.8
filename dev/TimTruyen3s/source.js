@@ -474,7 +474,7 @@ const isLastPage = ($) => {
 };
 exports.isLastPage = isLastPage;
 exports.TimTruyen3sInfo = {
-    version: '1.0.0',
+    version: '1.0.1',
     name: 'TimTruyen3s',
     icon: 'icon.png',
     author: 'AlanNois',
@@ -633,7 +633,7 @@ class Parser {
     parseMangaDetails($, mangaId, DOMAIN) {
         const tags = [];
         $('.genres > a').each((_, obj) => {
-            const label = $(obj).text();
+            const label = $(obj).text().trim();
             const id = $(obj).attr('href') ?? label;
             tags.push(App.createTag({ label, id }));
         });
@@ -643,7 +643,7 @@ class Parser {
         const image = DOMAIN + $('.manga-poster > img').attr('src');
         const desc = $('.description > p').text();
         const status = $('.anisc-info > div:nth-child(2) > a').text();
-        const rating = parseFloat($('.rating-result > .rr-mark > strong').text());
+        const rating = parseFloat($('.rating-result > .rr-mark > strong').text().trim());
         return App.createSourceManga({
             id: mangaId,
             mangaInfo: App.createMangaInfo({
@@ -663,8 +663,8 @@ class Parser {
         $('.chapters-list-ul > ul > li').each((_, obj) => {
             const id = String($('a', obj).attr('href'));
             const group = $('a .chapter-view', obj).text();
-            const name = $('a h1', obj).text();
-            const chapNum = $('a h1', obj).text().split(' ')[1];
+            const name = $('a h1', obj).text().trim();
+            const chapNum = $('a h1', obj).text().trim().split(' ').pop();
             chapters.push(App.createChapter({
                 id,
                 chapNum: parseFloat(String(chapNum)),
@@ -676,6 +676,7 @@ class Parser {
         if (this.parseChapterList.length == 0) {
             throw new Error('No chapter found');
         }
+        console.log(chapters);
         return chapters;
     }
     parseChapterDetails($) {
