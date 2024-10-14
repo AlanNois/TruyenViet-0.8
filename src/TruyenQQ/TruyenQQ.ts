@@ -21,7 +21,7 @@ import {
 
 import { Parser } from './TruyenQQParser';
 
-const DOMAIN = 'https://truyenqqviet.com/'
+const DOMAIN = 'https://truyenqqto.com/'
 
 export const isLastPage = ($: CheerioStatic): boolean => {
     const current = $('div.page_redirect > a > p.active').text();
@@ -37,7 +37,7 @@ export const isLastPage = ($: CheerioStatic): boolean => {
 };
 
 export const TruyenQQInfo: SourceInfo = {
-    version: '1.0.2',
+    version: '1.0.6',
     name: 'TruyenQQ',
     icon: 'icon.png',
     author: 'AlanNois',

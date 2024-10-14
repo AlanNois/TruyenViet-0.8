@@ -21,11 +21,11 @@ import {
 
 import { Parser } from './GocTruyenTranhParser';
 
-const DOMAIN = 'https://goctruyentranhvui2.com/';
+const DOMAIN = 'https://goctruyentranhvui3.com/';
 const Auth = 'Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJWxINuIEhvw6BuZyDEkGluaCIsImNvbWljSWRzIjpbXSwicm9sZUlkIjpudWxsLCJncm91cElkIjpudWxsLCJhZG1pbiI6ZmFsc2UsInJhbmsiOjAsInBlcm1pc3Npb24iOltdLCJpZCI6IjAwMDA1MjYzNzAiLCJ0ZWFtIjpmYWxzZSwiaWF0IjoxNzE1NDI0NDU3LCJlbWFpbCI6Im51bGwifQ.EjYw-HvoWM6RhbNzJkp06sSh61leaPcND0gb94PlDKeTYxfxU-f6WaxINAVjVYOP0pcVcG3YmfBVb4FVEBqPxQ'
 
 export const GocTruyenTranhInfo: SourceInfo = {
-    version: '1.1.2',
+    version: '1.1.6',
     name: 'GocTruyenTranh',
     icon: 'icon.png',
     author: 'AlanNois',
@@ -39,7 +39,7 @@ export const GocTruyenTranhInfo: SourceInfo = {
             type: BadgeColor.BLUE
         },
     ],
-    intents: SourceIntents.MANGA_CHAPTERS | SourceIntents.HOMEPAGE_SECTIONS
+    intents: SourceIntents.MANGA_CHAPTERS | SourceIntents.HOMEPAGE_SECTIONS | SourceIntents.CLOUDFLARE_BYPASS_REQUIRED
 }
 
 export class GocTruyenTranh implements SearchResultsProviding, MangaProviding, ChapterProviding, HomePageSectionsProviding {
@@ -55,8 +55,7 @@ export class GocTruyenTranh implements SearchResultsProviding, MangaProviding, C
                     ...(request.headers ?? {}),
                     ...{
                         'referer': DOMAIN,
-                        // 'user-agent': await this.requestManager.getDefaultUserAgent()
-                        'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36'
+                        'user-agent': await this.requestManager.getDefaultUserAgent()
                     }
                 }
                 return request;
@@ -79,6 +78,7 @@ export class GocTruyenTranh implements SearchResultsProviding, MangaProviding, C
             method: 'GET',
         });
         const response = await this.requestManager.schedule(request, 1);
+        this.CloudFlareError(response.status)
         return this.cheerio.load(response.data as string);
     }
 
@@ -88,6 +88,7 @@ export class GocTruyenTranh implements SearchResultsProviding, MangaProviding, C
             method: 'GET',
         });
         const response = await this.requestManager.schedule(request, 1);
+        this.CloudFlareError(response.status)
         return JSON.parse(response.data as string);
     }
 
@@ -222,4 +223,23 @@ export class GocTruyenTranh implements SearchResultsProviding, MangaProviding, C
         const json = await this.callAPI(url);
         return this.parser.parseTags(json);
     }
+
+    CloudFlareError(status: number): void {
+        if (status == 503 || status == 403) {
+            throw new Error(`CLOUDFLARE BYPASS ERROR:\nPlease go to home page ${GocTruyenTranh.name} source and press the cloud icon.`)
+        }
+    }
+
+    async getCloudflareBypassRequestAsync() {
+        return App.createRequest({
+            url: DOMAIN,
+            method: 'GET',
+            headers: {
+                'referer': `${DOMAIN}/`,
+                'origin': `${DOMAIN}/`,
+                'user-agent': await this.requestManager.getDefaultUserAgent()
+            }
+        })
+    }
+
 }

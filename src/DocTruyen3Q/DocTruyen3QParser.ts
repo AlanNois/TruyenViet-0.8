@@ -160,7 +160,12 @@ export class Parser {
 
         $(`${id} > .body > .main-left .item-manga > .item`).each((_: any, obj: any) => {
             const title = $('.caption > h3 > a', obj).text().trim();
-            let image = $('.image-item > a > img', obj).attr('data-cfsrc') ?? $('.image-item > a > img', obj).attr('src') ?? $('.image-item > a > img', obj).attr('data-original');
+            let image: any
+            if (id == '#home') {
+                image = $('.image-item > a > img', obj).attr('data-cfsrc') ?? $('.image-item > a > img', obj).attr('src') ?? $('.image-item > a > img', obj).attr('data-original');
+            } else {
+                image = $('.image-item > a > img', obj).attr('data-original') ?? $('.image-item > a > img', obj).attr('data-cfsrc') ?? $('.image-item > a > img', obj).attr('src');
+            }
             image = !image ? "https://i.imgur.com/GYUxEX8.png" : image;
             const mangaId = String($('.caption > h3 > a', obj).attr('href')?.split('/').slice(4).join('/'));
             const subtitle = $('ul > li:first-child > a', obj).text().trim();

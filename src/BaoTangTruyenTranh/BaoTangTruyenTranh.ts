@@ -23,7 +23,7 @@ import {
 
 import { Parser } from './BaoTangTruyenTranhParser';
 
-const DOMAIN = 'https://baotangtruyen13.com/';
+const DOMAIN = 'https://baotangtruyen19.com/';
 
 export const isLastPage = ($: CheerioStatic): boolean => {
     const pages: number[] = [];
@@ -39,7 +39,7 @@ export const isLastPage = ($: CheerioStatic): boolean => {
 }
 
 export const BaoTangTruyenTranhInfo: SourceInfo = {
-    version: '1.0.10',
+    version: '1.0.14',
     name: 'BaoTangTruyenTranh',
     icon: 'icon.png',
     author: 'AlanNois',
@@ -57,7 +57,7 @@ export const BaoTangTruyenTranhInfo: SourceInfo = {
             type: BadgeColor.BLUE,
         }
     ],
-    intents: SourceIntents.MANGA_CHAPTERS | SourceIntents.HOMEPAGE_SECTIONS
+    intents: SourceIntents.MANGA_CHAPTERS | SourceIntents.HOMEPAGE_SECTIONS | SourceIntents.CLOUDFLARE_BYPASS_REQUIRED
 }
 
 export class BaoTangTruyenTranh implements ChapterProviding, MangaProviding, SearchResultsProviding, HomePageSectionsProviding {
@@ -95,6 +95,7 @@ export class BaoTangTruyenTranh implements ChapterProviding, MangaProviding, Sea
             method: 'GET',
         });
         const response = await this.requestManager.schedule(request, 1);
+        this.CloudFlareError(response.status)
         return this.cheerio.load(response.data as string);
     }
 
@@ -333,5 +334,23 @@ export class BaoTangTruyenTranh implements ChapterProviding, MangaProviding, Sea
 
         const returnObject = this.parser.parseUpdatedManga(updatedManga, time, ids);
         mangaUpdatesFoundCallback(App.createMangaUpdates(returnObject));
+    }
+
+    CloudFlareError(status: number): void {
+        if (status == 503 || status == 403) {
+            throw new Error(`CLOUDFLARE BYPASS ERROR:\nPlease go to home page ${BaoTangTruyenTranh.name} source and press the cloud icon.`)
+        }
+    }
+
+    async getCloudflareBypassRequestAsync() {
+        return App.createRequest({
+            url: DOMAIN,
+            method: 'GET',
+            headers: {
+                'referer': `${DOMAIN}/`,
+                'origin': `${DOMAIN}/`,
+                'user-agent': await this.requestManager.getDefaultUserAgent()
+            }
+        })
     }
 }
