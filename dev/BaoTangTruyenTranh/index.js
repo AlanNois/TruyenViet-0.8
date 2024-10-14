@@ -1453,7 +1453,7 @@ const isLastPage = ($) => {
 };
 exports.isLastPage = isLastPage;
 exports.BaoTangTruyenTranhInfo = {
-    version: '1.0.13',
+    version: '1.0.14',
     name: 'BaoTangTruyenTranh',
     icon: 'icon.png',
     author: 'AlanNois',
@@ -1471,7 +1471,7 @@ exports.BaoTangTruyenTranhInfo = {
             type: types_1.BadgeColor.BLUE,
         }
     ],
-    intents: types_1.SourceIntents.MANGA_CHAPTERS | types_1.SourceIntents.HOMEPAGE_SECTIONS
+    intents: types_1.SourceIntents.MANGA_CHAPTERS | types_1.SourceIntents.HOMEPAGE_SECTIONS | types_1.SourceIntents.CLOUDFLARE_BYPASS_REQUIRED
 };
 class BaoTangTruyenTranh {
     constructor(cheerio) {
@@ -1505,6 +1505,7 @@ class BaoTangTruyenTranh {
             method: 'GET',
         });
         const response = await this.requestManager.schedule(request, 1);
+        this.CloudFlareError(response.status);
         return this.cheerio.load(response.data);
     }
     async getMangaDetails(mangaId) {
@@ -1720,6 +1721,22 @@ class BaoTangTruyenTranh {
         }
         const returnObject = this.parser.parseUpdatedManga(updatedManga, time, ids);
         mangaUpdatesFoundCallback(App.createMangaUpdates(returnObject));
+    }
+    CloudFlareError(status) {
+        if (status == 503 || status == 403) {
+            throw new Error(`CLOUDFLARE BYPASS ERROR:\nPlease go to home page ${BaoTangTruyenTranh.name} source and press the cloud icon.`);
+        }
+    }
+    async getCloudflareBypassRequestAsync() {
+        return App.createRequest({
+            url: DOMAIN,
+            method: 'GET',
+            headers: {
+                'referer': `${DOMAIN}/`,
+                'origin': `${DOMAIN}/`,
+                'user-agent': await this.requestManager.getDefaultUserAgent()
+            }
+        });
     }
 }
 exports.BaoTangTruyenTranh = BaoTangTruyenTranh;
