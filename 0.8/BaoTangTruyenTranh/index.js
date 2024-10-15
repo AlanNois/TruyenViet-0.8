@@ -1485,6 +1485,7 @@ class BaoTangTruyenTranh {
                         ...(request.headers ?? {}),
                         ...{
                             'referer': DOMAIN,
+                            'user-agent': await this.requestManager.getDefaultUserAgent()
                         }
                     };
                     return request;
