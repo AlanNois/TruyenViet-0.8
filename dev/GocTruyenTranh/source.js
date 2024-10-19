@@ -1438,10 +1438,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.GocTruyenTranh = exports.GocTruyenTranhInfo = void 0;
 const types_1 = require("@paperback/types");
 const GocTruyenTranhParser_1 = require("./GocTruyenTranhParser");
-const DOMAIN = 'https://goctruyentranhvui3.com/';
+const DOMAIN = 'https://goctruyentranhvui5.com/';
 const Auth = 'Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJWxINuIEhvw6BuZyDEkGluaCIsImNvbWljSWRzIjpbXSwicm9sZUlkIjpudWxsLCJncm91cElkIjpudWxsLCJhZG1pbiI6ZmFsc2UsInJhbmsiOjAsInBlcm1pc3Npb24iOltdLCJpZCI6IjAwMDA1MjYzNzAiLCJ0ZWFtIjpmYWxzZSwiaWF0IjoxNzE1NDI0NDU3LCJlbWFpbCI6Im51bGwifQ.EjYw-HvoWM6RhbNzJkp06sSh61leaPcND0gb94PlDKeTYxfxU-f6WaxINAVjVYOP0pcVcG3YmfBVb4FVEBqPxQ';
 exports.GocTruyenTranhInfo = {
-    version: '1.1.6',
+    version: '1.1.7',
     name: 'GocTruyenTranh',
     icon: 'icon.png',
     author: 'AlanNois',
