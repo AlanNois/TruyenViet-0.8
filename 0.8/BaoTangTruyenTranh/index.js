@@ -1453,7 +1453,7 @@ const isLastPage = ($) => {
 };
 exports.isLastPage = isLastPage;
 exports.BaoTangTruyenTranhInfo = {
-    version: '1.0.14',
+    version: '1.0.15',
     name: 'BaoTangTruyenTranh',
     icon: 'icon.png',
     author: 'AlanNois',
@@ -1478,7 +1478,7 @@ class BaoTangTruyenTranh {
         this.cheerio = cheerio;
         this.requestManager = App.createRequestManager({
             requestsPerSecond: 4,
-            requestTimeout: 15000,
+            requestTimeout: 50000,
             interceptor: {
                 interceptRequest: async (request) => {
                     request.headers = {

@@ -500,7 +500,7 @@ class NhatTruyen {
         this.cheerio = cheerio;
         this.requestManager = App.createRequestManager({
             requestsPerSecond: 4,
-            requestTimeout: 15000,
+            requestTimeout: 50000,
             interceptor: {
                 interceptRequest: async (request) => {
                     request.headers = {

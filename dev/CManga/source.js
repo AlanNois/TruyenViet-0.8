@@ -1440,7 +1440,7 @@ const types_1 = require("@paperback/types");
 const CMangaParser_1 = require("./CMangaParser");
 const DOMAIN = 'https://cmanga03.com/';
 exports.CMangaInfo = {
-    version: '1.0.7',
+    version: '1.0.8',
     name: 'CManga',
     icon: 'icon.png',
     author: 'AlanNois',
@@ -1461,7 +1461,7 @@ class CManga {
         // constructor(private cheerio: CheerioAPI) { }
         this.requestManager = App.createRequestManager({
             requestsPerSecond: 4,
-            requestTimeout: 15000,
+            requestTimeout: 50000,
             interceptor: {
                 interceptRequest: async (request) => {
                     request.headers = {

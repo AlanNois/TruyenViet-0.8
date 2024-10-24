@@ -1446,7 +1446,7 @@ const isLastPage = ($) => {
 };
 exports.isLastPage = isLastPage;
 exports.BlogtruyenInfo = {
-    version: '1.0.4',
+    version: '1.0.5',
     name: 'Blogtruyen',
     icon: 'icon.png',
     author: 'AlanNois',
@@ -1461,7 +1461,7 @@ class Blogtruyen {
         this.cheerio = cheerio;
         this.requestManager = App.createRequestManager({
             requestsPerSecond: 4,
-            requestTimeout: 15000,
+            requestTimeout: 50000,
             interceptor: {
                 interceptRequest: async (request) => {
                     request.headers = {

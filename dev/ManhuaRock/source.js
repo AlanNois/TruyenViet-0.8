@@ -1453,7 +1453,7 @@ const isLastPage = ($) => {
 };
 exports.isLastPage = isLastPage;
 exports.ManhuaRockInfo = {
-    version: '1.0.3',
+    version: '1.0.4',
     name: 'ManhuaRock',
     icon: 'icon.png',
     author: 'AlanNois',
@@ -1484,7 +1484,7 @@ class ManhuaRock {
         from the `App` module. */
         this.requestManager = App.createRequestManager({
             requestsPerSecond: 4,
-            requestTimeout: 15000,
+            requestTimeout: 50000,
             interceptor: {
                 interceptRequest: async (request) => {
                     request.headers = {

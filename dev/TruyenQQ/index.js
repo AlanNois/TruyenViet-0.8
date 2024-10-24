@@ -477,7 +477,7 @@ const isLastPage = ($) => {
 };
 exports.isLastPage = isLastPage;
 exports.TruyenQQInfo = {
-    version: '1.0.6',
+    version: '1.0.7',
     name: 'TruyenQQ',
     icon: 'icon.png',
     author: 'AlanNois',
@@ -498,7 +498,7 @@ class TruyenQQ {
         this.cheerio = cheerio;
         this.requestManager = App.createRequestManager({
             requestsPerSecond: 4,
-            requestTimeout: 15000,
+            requestTimeout: 50000,
             interceptor: {
                 interceptRequest: async (request) => {
                     request.headers = {

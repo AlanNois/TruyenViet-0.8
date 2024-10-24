@@ -474,7 +474,7 @@ const isLastPage = ($) => {
 };
 exports.isLastPage = isLastPage;
 exports.TimTruyen3sInfo = {
-    version: '1.0.1',
+    version: '1.0.2',
     name: 'TimTruyen3s',
     icon: 'icon.png',
     author: 'AlanNois',
@@ -489,7 +489,7 @@ class TimTruyen3s {
         this.cheerio = cheerio;
         this.requestManager = App.createRequestManager({
             requestsPerSecond: 5,
-            requestTimeout: 15000,
+            requestTimeout: 50000,
             interceptor: {
                 interceptRequest: async (request) => {
                     request.headers = {
