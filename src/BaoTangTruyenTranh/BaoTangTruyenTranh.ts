@@ -23,7 +23,7 @@ import {
 
 import { Parser } from './BaoTangTruyenTranhParser';
 
-const DOMAIN = 'https://baotangtruyen19.com/';
+const DOMAIN = 'https://baotangtruyen21.com/';
 
 export const isLastPage = ($: CheerioStatic): boolean => {
     const pages: number[] = [];
@@ -39,7 +39,7 @@ export const isLastPage = ($: CheerioStatic): boolean => {
 }
 
 export const BaoTangTruyenTranhInfo: SourceInfo = {
-    version: '1.0.14',
+    version: '1.0.17',
     name: 'BaoTangTruyenTranh',
     icon: 'icon.png',
     author: 'AlanNois',
@@ -66,13 +66,14 @@ export class BaoTangTruyenTranh implements ChapterProviding, MangaProviding, Sea
 
     readonly requestManager = App.createRequestManager({
         requestsPerSecond: 4,
-        requestTimeout: 15000,
+        requestTimeout: 50000,
         interceptor: {
             interceptRequest: async (request: Request): Promise<Request> => {
                 request.headers = {
                     ...(request.headers ?? {}),
                     ...{
                         'referer': DOMAIN,
+                        'user-agent': await this.requestManager.getDefaultUserAgent()
                     }
                 }
                 return request;
@@ -160,6 +161,7 @@ export class BaoTangTruyenTranh implements ChapterProviding, MangaProviding, Sea
         const url = encodeURI(searchUrl);
         const $ = await this.DOMHTML(url);
         const tiles = this.parser.parseSearchResults($);
+        console.log(tiles)
         metadata = !isLastPage($) ? { page: page + 1 } : undefined;
 
         return App.createPagedResults({
@@ -205,6 +207,7 @@ export class BaoTangTruyenTranh implements ChapterProviding, MangaProviding, Sea
                     section.items = this.parser.parseTransSection($);
                     break;
             }
+            console.log(section)
             sectionCallback(section);
         }
     }
@@ -230,6 +233,7 @@ export class BaoTangTruyenTranh implements ChapterProviding, MangaProviding, Sea
         const $ = await this.DOMHTML(url);
         const manga = this.parser.parseViewMore($);
         metadata = !isLastPage($) ? { page: page + 1 } : undefined;
+        console.log(manga)
 
         return App.createPagedResults({
             results: manga,

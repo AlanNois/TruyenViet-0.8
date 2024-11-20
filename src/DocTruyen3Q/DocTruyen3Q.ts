@@ -32,7 +32,7 @@ export const isLastPage = ($: CheerioStatic): boolean => {
 }
 
 export const DocTruyen3QInfo: SourceInfo = {
-    version: '1.1.6',
+    version: '1.1.7',
     name: 'DocTruyen3Q',
     icon: 'icon.png',
     author: 'AlanNois',
@@ -56,7 +56,7 @@ export class DocTruyen3Q implements SearchResultsProviding, MangaProviding, Chap
 
     readonly requestManager = App.createRequestManager({
         requestsPerSecond: 4,
-        requestTimeout: 15000,
+        requestTimeout: 50000,
         interceptor: {
             interceptRequest: async (request: Request): Promise<Request> => {
                 request.headers = {

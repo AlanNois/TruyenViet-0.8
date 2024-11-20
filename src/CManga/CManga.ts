@@ -25,7 +25,7 @@ import { Parser } from './CMangaParser';
 const DOMAIN = 'https://cmanga03.com/';
 
 export const CMangaInfo: SourceInfo = {
-    version: '1.0.7',
+    version: '1.0.8',
     name: 'CManga',
     icon: 'icon.png',
     author: 'AlanNois',
@@ -48,7 +48,7 @@ export class CManga implements ChapterProviding, MangaProviding, SearchResultsPr
 
     readonly requestManager = App.createRequestManager({
         requestsPerSecond: 4,
-        requestTimeout: 15000,
+        requestTimeout: 50000,
         interceptor: {
             interceptRequest: async (request: Request): Promise<Request> => {
                 request.headers = {

@@ -40,7 +40,7 @@ export const isLastPage = ($: CheerioStatic): boolean => {
 };
 
 export const ManhuaRockInfo: SourceInfo = {
-    version: '1.0.3',
+    version: '1.0.4',
     name: 'ManhuaRock',
     icon: 'icon.png',
     author: 'AlanNois',
@@ -73,7 +73,7 @@ export class ManhuaRock implements SearchResultsProviding, MangaProviding, Chapt
     from the `App` module. */
     readonly requestManager = App.createRequestManager({
         requestsPerSecond: 4,
-        requestTimeout: 15000,
+        requestTimeout: 50000,
         interceptor: {
             interceptRequest: async (request: Request): Promise<Request> => {
                 request.headers = {

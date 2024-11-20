@@ -30,7 +30,7 @@ export const isLastPage = ($: CheerioStatic): boolean => {
 }
 
 export const BlogtruyenInfo: SourceInfo = {
-    version: '1.0.4',
+    version: '1.0.5',
     name: 'Blogtruyen',
     icon: 'icon.png',
     author: 'AlanNois',
@@ -46,7 +46,7 @@ export class Blogtruyen implements SearchResultsProviding, MangaProviding, Chapt
 
     readonly requestManager = App.createRequestManager({
         requestsPerSecond: 4,
-        requestTimeout: 15000,
+        requestTimeout: 50000,
         interceptor: {
             interceptRequest: async (request: Request): Promise<Request> => {
                 request.headers = {

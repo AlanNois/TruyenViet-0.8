@@ -37,7 +37,7 @@ export const isLastPage = ($: CheerioStatic): boolean => {
 };
 
 export const TruyenQQInfo: SourceInfo = {
-    version: '1.0.6',
+    version: '1.0.7',
     name: 'TruyenQQ',
     icon: 'icon.png',
     author: 'AlanNois',
@@ -60,7 +60,7 @@ export class TruyenQQ implements SearchResultsProviding, MangaProviding, Chapter
 
     readonly requestManager = App.createRequestManager({
         requestsPerSecond: 4,
-        requestTimeout: 15000,
+        requestTimeout: 50000,
         interceptor: {
             interceptRequest: async (request: Request): Promise<Request> => {
                 request.headers = {

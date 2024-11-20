@@ -63,7 +63,7 @@ export class NhatTruyen implements SearchResultsProviding, MangaProviding, Chapt
 
     readonly requestManager = App.createRequestManager({
         requestsPerSecond: 4,
-        requestTimeout: 15000,
+        requestTimeout: 50000,
         interceptor: {
             interceptRequest: async (request: Request): Promise<Request> => {
                 request.headers = {

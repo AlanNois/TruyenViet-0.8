@@ -43,7 +43,7 @@ export class Parser {
         return time
     }
 
-    parseMangaDetails($: CheerioStatic, mangaId: string): SourceManga {
+    parseMangaDetails($: CheerioStatic, mangaId: string, DOMAIN: any): SourceManga {
         const tags: Tag[] = [];
 
         $('.group-content a').each((_: any, obj: any) => {
@@ -66,7 +66,7 @@ export class Parser {
                     break
             }
         })
-        const image = String($('.v-image > img').attr('src'));
+        const image = String($('.v-image > img').attr('src')?.indexOf('https') === -1 ? DOMAIN + $('.v-image > img').attr('src') : $('.v-image > img').attr('src'));
         const desc = this.decodeHTMLEntity($('.v-card-text.pt-1.px-4.pb-4.text-secondary.font-weight-medium').text());
         const rating = parseFloat($('.pr-3 > b').text().trim());
 
@@ -108,7 +108,7 @@ export class Parser {
         return chapters;
     }
 
-    parseChapterDetails(json: any, $: any): string[] {
+    parseChapterDetails(json: any, $: any, DOMAIN: any): string[] {
         const pages: string[] = [];
 
         if (json == null) {
@@ -119,14 +119,14 @@ export class Parser {
             });
         } else {
             for (const img of json.result.data) {
-                pages.push(img);
+                pages.push(img.indexOf('https') === -1 ? DOMAIN + img : img);
             }
         }
 
         return pages;
     }
 
-    parseSearchResults(json: any): PartialSourceManga[] {
+    parseSearchResults(json: any, DOMAIN: any): PartialSourceManga[] {
         const tiles: PartialSourceManga[] = [];
         const array = json.result.data ?? json.result;
         for (let obj of array) {
@@ -136,7 +136,7 @@ export class Parser {
             let mangaId = `${obj.nameEn}::${obj.id}`;
             tiles.push(App.createPartialSourceManga({
                 mangaId,
-                image: encodeURI(image) ?? "",
+                image: encodeURI(image.indexOf('https') === -1 ? DOMAIN + image : image) ?? "",
                 title,
                 subtitle
             }))
@@ -145,7 +145,7 @@ export class Parser {
         return tiles;
     }
 
-    parseViewMoreItems(json: any): PartialSourceManga[] {
+    parseViewMoreItems(json: any, DOMAIN: any): PartialSourceManga[] {
         const manga: PartialSourceManga[] = [];
         const collectedIds: string[] = [];
         for (let obj of json.result.data) {
@@ -156,7 +156,7 @@ export class Parser {
             if (!collectedIds.includes(mangaId)) {
                 manga.push(App.createPartialSourceManga({
                     mangaId,
-                    image: encodeURI(image) ?? "",
+                    image: encodeURI(image.indexOf('https') === -1 ? DOMAIN + image : image) ?? "",
                     title,
                     subtitle,
                 }));

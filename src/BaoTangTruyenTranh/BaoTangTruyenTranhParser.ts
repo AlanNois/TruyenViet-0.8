@@ -99,7 +99,7 @@ export class Parser {
             const subtitle = $(".slide-caption > a", element).first().text().trim() + ' | ' + $(".time", element).first().text().trim();
             return App.createPartialSourceManga({
                 mangaId: String(id),
-                image: encodeURI(this.decodeHTMLEntity(String(image?.replace('http://', 'https://')))),
+                image: String(image),
                 title: this.decodeHTMLEntity(title),
                 subtitle: this.decodeHTMLEntity(subtitle),
             });
@@ -115,7 +115,7 @@ export class Parser {
             const subtitle = $("ul .chapter > a", element).first().text().trim().replace('Chapter ', 'Ch.') + ' | ' + $("ul .chapter > i", element).first().text().trim();
             return App.createPartialSourceManga({
                 mangaId: String(id),
-                image: encodeURI(this.decodeHTMLEntity(String(image?.replace('http://', 'https://')))),
+                image: String(image),
                 title: this.decodeHTMLEntity(title),
                 subtitle: this.decodeHTMLEntity(subtitle),
             });
@@ -131,7 +131,7 @@ export class Parser {
             const subtitle = $("ul .chapter > a", element).first().text().trim().replace('Chapter ', 'Ch.') + ' | ' + $("ul .chapter > i", element).first().text().trim();
             return App.createPartialSourceManga({
                 mangaId: String(id),
-                image: encodeURI(this.decodeHTMLEntity(String(image?.replace('http://', 'https://')))),
+                image: String(image),
                 title: this.decodeHTMLEntity(title),
                 subtitle: this.decodeHTMLEntity(subtitle),
             });

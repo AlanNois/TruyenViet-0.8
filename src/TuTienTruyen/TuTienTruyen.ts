@@ -63,7 +63,7 @@
 
 //     readonly requestManager = App.createRequestManager({
 //         requestsPerSecond: 4,
-//         requestTimeout: 20000,
+//         requestTimeout: 50000,
 //         interceptor: {
 //             interceptRequest: async (request: Request): Promise<Request> => {
 //                 request.headers = {

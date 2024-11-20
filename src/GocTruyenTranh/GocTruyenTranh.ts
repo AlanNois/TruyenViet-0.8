@@ -21,11 +21,11 @@ import {
 
 import { Parser } from './GocTruyenTranhParser';
 
-const DOMAIN = 'https://goctruyentranhvui3.com/';
+const DOMAIN = 'https://goctruyentranhvui6.com/';
 const Auth = 'Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJWxINuIEhvw6BuZyDEkGluaCIsImNvbWljSWRzIjpbXSwicm9sZUlkIjpudWxsLCJncm91cElkIjpudWxsLCJhZG1pbiI6ZmFsc2UsInJhbmsiOjAsInBlcm1pc3Npb24iOltdLCJpZCI6IjAwMDA1MjYzNzAiLCJ0ZWFtIjpmYWxzZSwiaWF0IjoxNzE1NDI0NDU3LCJlbWFpbCI6Im51bGwifQ.EjYw-HvoWM6RhbNzJkp06sSh61leaPcND0gb94PlDKeTYxfxU-f6WaxINAVjVYOP0pcVcG3YmfBVb4FVEBqPxQ'
 
 export const GocTruyenTranhInfo: SourceInfo = {
-    version: '1.1.6',
+    version: '1.1.11',
     name: 'GocTruyenTranh',
     icon: 'icon.png',
     author: 'AlanNois',
@@ -48,7 +48,7 @@ export class GocTruyenTranh implements SearchResultsProviding, MangaProviding, C
 
     readonly requestManager = App.createRequestManager({
         requestsPerSecond: 4,
-        requestTimeout: 15000,
+        requestTimeout: 50000,
         interceptor: {
             interceptRequest: async (request: Request): Promise<Request> => {
                 request.headers = {
@@ -94,7 +94,7 @@ export class GocTruyenTranh implements SearchResultsProviding, MangaProviding, C
 
     async getMangaDetails(mangaId: string): Promise<SourceManga> {
         const $ = await this.DOMHTML(`${DOMAIN}truyen/${mangaId.split('::')[0]}`);
-        return this.parser.parseMangaDetails($, mangaId);
+        return this.parser.parseMangaDetails($, mangaId, DOMAIN);
     }
 
     async getChapters(mangaId: string): Promise<Chapter[]> {
@@ -123,7 +123,7 @@ export class GocTruyenTranh implements SearchResultsProviding, MangaProviding, C
         const response = await this.requestManager.schedule(request, 1)
         const json = JSON.parse(response.data as string)
 
-        pages = this.parser.parseChapterDetails(json, null)
+        pages = this.parser.parseChapterDetails(json, null, DOMAIN)
 
         return App.createChapterDetails({
             id: chapterId,
@@ -139,7 +139,7 @@ export class GocTruyenTranh implements SearchResultsProviding, MangaProviding, C
         const tags = query.includedTags?.map(tag => tag.id) ?? [];
         const url = query.title ? encodeURI(`${DOMAIN}api/comic/search?name=${query.title}`) : `${DOMAIN}api/comic/search/category?p=${page}&value=${tags[0]}`;
         const json = await this.callAPI(url);
-        const tiles = this.parser.parseSearchResults(json);
+        const tiles = this.parser.parseSearchResults(json, DOMAIN);
 
         metadata = query.title ? undefined : { page: page + 1 };
 
@@ -179,13 +179,13 @@ export class GocTruyenTranh implements SearchResultsProviding, MangaProviding, C
 
             switch (section.id) {
                 case 'hot':
-                    section.items = this.parser.parseViewMoreItems(json).slice(0, 10);
+                    section.items = this.parser.parseViewMoreItems(json, DOMAIN).slice(0, 10);
                     break;
                 case 'new_added':
-                    section.items = this.parser.parseViewMoreItems(json).slice(0, 10);
+                    section.items = this.parser.parseViewMoreItems(json, DOMAIN).slice(0, 10);
                     break;
                 case 'new_updated':
-                    section.items = this.parser.parseViewMoreItems(json).slice(0, 10);
+                    section.items = this.parser.parseViewMoreItems(json, DOMAIN).slice(0, 10);
                     break;
             }
             sectionCallback(section);
@@ -210,7 +210,7 @@ export class GocTruyenTranh implements SearchResultsProviding, MangaProviding, C
         }
 
         const json = await this.callAPI(url);
-        const tiles = this.parser.parseViewMoreItems(json);
+        const tiles = this.parser.parseViewMoreItems(json, DOMAIN);
         metadata = { page: page + 1 };
         return App.createPagedResults({
             results: tiles,
