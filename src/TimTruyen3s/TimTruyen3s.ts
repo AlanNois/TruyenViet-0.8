@@ -20,7 +20,7 @@ import {
 
 import { Parser } from './TimTruyen3sParser';
 
-const DOMAIN = 'https://timtruyen3ss.com/';
+const DOMAIN = 'https://timtruyen3s.xyz/';
 
 export const isLastPage = ($: CheerioStatic): boolean => {
     const current = $('ul > .page-item.active > a').attr('data-page') ?? '';
@@ -34,7 +34,7 @@ export const isLastPage = ($: CheerioStatic): boolean => {
 }
 
 export const TimTruyen3sInfo: SourceInfo = {
-    version: '1.0.2',
+    version: '1.0.3',
     name: 'TimTruyen3s',
     icon: 'icon.png',
     author: 'AlanNois',

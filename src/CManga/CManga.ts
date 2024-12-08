@@ -22,10 +22,10 @@ import {
 
 import { Parser } from './CMangaParser';
 
-const DOMAIN = 'https://cmanga03.com/';
+const DOMAIN = 'https://cmangal.com/';
 
 export const CMangaInfo: SourceInfo = {
-    version: '1.0.8',
+    version: '1.0.9',
     name: 'CManga',
     icon: 'icon.png',
     author: 'AlanNois',
