@@ -24,12 +24,10 @@
 | 0    | NetTruyen          | https://nettruyenee.com/        |
 | 1    | NhatTruyen         | https://nhattruyenbing.com/     |
 | 2    | BaoTangTruyenTranh | https://baotangtruyen9.com/     |
-<!-- | 3                  | TuTienTruyen                    | https://tutientruyen5.xyz/ | --> 
 | 4    | GocTruyenTranh     | https://goctruyentranhvui1.com/ |
 | 5    | DocTruyen3Q        | https://doctruyen3qkr.com/      |
 | 6    | BlogTruyen         | https://blogtruyen.vn/          |
 | 7    | CManga             | https://cmangaot.com/           |
-|<!-- | 8                  | TruyenTranhLH                   | https://truyentranhlh.net/ | --> 
 
 </div>
 
