@@ -1435,31 +1435,30 @@ Object.defineProperty(exports, "decodeXMLStrict", { enumerable: true, get: funct
 },{"./decode.js":62,"./encode.js":64,"./escape.js":65}],70:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.GocTruyenTranh = exports.GocTruyenTranhInfo = void 0;
+exports.CManga = exports.CMangaInfo = void 0;
 const types_1 = require("@paperback/types");
-const GocTruyenTranhParser_1 = require("./GocTruyenTranhParser");
-const DOMAIN = 'https://goctruyentranhvui8.com/';
-const Auth = 'Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJWxINuIEhvw6BuZyDEkGluaCIsImNvbWljSWRzIjpbXSwicm9sZUlkIjpudWxsLCJncm91cElkIjpudWxsLCJhZG1pbiI6ZmFsc2UsInJhbmsiOjAsInBlcm1pc3Npb24iOltdLCJpZCI6IjAwMDA1MjYzNzAiLCJ0ZWFtIjpmYWxzZSwiaWF0IjoxNzE1NDI0NDU3LCJlbWFpbCI6Im51bGwifQ.EjYw-HvoWM6RhbNzJkp06sSh61leaPcND0gb94PlDKeTYxfxU-f6WaxINAVjVYOP0pcVcG3YmfBVb4FVEBqPxQ';
-exports.GocTruyenTranhInfo = {
-    version: '1.1.12',
-    name: 'GocTruyenTranh',
+const CMangaParser_1 = require("./CMangaParser");
+const DOMAIN = 'https://cmangal.com/';
+exports.CMangaInfo = {
+    version: '1.0.9',
+    name: 'CManga',
     icon: 'icon.png',
     author: 'AlanNois',
-    authorWebsite: 'https://github.com.AlanNois/',
-    description: 'Extension that pulls manga from GocTruyenTranh',
+    authorWebsite: 'https://github.com/AlanNois',
+    description: 'Extension that pulls manga from CManga',
+    contentRating: types_1.ContentRating.ADULT,
     websiteBaseURL: DOMAIN,
-    contentRating: types_1.ContentRating.EVERYONE,
     sourceTags: [
         {
-            text: "Recommended",
+            text: 'Recommended',
             type: types_1.BadgeColor.BLUE
-        },
+        }
     ],
-    intents: types_1.SourceIntents.MANGA_CHAPTERS | types_1.SourceIntents.HOMEPAGE_SECTIONS | types_1.SourceIntents.CLOUDFLARE_BYPASS_REQUIRED
+    intents: types_1.SourceIntents.MANGA_CHAPTERS | types_1.SourceIntents.HOMEPAGE_SECTIONS
 };
-class GocTruyenTranh {
-    constructor(cheerio) {
-        this.cheerio = cheerio;
+class CManga {
+    constructor() {
+        // constructor(private cheerio: CheerioAPI) { }
         this.requestManager = App.createRequestManager({
             requestsPerSecond: 4,
             requestTimeout: 50000,
@@ -1479,56 +1478,38 @@ class GocTruyenTranh {
                 }
             }
         });
-        this.parser = new GocTruyenTranhParser_1.Parser();
+        this.parser = new CMangaParser_1.Parser();
     }
     getMangaShareUrl(mangaId) {
-        return `${DOMAIN}truyen/${mangaId}`;
+        return `${DOMAIN}${mangaId}`;
     }
-    async DOMHTML(url) {
+    // private async DOMTHML(url: string): Promise<CheerioStatic> {
+    //     const request = App.createRequest({
+    //         url: url,
+    //         method: 'GET',
+    //     });
+    //     const response = await this.requestManager.schedule(request, 1);
+    //     return this.cheerio.load(response.data as string);
+    // }
+    async getAPI(url) {
         const request = App.createRequest({
             url: url,
             method: 'GET',
         });
         const response = await this.requestManager.schedule(request, 1);
-        this.CloudFlareError(response.status);
-        return this.cheerio.load(response.data);
-    }
-    async callAPI(url) {
-        const request = App.createRequest({
-            url: url,
-            method: 'GET',
-        });
-        const response = await this.requestManager.schedule(request, 1);
-        this.CloudFlareError(response.status);
-        return JSON.parse(response.data);
+        return response.data;
     }
     async getMangaDetails(mangaId) {
-        const $ = await this.DOMHTML(`${DOMAIN}truyen/${mangaId.split('::')[0]}`);
-        return this.parser.parseMangaDetails($, mangaId, DOMAIN);
+        const json = JSON.parse(JSON.parse(await this.getAPI(`${DOMAIN}api/get_data_by_id?table=album&data=info&id=${mangaId}`))['info']);
+        return this.parser.parseMangaDetails(json, mangaId, DOMAIN);
     }
     async getChapters(mangaId) {
-        const json = await this.callAPI(`${DOMAIN}api/comic/${mangaId.split('::')[1]}/chapter?offset=0&limit=-1`);
-        return this.parser.parseChapterList(json);
+        const json = JSON.parse(await this.getAPI(`${DOMAIN}api/chapter_list?album=${mangaId}&v=0`));
+        return this.parser.parseChapters(json);
     }
     async getChapterDetails(mangaId, chapterId) {
-        // Extract manga ID and chapter number using destructuring
-        const [mangaNumber, chapterNumber] = [mangaId.split('::')[1], chapterId.split('-')[1]];
-        // Combine manga ID and chapter number into a single query parameter
-        const comicId = `${mangaNumber}&chapterNumber=${chapterNumber}`;
-        let pages;
-        const request = App.createRequest({
-            url: `${DOMAIN}api/chapter/limitation`,
-            method: 'POST',
-            headers: {
-                'authorization': Auth,
-                'content-type': 'application/x-www-form-urlencoded',
-                'x-requested-with': 'XMLHttpRequest'
-            },
-            data: { comicId }
-        });
-        const response = await this.requestManager.schedule(request, 1);
-        const json = JSON.parse(response.data);
-        pages = this.parser.parseChapterDetails(json, null, DOMAIN);
+        const json = await this.getAPI(`${DOMAIN}api/chapter_image?chapter=${chapterId}&v=0`);
+        const pages = this.parser.parseChapterDetails(JSON.parse(json));
         return App.createChapterDetails({
             id: chapterId,
             mangaId: mangaId,
@@ -1536,276 +1517,361 @@ class GocTruyenTranh {
         });
     }
     async getSearchResults(query, metadata) {
-        let page = metadata?.page ?? 0;
-        const tags = query.includedTags?.map(tag => tag.id) ?? [];
-        const url = query.title ? encodeURI(`${DOMAIN}api/comic/search?name=${query.title}`) : `${DOMAIN}api/comic/search/category?p=${page}&value=${tags[0]}`;
-        const json = await this.callAPI(url);
-        const tiles = this.parser.parseSearchResults(json, DOMAIN);
-        metadata = query.title ? undefined : { page: page + 1 };
+        let page = metadata?.page ?? 1;
+        // const tags = query.includedTags?.map(tag => tag.id) ?? [];
+        // const search = {
+        //     status: "all",
+        //     num_chapter: "0",
+        //     sort: "new",
+        //     tag: "",
+        //     top: ""
+        // };
+        // tags.map((value) => {
+        //     switch (value.split('.')[0]) {
+        //         case 'sort':
+        //             search.sort = String(value.split('.')[1]);
+        //             break;
+        //         case 'status':
+        //             search.status = String(value.split('.')[1]);
+        //             break;
+        //         case 'num_chapter':
+        //             search.num_chapter = String(value.split('.')[1]);
+        //             break;
+        //         case 'tag':
+        //             search.tag = String(value.split('.')[1]);
+        //             break;
+        //         case 'top':
+        //             search.top = String(value.split('.')[1]);
+        //             break;
+        //     }
+        // });
+        const url = /*query.title ?*/ encodeURI(`${DOMAIN}api/search?string=${query.title}`);
+        // : (search.top !== '' ? `${DOMAIN}api/top?data=book_top`
+        // : encodeURI(`${DOMAIN}api/list_item?page=${page}&limit=40&sort=${search.sort}&type=all&tag=${search.tag}&child=off&status=${search.status}&num_chapter=${search.num_chapter}`))
+        // const request = App.createRequest({
+        //     url: url,
+        //     method: 'GET',
+        // })
+        // const response = await this.requestManager.schedule(request, 1);
+        // const json = (query.title || search.top !== "") ? JSON.parse(response.data as string) : JSON.parse(JSON.parse(response.data as string));
+        // const tiles = this.parser.parseSearch(json, search, DOMAIN);
+        const json = JSON.parse(await this.getAPI(url));
+        const tiles = this.parser.parseSearch(json, DOMAIN);
+        const allPage = (json['total'] / 40);
+        metadata = (page < allPage) ? { page: page + 1 } : undefined;
         return App.createPagedResults({
             results: tiles,
             metadata
         });
     }
     async getHomePageSections(sectionCallback) {
-        console.log('GocTruyenTranh Running...');
+        console.log('CManga Running...');
         const sections = [
-            App.createHomeSection({ id: 'hot', title: 'TRUYỆN HOT NHẤT', containsMoreItems: true, type: types_1.HomeSectionType.singleRowNormal }),
-            App.createHomeSection({ id: 'new_added', title: 'TRUYỆN MỚI', containsMoreItems: true, type: types_1.HomeSectionType.singleRowNormal }),
-            App.createHomeSection({ id: 'new_updated', title: 'TRUYỆN CẬP NHẬT GẦN ĐÂY', containsMoreItems: true, type: types_1.HomeSectionType.singleRowNormal })
+            App.createHomeSection({ id: 'new_updated', title: "TRUYỆN MỚI CẬP NHẬT", containsMoreItems: true, type: types_1.HomeSectionType.singleRowNormal, }),
+            // App.createHomeSection({ id: 'new_added', title: "VIP TRUYỆN SIÊU HAY", containsMoreItems: true, type: HomeSectionType.singleRowNormal, })
         ];
         for (const section of sections) {
             sectionCallback(section);
             let url;
             switch (section.id) {
-                case 'hot':
-                    url = `${DOMAIN}api/comic/search/view?p=0`;
-                    break;
-                case 'new_added':
-                    url = `${DOMAIN}api/comic/search/new?p=0`;
-                    break;
                 case 'new_updated':
-                    url = `${DOMAIN}api/comic/search/recent?p=0`;
+                    url = `${DOMAIN}api/home_album_list?num_chapter=0&sort=update&tag=all&limit=20&page=1&user=0&child_protect=off`;
                     break;
+                // case 'new_added':
+                //     url = `${DOMAIN}api/list_item?page=1&limit=20&sort=new&type=all&tag=Truy%E1%BB%87n%20si%C3%AAu%20hay&child=off&status=all&num_chapter=0`;
+                //     break;
                 default:
                     throw new Error(`Invalid home section ID`);
             }
-            let json = await this.callAPI(url);
+            const json = JSON.parse(await this.getAPI(url));
             switch (section.id) {
-                case 'hot':
-                    section.items = this.parser.parseViewMoreItems(json, DOMAIN).slice(0, 10);
-                    break;
-                case 'new_added':
-                    section.items = this.parser.parseViewMoreItems(json, DOMAIN).slice(0, 10);
-                    break;
                 case 'new_updated':
-                    section.items = this.parser.parseViewMoreItems(json, DOMAIN).slice(0, 10);
+                    section.items = this.parser.parseNewUpdatedSection(json['data'], DOMAIN);
                     break;
+                // case 'new_added':
+                //     section.items = this.parser.parseNewAddedSection(json, DOMAIN);
+                //     break;
             }
             sectionCallback(section);
         }
     }
     async getViewMoreItems(homepageSectionId, metadata) {
-        let page = metadata?.page ?? 0;
-        let url;
+        let page = metadata?.page ?? 1;
+        let url = '';
         switch (homepageSectionId) {
-            case 'hot':
-                url = `${DOMAIN}api/comic/search/view?p=${page}`;
-                break;
-            case 'new_added':
-                url = `${DOMAIN}api/comic/search/new?p=${page}`;
-                break;
             case 'new_updated':
-                url = `${DOMAIN}api/comic/search/recent?p=${page}`;
+                url = `${DOMAIN}api/home_album_list?num_chapter=0&sort=update&tag=all&limit=40&page=${page}&user=0&child_protect=off`;
                 break;
+            // case 'new_added':
+            //     url = `${DOMAIN}api/list_item?page=${page}&limit=40&sort=new&type=all&tag=Truy%E1%BB%87n%20si%C3%AAu%20hay&child=off&status=all&num_chapter=0`
+            //     break;
             default:
-                throw new Error("Requested to getViewMoreItems for a section ID which doesn't exist");
+                throw new Error(`Requested to getViewMoreItems for a section ID which doesn't exist`);
         }
-        const json = await this.callAPI(url);
-        const tiles = this.parser.parseViewMoreItems(json, DOMAIN);
-        metadata = { page: page + 1 };
+        const json = JSON.parse(await this.getAPI(url));
+        const manga = this.parser.parseViewMore(json['data'], DOMAIN);
+        const allPage = (json['total'] / 40);
+        metadata = (page < allPage) ? { page: page + 1 } : undefined;
         return App.createPagedResults({
-            results: tiles,
+            results: manga,
             metadata
         });
     }
-    async getSearchTags() {
-        const url = `${DOMAIN}api/category`;
-        const json = await this.callAPI(url);
-        return this.parser.parseTags(json);
-    }
-    CloudFlareError(status) {
-        if (status == 503 || status == 403) {
-            throw new Error(`CLOUDFLARE BYPASS ERROR:\nPlease go to home page ${GocTruyenTranh.name} source and press the cloud icon.`);
+    // async getSearchTags(): Promise<TagSection[]> {
+    //     const url = DOMAIN
+    //     const $ = await this.DOMTHML(url);
+    //     return this.parser.parseTags($);
+    // }
+    async filterUpdatedManga(mangaUpdatesFoundCallback, time, ids) {
+        const updatedManga = [];
+        const pages = 10;
+        for (let page = 1; page <= pages; page++) {
+            let url = `${DOMAIN}api/list_item?page=${page}&limit=40&sort=new&type=all&tag=&child_protect=off&status=all&num_chapter=0`;
+            const json = JSON.parse(await this.getAPI(url));
+            const updateManga = Object.keys(json).map(key => {
+                const id = `${json[key].url}-${json[key].id_book}`;
+                const [date, time] = json[key].last_update.split(' ');
+                const [year, month, day] = date.split('-');
+                const [hour, minute] = time.split(':');
+                const formattedTime = `${hour}:${minute}`;
+                const formattedDate = `${month}/${day}/${year}`;
+                const timeFinal = new Date(`${formattedDate} ${formattedTime}`);
+                return {
+                    id,
+                    time: timeFinal
+                };
+            });
+            updatedManga.push(...updateManga);
         }
-    }
-    async getCloudflareBypassRequestAsync() {
-        return App.createRequest({
-            url: DOMAIN,
-            method: 'GET',
-            headers: {
-                'referer': `${DOMAIN}/`,
-                'origin': `${DOMAIN}/`,
-                'user-agent': await this.requestManager.getDefaultUserAgent()
-            }
-        });
+        const returnObject = this.parser.parseUpdatedManga(updatedManga, time, ids);
+        mangaUpdatesFoundCallback(App.createMangaUpdates(returnObject));
     }
 }
-exports.GocTruyenTranh = GocTruyenTranh;
+exports.CManga = CManga;
 
-},{"./GocTruyenTranhParser":71,"@paperback/types":61}],71:[function(require,module,exports){
+},{"./CMangaParser":71,"@paperback/types":61}],71:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Parser = void 0;
-const entities = require("entities"); //Import package for decoding HTML entities
+const entities = require("entities");
 class Parser {
-    convertTime(timeAgo) {
-        let time;
-        let trimmed = Number((/\d*/.exec(timeAgo) ?? [])[0]);
-        trimmed = (trimmed == 0 && timeAgo.includes('a')) ? 1 : trimmed;
-        if (timeAgo.includes('giây') || timeAgo.includes('secs')) {
-            time = new Date(Date.now() - trimmed * 1000); // => mili giây (1000 ms = 1s)
-        }
-        else if (timeAgo.includes('phút')) {
-            time = new Date(Date.now() - trimmed * 60000);
-        }
-        else if (timeAgo.includes('giờ')) {
-            time = new Date(Date.now() - trimmed * 3600000);
-        }
-        else if (timeAgo.includes('ngày')) {
-            time = new Date(Date.now() - trimmed * 86400000);
-        }
-        else if (timeAgo.includes('tuần')) {
-            time = new Date(Date.now() - trimmed * 86400000 * 7);
-        }
-        else if (timeAgo.includes('tháng')) {
-            time = new Date(Date.now() - trimmed * 86400000 * 7 * 4);
-        }
-        else if (timeAgo.includes('năm')) {
-            time = new Date(Date.now() - trimmed * 31556952000);
-        }
-        else {
-            if (timeAgo.includes(":")) {
-                let split = timeAgo.split(' ');
-                let H = split[0]; //vd => 21:08
-                let D = split[1]; //vd => 25/08 
-                let fixD = String(D).split('/');
-                let finalD = fixD[1] + '/' + fixD[0] + '/' + new Date().getFullYear();
-                time = new Date(finalD + ' ' + H);
-            }
-            else {
-                let split = timeAgo.split('-'); //vd => 05/12/18
-                time = new Date(split[1] + '/' + split[0] + '/' + split[2]);
-            }
-        }
-        return time;
-    }
-    parseMangaDetails($, mangaId, DOMAIN) {
+    parseMangaDetails(json, mangaId, DOMAIN) {
         const tags = [];
-        $('.group-content a').each((_, obj) => {
-            const label = $('span:nth-child(2)', obj).text().trim();
-            const id = $(obj).attr('href')?.trim().split('=')[1] ?? label;
+        for (const id of json.tags) {
+            if (!id)
+                continue;
+            const label = this.titleCase(id);
             tags.push(App.createTag({ label, id }));
-        });
-        const titles = [this.decodeHTMLEntity($('.v-card-title').text().trim())];
-        let author, artist;
-        let status = '';
-        $('.information-section > div').each((_, obj) => {
-            switch ($(obj).text().trim().split('\n')[0]) {
-                case "Tác giả:":
-                    author = String($(obj).text().split('\n')[1]).trim();
-                    artist = String($(obj).text().split('\n')[1]).trim();
-                    break;
-                case "Trạng thái:":
-                    status = String($(obj).text().split('\n')[1]).trim();
-                    break;
-            }
-        });
-        const image = String($('.v-image > img').attr('src')?.indexOf('https') === -1 ? DOMAIN + $('.v-image > img').attr('src') : $('.v-image > img').attr('src'));
-        const desc = this.decodeHTMLEntity($('.v-card-text.pt-1.px-4.pb-4.text-secondary.font-weight-medium').text());
-        const rating = parseFloat($('.pr-3 > b').text().trim());
+        }
+        const titles = [this.titleCase(json.name)];
+        const status = json.status == 'doing' ? 'Đang cập nhật' : 'Hoàn thành';
+        const desc = this.decodeHTMLEntity(json.detail);
+        const image = `${DOMAIN}assets/tmp/album/${json.avatar}`;
         return App.createSourceManga({
             id: mangaId,
             mangaInfo: App.createMangaInfo({
                 titles,
                 image,
-                desc,
-                author,
-                artist,
                 status,
-                rating,
-                tags: [App.createTagSection({ id: '0', label: 'genres', tags })]
+                desc,
+                tags: [App.createTagSection({ id: '0', label: 'genres', tags: tags })]
             })
         });
     }
-    parseChapterList(json) {
+    parseChapters(json) {
         const chapters = [];
-        for (let obj of json.result.chapters) {
-            const chapNum = parseFloat(obj.numberChapter);
-            const id = `chuong-${chapNum}`;
-            const timeStr = obj.stringUpdateTime;
-            const time = this.convertTime(timeStr);
-            const name = (obj.name != 'N/A') ? obj.name : '';
-            const group = `${obj.viewCount} lượt xem`;
+        for (const obj of json) {
+            const in4 = JSON.parse(obj.info);
+            const [date, time] = in4.last_update.split(' ');
+            const [year, month, day] = date.split('-');
+            const [hour, minute] = time.split(':');
+            const formattedTime = `${hour}:${minute}`;
+            const formattedDate = `${month}/${day}/${year}`;
+            const id = obj.id_chapter;
+            const chapNum = parseFloat(in4.num);
+            const name = this.titleCase(in4.name);
             chapters.push(App.createChapter({
                 id,
                 chapNum,
                 name,
                 langCode: '🇻🇳',
-                time,
-                group
+                time: new Date(`${formattedDate} ${formattedTime}`),
+                group: `${in4.statics.view} lượt xem`,
             }));
+        }
+        if (chapters.length == 0) {
+            throw new Error('No chapters found');
         }
         return chapters;
     }
-    parseChapterDetails(json, $, DOMAIN) {
+    parseChapterDetails(json) {
         const pages = [];
-        if (json == null) {
-            $('.image-section > .img-block > img').each((_, obj) => {
-                if (!obj.attribs['src'])
-                    return;
-                let link = obj.attribs['src'];
-                pages.push(encodeURI(link));
-            });
-        }
-        else {
-            for (const img of json.result.data) {
-                pages.push(img.indexOf('https') === -1 ? DOMAIN + img : img);
-            }
+        for (const img of json) {
+            pages.push(img.replace('?v=1&', '?v=9999&'));
         }
         return pages;
     }
-    parseSearchResults(json, DOMAIN) {
-        const tiles = [];
-        const array = json.result.data ?? json.result;
-        for (let obj of array) {
-            let title = obj.name;
-            let subtitle = `Chương ${obj.chapterLatest[0]}`;
-            const image = obj.photo;
-            let mangaId = `${obj.nameEn}::${obj.id}`;
-            tiles.push(App.createPartialSourceManga({
-                mangaId,
-                image: encodeURI(image.indexOf('https') === -1 ? DOMAIN + image : image) ?? "",
-                title,
-                subtitle
-            }));
-        }
-        return tiles;
-    }
-    parseViewMoreItems(json, DOMAIN) {
+    parseSearch(json, /*search: any,*/ DOMAIN) {
         const manga = [];
-        const collectedIds = [];
-        for (let obj of json.result.data) {
-            let title = obj.name;
-            let subtitle = 'Chương ' + obj.chapterLatest[0];
-            const image = obj.photo;
-            let mangaId = `${obj.nameEn}::${obj.id}`;
-            if (!collectedIds.includes(mangaId)) {
-                manga.push(App.createPartialSourceManga({
-                    mangaId,
-                    image: encodeURI(image.indexOf('https') === -1 ? DOMAIN + image : image) ?? "",
-                    title,
-                    subtitle,
-                }));
-                collectedIds.push(mangaId);
-            }
+        const getData = (item, in4) => ({
+            mangaId: `${item.id_album}`,
+            image: `${DOMAIN}assets/tmp/album/${in4.avatar}`,
+            title: this.titleCase(in4.name),
+            subtitle: `Chap ${in4.chapter.last}`,
+            // subtitle: search.top !== '' ? `${Number(item.total_view).toLocaleString()} views` : `Chap ${item.last_chapter}`
+        });
+        // const itemList = search.top !== '' ? json[search.top] : json;
+        for (const i of Object.keys(json)) {
+            // const item = itemList[i];
+            const item = json[i];
+            var in4 = JSON.parse(item['info']);
+            // if (!item.name) continue;
+            manga.push(App.createPartialSourceManga(getData(item, in4)));
         }
         return manga;
     }
-    parseTags(json) {
-        const tags = [];
-        for (let obj of json.result) {
-            const label = obj.name;
-            const id = obj.id;
-            tags.push(App.createTag({ label, id }));
+    parseNewUpdatedSection(json, DOMAIN) {
+        const newUpdatedItems = [];
+        for (var i of Object.keys(json)) {
+            var item = json[i];
+            var in4 = JSON.parse(item['info']);
+            // if (!item.name) continue;
+            newUpdatedItems.push(App.createPartialSourceManga({
+                mangaId: `${item.id_album}`,
+                image: `${DOMAIN}assets/tmp/album/${in4.avatar}`,
+                title: this.titleCase(in4.name),
+                subtitle: `Chap ${in4.chapter.last}`,
+            }));
         }
-        const tagSections = [
-            App.createTagSection({ id: '0', label: 'Thể loại', tags: tags.map(x => App.createTag(x)) }),
-        ];
-        return tagSections;
+        return newUpdatedItems;
+    }
+    parseNewAddedSection(json, DOMAIN) {
+        const newAddedItems = [];
+        for (var i of Object.keys(json)) {
+            var item = json[i];
+            if (!item.name)
+                continue;
+            newAddedItems.push(App.createPartialSourceManga({
+                mangaId: `${item.url}-${item.id_book}`,
+                image: `${DOMAIN}assets/tmp/book/avatar/${item.avatar}.jpg`,
+                title: this.titleCase(item.name),
+                subtitle: `Chap ${item.last_chapter}`,
+            }));
+        }
+        return newAddedItems;
+    }
+    parseViewMore(json, DOMAIN) {
+        const manga = [];
+        const getData = (item, in4) => ({
+            mangaId: `${item.id_album}`,
+            image: `${DOMAIN}assets/tmp/album/${in4.avatar}`,
+            title: this.titleCase(in4.name),
+            subtitle: `Chap ${in4.chapter.last}`,
+        });
+        for (const i of Object.keys(json)) {
+            const item = json[i];
+            var in4 = JSON.parse(item['info']);
+            // if (!item.name) continue;
+            manga.push(App.createPartialSourceManga(getData(item, in4)));
+        }
+        return manga;
+    }
+    // parseTags($: CheerioStatic): TagSection[] {
+    //     const arrayTags: Tag[] = [];
+    //     for (const tag of $('.book_tags_content a').toArray()) {
+    //         const label = $(tag).text().trim();
+    //         const id = 'tag.' + label;
+    //         arrayTags.push({ id: id, label: label });
+    //     }
+    //     const arrayTags2: Tag[] = [
+    //         {
+    //             label: 'Ngày đăng',
+    //             id: 'sort.new'
+    //         },
+    //         {
+    //             label: 'Lượt xem',
+    //             id: 'sort.view'
+    //         },
+    //         {
+    //             label: 'Lượt theo dõi',
+    //             id: 'sort.follow'
+    //         }
+    //     ];
+    //     const arrayTags3: Tag[] = [
+    //         {
+    //             label: 'Tất cả',
+    //             id: 'status.all'
+    //         },
+    //         {
+    //             label: 'Hoàn thành',
+    //             id: 'status.completed'
+    //         }
+    //     ];
+    //     const arrayTags4: Tag[] = [
+    //         {
+    //             label: '>= 100',
+    //             id: 'num.100'
+    //         },
+    //         {
+    //             label: '>= 200',
+    //             id: 'num.200'
+    //         },
+    //         {
+    //             label: '>= 300',
+    //             id: 'num.300'
+    //         },
+    //         {
+    //             label: '>= 400',
+    //             id: 'num.400'
+    //         },
+    //         {
+    //             label: '>= 500',
+    //             id: 'num.500'
+    //         }
+    //     ];
+    //     const arrayTags5: Tag[] = [
+    //         {
+    //             label: 'Top Ngày',
+    //             id: 'top.day'
+    //         },
+    //         {
+    //             label: 'Top Tuần',
+    //             id: 'top.week'
+    //         },
+    //         {
+    //             label: 'Top Tổng',
+    //             id: 'top.month'
+    //         }
+    //     ];
+    //     const tagSections: TagSection[] = [
+    //         App.createTagSection({ id: '4', label: 'Rank', tags: arrayTags5.map(x => App.createTag(x)) }),
+    //         App.createTagSection({ id: '0', label: 'Thể Loại', tags: arrayTags.map(x => App.createTag(x)) }),
+    //         App.createTagSection({ id: '1', label: 'Sắp xếp theo', tags: arrayTags2.map(x => App.createTag(x)) }),
+    //         App.createTagSection({ id: '2', label: 'Tình trạng', tags: arrayTags3.map(x => App.createTag(x)) }),
+    //         App.createTagSection({ id: '3', label: 'Num chapter', tags: arrayTags4.map(x => App.createTag(x)) })
+    //     ]
+    //     return tagSections;
+    // }
+    parseUpdatedManga(updatedManga, time, ids) {
+        const returnObject = {
+            ids: []
+        };
+        for (const elem of updatedManga) {
+            if (ids.includes(elem.id) && time < elem.time) {
+                returnObject.ids.push(elem.id);
+            }
+        }
+        return returnObject;
     }
     decodeHTMLEntity(str) {
         return entities.decodeHTML(str);
+    }
+    titleCase(str) {
+        var splitStr = str.toLowerCase().split(' ');
+        for (var i = 0; i < splitStr.length; i++) {
+            splitStr[i] = String(splitStr[i]).charAt(0).toUpperCase() + String(splitStr[i]).substring(1);
+        }
+        return splitStr.join(' ');
     }
 }
 exports.Parser = Parser;
