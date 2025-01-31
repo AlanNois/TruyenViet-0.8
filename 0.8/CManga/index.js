@@ -1440,7 +1440,7 @@ const types_1 = require("@paperback/types");
 const CMangaParser_1 = require("./CMangaParser");
 const DOMAIN = 'https://cmangag.com/';
 exports.CMangaInfo = {
-    version: '1.0.11',
+    version: '1.0.12',
     name: 'CManga',
     icon: 'icon.png',
     author: 'AlanNois',
@@ -1504,7 +1504,7 @@ class CManga {
         return this.parser.parseMangaDetails(json, mangaId, DOMAIN);
     }
     async getChapters(mangaId) {
-        const json = JSON.parse(await this.getAPI(`${DOMAIN}api/chapter_list?album=${mangaId}&v=0`));
+        const json = JSON.parse(await this.getAPI(`${DOMAIN}api/chapter_list?album=${mangaId}&page=1&limit=99999999&v=0`));
         return this.parser.parseChapters(json);
     }
     async getChapterDetails(mangaId, chapterId) {
@@ -1706,7 +1706,7 @@ class Parser {
     }
     parseChapterDetails(json) {
         const pages = [];
-        for (const img of json) {
+        for (const img of json['image']) {
             pages.push(img.replace('?v=1&', '?v=9999&'));
         }
         return pages;
