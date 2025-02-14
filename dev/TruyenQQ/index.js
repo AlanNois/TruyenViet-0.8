@@ -477,7 +477,7 @@ const isLastPage = ($) => {
 };
 exports.isLastPage = isLastPage;
 exports.TruyenQQInfo = {
-    version: '1.0.7',
+    version: '1.0.8',
     name: 'TruyenQQ',
     icon: 'icon.png',
     author: 'AlanNois',
