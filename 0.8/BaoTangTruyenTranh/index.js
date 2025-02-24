@@ -1453,7 +1453,7 @@ const isLastPage = ($) => {
 };
 exports.isLastPage = isLastPage;
 exports.BaoTangTruyenTranhInfo = {
-    version: '1.0.20',
+    version: '1.0.21',
     name: 'BaoTangTruyenTranh',
     icon: 'icon.png',
     author: 'AlanNois',
@@ -1884,8 +1884,8 @@ class Parser {
             manga.push(App.createPartialSourceManga({
                 mangaId: String(id),
                 image: encodeURI(this.decodeHTMLEntity(image?.replace('http://', 'https://'))),
-                title: title,
-                subtitle: chapter,
+                title: this.decodeHTMLEntity(title),
+                subtitle: this.decodeHTMLEntity(chapter),
             }));
         });
         return manga;
