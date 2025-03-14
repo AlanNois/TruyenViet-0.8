@@ -1438,7 +1438,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.ManhuaRock = exports.ManhuaRockInfo = exports.isLastPage = void 0;
 const types_1 = require("@paperback/types");
 const ManhuaRockParser_1 = require("./ManhuaRockParser");
-const DOMAIN = 'https://manhuarockz.com/';
+const DOMAIN = 'https://manhuarock4.com/';
 const isLastPage = ($) => {
     const pages = [];
     $("li", "ul.pagination").each((_, page) => {
@@ -1536,11 +1536,11 @@ class ManhuaRock {
         return response.data;
     }
     async getMangaDetails(mangaId) {
-        const $ = await this.DOMHTML(`${DOMAIN}truyen/${mangaId}`);
+        const $ = await this.DOMHTML(`${DOMAIN}truyen-tranh/${mangaId}`);
         return this.parser.parseMangaDetails($, mangaId, DOMAIN);
     }
     async getChapters(mangaId) {
-        const $ = await this.DOMHTML(`${DOMAIN}truyen/${mangaId}`);
+        const $ = await this.DOMHTML(`${DOMAIN}truyen-tranh/${mangaId}`);
         return this.parser.parseChapterList($);
     }
     async getChapterDetails(mangaId, chapterId) {
@@ -1599,7 +1599,7 @@ class ManhuaRock {
                     url = `${DOMAIN}xem-nhieu/`;
                     break;
                 case 'new_updated':
-                    url = `${DOMAIN}danh-sach-truyen/?sort=latest-updated`;
+                    url = `${DOMAIN}tat-ca-truyen/1/?sort=latest-updated`;
                     break;
                 case 'full':
                     url = `${DOMAIN}hoan-thanh/`;
@@ -1804,12 +1804,12 @@ class Parser {
     }
     parseFeaturedSection($, DOMAIN) {
         const featuredItems = [];
-        $('.p-item', '.sidebar > div:nth-child(5) > div.sidebar-pp').each((_, manga) => {
-            const title = $('.p-left > h4', manga).text().trim();
-            const id = $('.p-left > h4 > a', manga).attr('href')?.split('/').slice(4).join('/');
-            let image = `${DOMAIN}${$('.pthumb > img', manga).first().attr('data-src')}`;
+        $('div', '.owl-wrapper').each((_, manga) => {
+            const title = $('.item > .slide-caption > h3', manga).text().trim();
+            const id = $('.item > .slide-caption > h3 > a', manga).attr('href')?.split('/').slice(4).join('/');
+            let image = `${DOMAIN}${$('.item > a > img', manga).first().attr('data-src')}`;
             image = !image ? "https://i.imgur.com/GYUxEX8.png" : image;
-            const subtitle = $(".p-left > .list-chapter > div:nth-of-type(1) > span", manga).first().text().trim();
+            const subtitle = String($(".item > .slide-caption", manga).text().trim().split('\n')[1]?.trim());
             if (!id || !title)
                 return;
             featuredItems.push(App.createPartialSourceManga({
@@ -1819,6 +1819,7 @@ class Parser {
                 subtitle: subtitle,
             }));
         });
+        console.log(featuredItems);
         return featuredItems;
     }
     parseTags() {

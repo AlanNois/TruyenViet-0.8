@@ -1438,9 +1438,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.CManga = exports.CMangaInfo = void 0;
 const types_1 = require("@paperback/types");
 const CMangaParser_1 = require("./CMangaParser");
-const DOMAIN = 'https://cmangax.com/';
+const DOMAIN = 'https://cmangaob.com/';
 exports.CMangaInfo = {
-    version: '1.0.13',
+    version: '1.0.14',
     name: 'CManga',
     icon: 'icon.png',
     author: 'AlanNois',
@@ -1575,7 +1575,7 @@ class CManga {
             let url;
             switch (section.id) {
                 case 'new_updated':
-                    url = `${DOMAIN}api/home_album_list?num_chapter=0&sort=update&tag=all&limit=20&page=1&user=0&child_protect=off`;
+                    url = `${DOMAIN}api/home_album_list?num_chapter=0&sort=update&tag=&limit=20&page=1&user=0&child_protect=off`;
                     break;
                 // case 'new_added':
                 //     url = `${DOMAIN}api/list_item?page=1&limit=20&sort=new&type=all&tag=Truy%E1%BB%87n%20si%C3%AAu%20hay&child=off&status=all&num_chapter=0`;

@@ -463,7 +463,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.DocTruyen3Q = exports.DocTruyen3QInfo = exports.isLastPage = void 0;
 const types_1 = require("@paperback/types");
 const DocTruyen3QParser_1 = require("./DocTruyen3QParser");
-const DOMAIN = 'https://doctruyen3qui2.com/';
+const DOMAIN = 'https://doctruyen3qui3.pro/';
 const isLastPage = ($) => {
     const lastPage = Number($("ul.pagination > li.page-item:not(:has(a[rel='next'])) a").last().text().trim());
     const currentPage = Number($("ul.pagination > li.active").text().trim());
@@ -471,7 +471,7 @@ const isLastPage = ($) => {
 };
 exports.isLastPage = isLastPage;
 exports.DocTruyen3QInfo = {
-    version: '1.1.9',
+    version: '1.1.10',
     name: 'DocTruyen3Q',
     icon: 'icon.png',
     author: 'AlanNois',
@@ -782,9 +782,34 @@ class Parser {
     }
     parseChapterDetails($) {
         const pages = [];
+        const DEFAULT_IMAGE = 'images/default/chapter_default.png';
         $('.list-image-detail img').each((_, obj) => {
-            const link = String($(obj).attr('src') ?? $(obj).attr('data-cfsrc'));
-            pages.push(link.indexOf('https') === -1 ? 'https:' + link : link);
+            const attributes = ['src', 'data-src', 'data-cfsrc', 'data-original'];
+            let link = '';
+            for (const attr of attributes) {
+                const url = $(obj).attr(attr);
+                if (url && !url.includes(DEFAULT_IMAGE)) {
+                    link = url;
+                    break;
+                }
+            }
+            // Fallback to first existing attribute if all are default
+            if (!link) {
+                for (const attr of attributes) {
+                    const url = $(obj).attr(attr);
+                    if (url) {
+                        link = url;
+                        break;
+                    }
+                }
+            }
+            if (link) {
+                // Handle protocol-relative URLs
+                const fullUrl = link.startsWith('//') ? `https:${link}` :
+                    link.startsWith('http') ? link :
+                        `https://${link}`;
+                pages.push(fullUrl);
+            }
         });
         console.log(pages);
         return pages;
