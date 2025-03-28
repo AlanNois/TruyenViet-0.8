@@ -1460,7 +1460,7 @@ const isLastPage = ($) => {
 };
 exports.isLastPage = isLastPage;
 exports.BaoTangTruyenTranhInfo = {
-    version: '1.1.0',
+    version: '1.1.1',
     name: 'BaoTangTruyenTranh',
     icon: 'icon.png',
     author: 'AlanNois',
@@ -1838,7 +1838,7 @@ class Parser {
             // const ids = String($('a', obj).first().attr('href'));
             // const id = ids.replace(String(ids.match(/chapter-\d+/)), String(mangaId.split('/')[mangaId.split('/').length - 1]).split('-').slice(0, -1).join('-'));
             const id = obj.slug;
-            const chapNum = parseFloat(String(obj.title.split(' ')[1]));
+            const chapNum = parseFloat(String(obj.title.split(' ').pop()));
             let name = '';
             if (!obj.is_free) {
                 name = 'LOCKED (' + `Only unlock(with ${obj.unlock_cost} point) and read on website` + ')';
@@ -1854,6 +1854,7 @@ class Parser {
                 time: timeFinal,
             }));
         });
+        console.log(chapters);
         return chapters;
     }
     parseChapterDetails($, API) {
