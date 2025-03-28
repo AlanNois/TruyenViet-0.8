@@ -46,7 +46,7 @@ export const isLastPage = ($: any): boolean => {
 }
 
 export const BaoTangTruyenTranhInfo: SourceInfo = {
-    version: '1.1.1',
+    version: '1.1.2',
     name: 'BaoTangTruyenTranh',
     icon: 'icon.png',
     author: 'AlanNois',
@@ -97,15 +97,15 @@ export class BaoTangTruyenTranh implements ChapterProviding, MangaProviding, Sea
 
     parser = new Parser();
 
-    private async DOMHTML(url: string): Promise<CheerioStatic> {
-        const request = App.createRequest({
-            url: url,
-            method: 'GET',
-        });
-        const response = await this.requestManager.schedule(request, 1);
-        this.CloudFlareError(response.status)
-        return this.cheerio.load(response.data as string);
-    }
+    // private async DOMHTML(url: string): Promise<CheerioStatic> {
+    //     const request = App.createRequest({
+    //         url: url,
+    //         method: 'GET',
+    //     });
+    //     const response = await this.requestManager.schedule(request, 1);
+    //     this.CloudFlareError(response.status)
+    //     return this.cheerio.load(response.data as string);
+    // }
 
     private async callAPI(url: string): Promise<any> {
         const request = App.createRequest({
@@ -245,7 +245,7 @@ export class BaoTangTruyenTranh implements ChapterProviding, MangaProviding, Sea
                 url = `${API}getAllComics?page=${page}&limit=36&sort=created_at&genres=T%E1%BA%A5t+c%E1%BA%A3`;
                 // select = 1;
                 break;
-            case 'trans':
+            case 'hot':
                 url = `${API}getAllComics?page=${page}&limit=36&sort=views&genres=T%E1%BA%A5t+c%E1%BA%A3`;
                 // select = 1;
                 break;
@@ -253,7 +253,7 @@ export class BaoTangTruyenTranh implements ChapterProviding, MangaProviding, Sea
                 return App.createPagedResults({ results: [] });
         }
 
-        const $ = await this.DOMHTML(url);
+        const $ = await this.callAPI(url);
         const manga = this.parser.parseSection($, API);
         metadata = !isLastPage($) ? { page: page + 1 } : undefined;
         console.log(manga)
