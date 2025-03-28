@@ -14,5 +14,7 @@ docs
 
 .idea
 
+*.test.ts
+
 # mac stuff
 .DS_Store

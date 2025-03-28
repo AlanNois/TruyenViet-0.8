@@ -72,7 +72,7 @@ export class Parser {
     parseChapterDetails(json: any): string[] {
         const pages: string[] = [];
 
-        for (const img of json) {
+        for (const img of json['image']) {
             pages.push(img.replace('?v=1&', '?v=9999&'));
         }
 

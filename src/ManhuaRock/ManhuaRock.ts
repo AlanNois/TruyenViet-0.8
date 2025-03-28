@@ -21,7 +21,7 @@ import {
 
 import { Parser } from './ManhuaRockParser';
 
-const DOMAIN = 'https://manhuarockz.com/'
+const DOMAIN = 'https://manhuarock4.com/'
 
 export const isLastPage = ($: CheerioStatic): boolean => {
     const pages: number[] = [];
@@ -129,12 +129,12 @@ export class ManhuaRock implements SearchResultsProviding, MangaProviding, Chapt
     }
 
     async getMangaDetails(mangaId: string): Promise<SourceManga> {
-        const $ = await this.DOMHTML(`${DOMAIN}truyen/${mangaId}`);
+        const $ = await this.DOMHTML(`${DOMAIN}truyen-tranh/${mangaId}`);
         return this.parser.parseMangaDetails($, mangaId, DOMAIN);
     }
 
     async getChapters(mangaId: string): Promise<Chapter[]> {
-        const $ = await this.DOMHTML(`${DOMAIN}truyen/${mangaId}`);
+        const $ = await this.DOMHTML(`${DOMAIN}truyen-tranh/${mangaId}`);
         return this.parser.parseChapterList($);
     }
 
@@ -200,7 +200,7 @@ export class ManhuaRock implements SearchResultsProviding, MangaProviding, Chapt
                     url = `${DOMAIN}xem-nhieu/`;
                     break;
                 case 'new_updated':
-                    url = `${DOMAIN}danh-sach-truyen/?sort=latest-updated`;
+                    url = `${DOMAIN}tat-ca-truyen/1/?sort=latest-updated`;
                     break;
                 case 'full':
                     url = `${DOMAIN}hoan-thanh/`;

@@ -100,10 +100,38 @@ export class Parser {
 
     parseChapterDetails($: CheerioStatic): string[] {
         const pages: string[] = [];
+        const DEFAULT_IMAGE = 'images/default/chapter_default.png'
 
         $('.list-image-detail img').each((_: any, obj: any) => {
-            const link = String($(obj).attr('src') ?? $(obj).attr('data-cfsrc'));
-            pages.push(link.indexOf('https') === -1 ? 'https:' + link : link);
+            const attributes = ['src', 'data-src', 'data-cfsrc', 'data-original'];
+            let link = '';
+
+            for (const attr of attributes) {
+                const url = $(obj).attr(attr);
+                if (url && !url.includes(DEFAULT_IMAGE)) {
+                    link = url;
+                    break;
+                }
+            }
+
+            // Fallback to first existing attribute if all are default
+            if (!link) {
+                for (const attr of attributes) {
+                    const url = $(obj).attr(attr);
+                    if (url) {
+                        link = url;
+                        break;
+                    }
+                }
+            }
+
+            if (link) {
+                // Handle protocol-relative URLs
+                const fullUrl = link.startsWith('//') ? `https:${link}` :
+                    link.startsWith('http') ? link :
+                        `https://${link}`;
+                pages.push(fullUrl);
+            }
         });
 
         console.log(pages)

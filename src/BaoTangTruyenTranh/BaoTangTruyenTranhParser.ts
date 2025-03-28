@@ -2,7 +2,7 @@ import {
     Chapter,
     SourceManga,
     Tag,
-    MangaUpdates,
+    // MangaUpdates,
     PartialSourceManga
 } from '@paperback/types'
 
@@ -10,21 +10,22 @@ const entities = require("entities");
 
 export class Parser {
 
-    parseMangaDetails($: CheerioStatic, mangaId: string): SourceManga {
+    parseMangaDetails($: any, mangaId: string, API: string): SourceManga {
         const tags: Tag[] = [];
 
-        $('.kind a').each((_: any, obj: any) => {
-            const label = this.decodeHTMLEntity($(obj).text().trim());
-            const id = $(obj).attr('href')?.split('/').pop() ?? label;
+        $.genres.map((obj: any) => {
+            const label = this.decodeHTMLEntity(obj.trim());
+            // const id = $(obj).attr('href')?.split('/').pop() ?? label;
+            const id = label;
             tags.push(App.createTag({ label, id }));
         });
 
-        const titles = [this.decodeHTMLEntity($('.title-detail').text().trim())];
-        const author = this.decodeHTMLEntity($('.author p').last().text().trim());
-        const artist = this.decodeHTMLEntity($('.author p').last().text().trim());
-        const desc = $('#summary').text();
-        const image = encodeURI($('.col-image img').attr('data-src')?.replace('http://', 'https://') ?? "");
-        const status = $('.status p').last().text().trim();
+        const titles = [this.decodeHTMLEntity($.name.trim())];
+        const author = this.decodeHTMLEntity($.author.trim());
+        const artist = this.decodeHTMLEntity($.author.trim());
+        const desc = this.decodeHTMLEntity($.description.trim());
+        const image = encodeURI(`${API}thumbnails/${$.thumbnail}`);
+        const status = 'Đang cập nhật';
 
         return App.createSourceManga({
             id: mangaId,
@@ -40,49 +41,52 @@ export class Parser {
         })
     };
 
-    parseChapterList($: CheerioStatic, mangaId: string): Chapter[] {
+    parseChapterList($: any): Chapter[] {
         const chapters: Chapter[] = [];
 
-        $('ul .row:not(.heading)').each((_, obj) => {
-            const ids = String($('a', obj).first().attr('href'));
-            const id = ids.replace(String(ids.match(/chapter-\d+/)), String(mangaId.split('/')[mangaId.split('/').length - 1]).split('-').slice(0, -1).join('-'));
-            const chapNum = parseFloat(String($('a', obj).first().text()?.split(' ')[1]));
-            let name = $('a', obj).first().text().trim();
-            if ($('.coin-unlock', obj).attr('title')) {
-                name = 'LOCKED (' + $('.coin-unlock', obj).attr('title') + ')';
+        $.chapters.map((obj: any) => {
+            // const ids = String($('a', obj).first().attr('href'));
+            // const id = ids.replace(String(ids.match(/chapter-\d+/)), String(mangaId.split('/')[mangaId.split('/').length - 1]).split('-').slice(0, -1).join('-'));
+            const id = obj.slug;
+            const chapNum = parseFloat(String(obj.title.split(' ').pop()));
+            let name = '';
+            if (!obj.is_free) {
+                name = 'LOCKED (' + `Only unlock(with ${obj.unlock_cost} point) and read on website` + ')';
             }
-            const time = $('.col-xs-4', obj).text().trim();
+            const time = obj.created_at.trim();
             const timeFinal = this.convertTime(this.decodeHTMLEntity(time))
             chapters.push(App.createChapter({
-                id: id.split('/').slice(-4).join('/'),
+                // id: id.split('/').slice(-4).join('/'),
+                id,
                 chapNum: chapNum,
                 name,
                 langCode: '🇻🇳',
                 time: timeFinal,
             }));
         });
+        console.log(chapters)
         return chapters;
     }
 
-    parseChapterDetails($: CheerioStatic): string[] {
-        const pages: string[] = $('.reading-detail img').map((_, element) => {
-            const image = $(element).attr('src');
-            return encodeURI(String(image?.replace('http://', 'https://')));
-        }).get();
+    parseChapterDetails($: any, API: any): string[] {
+        const pages: string[] = $.images.map((element: any) => {
+            const image = `${API}${element}`;
+            return encodeURI(image);
+        });
 
         return pages
     }
 
-    parseSearchResults($: CheerioStatic): PartialSourceManga[] {
+    parseSearchResults($: any, API: string): PartialSourceManga[] {
         const manga: PartialSourceManga[] = [];
-        $('.row .item').each((_, element) => {
-            const title = $('h3 > a', element).text().trim();
-            const image = $('.image img', element).attr("src") ?? "";
-            const id = $('h3 > a', element).attr('href')?.split('/').slice(-2).join('/');
-            const chapter = $("ul .chapter > a", element).first().text().trim().replace('Chapter ', 'Ch.') + ' | ' + $("ul .chapter > i", element).first().text().trim();
+        $.data.map((element: any) => {
+            const title = element.name.trim();
+            const image = `${API}thumbnails/${element.thumbnail}` ?? "";
+            const id = element.slug;
+            const chapter = element.chapters.pop();
             manga.push(App.createPartialSourceManga({
                 mangaId: String(id),
-                image: encodeURI(this.decodeHTMLEntity(image?.replace('http://', 'https://'))),
+                image: encodeURI(this.decodeHTMLEntity(image)),
                 title: this.decodeHTMLEntity(title),
                 subtitle: chapter,
             }));
@@ -90,94 +94,87 @@ export class Parser {
         return manga;
     }
 
-    parseFeaturedSection($: CheerioStatic): PartialSourceManga[] {
+    parseFeaturedSection($: any, API: string): PartialSourceManga[] {
         let featuredItems: PartialSourceManga[] = [];
-        featuredItems = $('.items-slide .item').map((_, element) => {
-            const title = $('.slide-caption h3', element).text().trim();
-            const image = $('a img', element).attr("src");
-            const id = $('a', element).attr('href')?.split('/').slice(-2).join('/');
-            const subtitle = $(".slide-caption > a", element).first().text().trim() + ' | ' + $(".time", element).first().text().trim();
+        featuredItems = $.data.map((element: any) => {
+            const title = element.comic_name.trim();
+            const image = `${API}thumbnails/${element.thumbnail}`;
+            const id = element.slug;
+            const subtitle = element.latest_chapter.title.trim() + ' | ' + this.convertTime(element.latest_chapter.created_at);
             return App.createPartialSourceManga({
                 mangaId: String(id),
                 image: String(image),
                 title: this.decodeHTMLEntity(title),
                 subtitle: this.decodeHTMLEntity(subtitle),
             });
-        }).get();
+        });
         return featuredItems;
     }
 
-    parseNewUpdatedSection($: CheerioStatic): PartialSourceManga[] {
-        const newUpdatedItems: PartialSourceManga[] = $('.row .item').map((_, element) => {
-            const title = $('h3 > a', element).text().trim();
-            const image = $('.image img', element).attr("src");
-            const id = $('h3 > a', element).attr('href')?.split('/').slice(-2).join('/');
-            const subtitle = $("ul .chapter > a", element).first().text().trim().replace('Chapter ', 'Ch.') + ' | ' + $("ul .chapter > i", element).first().text().trim();
+    parseSection($: any, API: string): PartialSourceManga[] {
+        let sectionItems: PartialSourceManga[] = [];
+        sectionItems = $.data.map((element: any) => {
+            const title = element.name.trim();
+            const image = `${API}thumbnails/${element.thumbnail}`;
+            const id = element.slug;
+            const latest_chapter = element.chapters.pop()
+            const subtitle = latest_chapter.title.trim() + ' | ' + this.convertTime(latest_chapter.created_at);
             return App.createPartialSourceManga({
                 mangaId: String(id),
                 image: String(image),
                 title: this.decodeHTMLEntity(title),
                 subtitle: this.decodeHTMLEntity(subtitle),
             });
-        }).get();
-        return newUpdatedItems;
-    }
-
-    parseTransSection($: CheerioStatic): PartialSourceManga[] {
-        const transItems: PartialSourceManga[] = $('.row .item').map((_, element) => {
-            const title = $('h3 > a', element).text().trim();
-            const image = $('.image img', element).attr("src");
-            const id = $('h3 > a', element).attr('href')?.split('/').slice(-2).join('/');
-            const subtitle = $("ul .chapter > a", element).first().text().trim().replace('Chapter ', 'Ch.') + ' | ' + $("ul .chapter > i", element).first().text().trim();
-            return App.createPartialSourceManga({
-                mangaId: String(id),
-                image: String(image),
-                title: this.decodeHTMLEntity(title),
-                subtitle: this.decodeHTMLEntity(subtitle),
-            });
-        }).get();
-        return transItems;
-    }
-
-    parseViewMore($: CheerioStatic): PartialSourceManga[] {
-        const manga: PartialSourceManga[] = [];
-        $('.row .item').each((_, element) => {
-            const title = $('h3 > a', element).text().trim();
-            const image = $('.image img', element).attr("src") ?? "";
-            const id = $('h3 > a', element).attr('href')?.split('/').slice(-2).join('/');
-            const chapter = $("ul .chapter > a", element).first().text().trim().replace('Chapter ', 'Ch.') + ' | ' + $("ul .chapter > i", element).first().text().trim();
-            manga.push(App.createPartialSourceManga({
-                mangaId: String(id),
-                image: encodeURI(this.decodeHTMLEntity(image?.replace('http://', 'https://'))),
-                title: title,
-                subtitle: chapter,
-            }));
         });
-        return manga;
+        return sectionItems;
     }
 
-    parseUpdatedManga(updateManga: any, time: Date, ids: string[]): MangaUpdates {
-        const returnObject: MangaUpdates = {
-            ids: []
-        };
+    // parseViewMore($: CheerioStatic): PartialSourceManga[] {
+    //     const manga: PartialSourceManga[] = [];
+    //     $('.row .item').each((_, element) => {
+    //         const title = $('h3 > a', element).text().trim();
+    //         const image = $('.image img', element).attr("src") ?? "";
+    //         const id = $('h3 > a', element).attr('href')?.split('/').slice(-2).join('/');
+    //         const chapter = $("ul .chapter > a", element).first().text().trim().replace('Chapter ', 'Ch.') + ' | ' + $("ul .chapter > i", element).first().text().trim();
+    //         manga.push(App.createPartialSourceManga({
+    //             mangaId: String(id),
+    //             image: encodeURI(this.decodeHTMLEntity(image?.replace('http://', 'https://'))),
+    //             title: this.decodeHTMLEntity(title),
+    //             subtitle: this.decodeHTMLEntity(chapter),
+    //         }));
+    //     });
+    //     return manga;
+    // }
 
-        for (const elem of updateManga) {
-            if (ids.includes(elem.id) && time < this.convertTime(elem.time)) {
-                returnObject.ids.push(elem.id);
-            }
-        }
+    // parseUpdatedManga(updateManga: any, time: Date, ids: string[]): MangaUpdates {
+    //     const returnObject: MangaUpdates = {
+    //         ids: []
+    //     };
 
-        return returnObject;
-    }
+    //     for (const elem of updateManga) {
+    //         if (ids.includes(elem.id) && time < this.convertTime(elem.time)) {
+    //             returnObject.ids.push(elem.id);
+    //         }
+    //     }
+
+    //     return returnObject;
+    // }
 
     decodeHTMLEntity = (str: string): string => {
         return entities.decodeHTML(str);
     };
 
     private convertTime(timeAgo: string): Date {
+        // Attempt native parsing first
+        const parsed = new Date(timeAgo);
+        if (!isNaN(parsed.getTime())) {
+            return parsed;
+        }
+
         let time: Date;
         let trimmed: number = Number((/\d*/.exec(timeAgo) ?? [])[0]);
-        trimmed = (trimmed == 0 && timeAgo.includes('a')) ? 1 : trimmed;
+        trimmed = (trimmed === 0 && timeAgo.includes('a')) ? 1 : trimmed;
+
         if (timeAgo.includes('giây')) {
             time = new Date(Date.now() - trimmed * 1000);
         } else if (timeAgo.includes('phút')) {
@@ -193,16 +190,32 @@ export class Parser {
         } else if (timeAgo.includes('năm')) {
             time = new Date(Date.now() - trimmed * 86400000 * 7 * 4 * 12);
         } else {
-            if (timeAgo.includes(":")) {
+            // Check if the string is in ISO-like format: "YYYY-MM-DD HH:MM:SS"
+            const isoRegex = /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/;
+            if (isoRegex.test(timeAgo)) {
+                time = new Date(timeAgo);
+            } else if (timeAgo.includes(":")) {
                 const split = timeAgo.split(' ');
-                const H = split[0];
-                const D = split[1];
-                const fixD = String(D).split('/');
-                const finalD = fixD[1] + '/' + fixD[0] + '/' + new Date().getFullYear();
-                time = new Date(finalD + ' ' + H);
+                if (split.length >= 2) {
+                    const H = split[0];
+                    const D = split[1];
+                    const fixD = String(D).split('/');
+                    if (fixD.length >= 2) {
+                        const finalD = fixD[1] + '/' + fixD[0] + '/' + new Date().getFullYear();
+                        time = new Date(finalD + ' ' + H);
+                    } else {
+                        time = new Date(timeAgo); // fallback attempt
+                    }
+                } else {
+                    time = new Date(timeAgo); // fallback attempt
+                }
             } else {
                 const split = timeAgo.split('/');
-                time = new Date(split[1] + '/' + split[0] + '/' + '20' + split[2]);
+                if (split.length >= 3) {
+                    time = new Date(split[1] + '/' + split[0] + '/' + '20' + split[2]);
+                } else {
+                    time = new Date(timeAgo); // final fallback
+                }
             }
         }
         return time;

@@ -22,10 +22,10 @@ import {
 
 import { Parser } from './CMangaParser';
 
-const DOMAIN = 'https://cmangal.com/';
+const DOMAIN = 'https://cmangaax.com/';
 
 export const CMangaInfo: SourceInfo = {
-    version: '1.0.9',
+    version: '1.0.15',
     name: 'CManga',
     icon: 'icon.png',
     author: 'AlanNois',
@@ -96,7 +96,7 @@ export class CManga implements ChapterProviding, MangaProviding, SearchResultsPr
     }
 
     async getChapters(mangaId: string): Promise<Chapter[]> {
-        const json = JSON.parse(await this.getAPI(`${DOMAIN}api/chapter_list?album=${mangaId}&v=0`));
+        const json = JSON.parse(await this.getAPI(`${DOMAIN}api/chapter_list?album=${mangaId}&page=1&limit=99999999&v=0`));
         return this.parser.parseChapters(json);
     }
 
@@ -175,7 +175,7 @@ export class CManga implements ChapterProviding, MangaProviding, SearchResultsPr
             let url: string;
             switch (section.id) {
                 case 'new_updated':
-                    url = `${DOMAIN}api/home_album_list?num_chapter=0&sort=update&tag=all&limit=20&page=1&user=0&child_protect=off`;
+                    url = `${DOMAIN}api/home_album_list?num_chapter=0&sort=update&tag=&limit=20&page=1&user=0&child_protect=off`;
                     break;
                 // case 'new_added':
                 //     url = `${DOMAIN}api/list_item?page=1&limit=20&sort=new&type=all&tag=Truy%E1%BB%87n%20si%C3%AAu%20hay&child=off&status=all&num_chapter=0`;

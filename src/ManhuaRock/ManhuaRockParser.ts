@@ -163,12 +163,12 @@ export class Parser {
     parseFeaturedSection($: CheerioStatic, DOMAIN: string): PartialSourceManga[] {
         const featuredItems: PartialSourceManga[] = [];
 
-        $('.p-item', '.sidebar > div:nth-child(5) > div.sidebar-pp').each((_: any, manga: any) => {
-            const title = $('.p-left > h4', manga).text().trim();
-            const id = $('.p-left > h4 > a', manga).attr('href')?.split('/').slice(4).join('/');
-            let image = `${DOMAIN}${$('.pthumb > img', manga).first().attr('data-src')}`;
+        $('div', '.owl-wrapper').each((_: any, manga: any) => {
+            const title = $('.item > .slide-caption > h3', manga).text().trim();
+            const id = $('.item > .slide-caption > h3 > a', manga).attr('href')?.split('/').slice(4).join('/');
+            let image = `${DOMAIN}${$('.item > a > img', manga).first().attr('data-src')}`;
             image = !image ? "https://i.imgur.com/GYUxEX8.png" : image
-            const subtitle = $(".p-left > .list-chapter > div:nth-of-type(1) > span", manga).first().text().trim();
+            const subtitle = String($(".item > .slide-caption", manga).text().trim().split('\n')[1]?.trim());
             if (!id || !title) return;
 
             featuredItems.push(App.createPartialSourceManga({
@@ -178,6 +178,7 @@ export class Parser {
                 subtitle: subtitle,
             }));
         });
+        console.log(featuredItems)
 
         return featuredItems
     }
