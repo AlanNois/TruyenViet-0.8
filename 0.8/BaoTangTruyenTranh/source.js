@@ -1460,7 +1460,7 @@ const isLastPage = ($) => {
 };
 exports.isLastPage = isLastPage;
 exports.BaoTangTruyenTranhInfo = {
-    version: '1.1.1',
+    version: '1.1.2',
     name: 'BaoTangTruyenTranh',
     icon: 'icon.png',
     author: 'AlanNois',
@@ -1507,15 +1507,15 @@ class BaoTangTruyenTranh {
     getMangaShareUrl(mangaId) {
         return `${DOMAIN}${mangaId}`;
     }
-    async DOMHTML(url) {
-        const request = App.createRequest({
-            url: url,
-            method: 'GET',
-        });
-        const response = await this.requestManager.schedule(request, 1);
-        this.CloudFlareError(response.status);
-        return this.cheerio.load(response.data);
-    }
+    // private async DOMHTML(url: string): Promise<CheerioStatic> {
+    //     const request = App.createRequest({
+    //         url: url,
+    //         method: 'GET',
+    //     });
+    //     const response = await this.requestManager.schedule(request, 1);
+    //     this.CloudFlareError(response.status)
+    //     return this.cheerio.load(response.data as string);
+    // }
     async callAPI(url) {
         const request = App.createRequest({
             url: url,
@@ -1641,14 +1641,14 @@ class BaoTangTruyenTranh {
                 url = `${API}getAllComics?page=${page}&limit=36&sort=created_at&genres=T%E1%BA%A5t+c%E1%BA%A3`;
                 // select = 1;
                 break;
-            case 'trans':
+            case 'hot':
                 url = `${API}getAllComics?page=${page}&limit=36&sort=views&genres=T%E1%BA%A5t+c%E1%BA%A3`;
                 // select = 1;
                 break;
             default:
                 return App.createPagedResults({ results: [] });
         }
-        const $ = await this.DOMHTML(url);
+        const $ = await this.callAPI(url);
         const manga = this.parser.parseSection($, API);
         metadata = !(0, exports.isLastPage)($) ? { page: page + 1 } : undefined;
         console.log(manga);
