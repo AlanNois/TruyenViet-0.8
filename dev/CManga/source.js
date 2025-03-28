@@ -1600,7 +1600,7 @@ class CManga {
         let url = '';
         switch (homepageSectionId) {
             case 'new_updated':
-                url = `${DOMAIN}api/home_album_list?num_chapter=0&sort=update&tag=all&limit=40&page=${page}&user=0&child_protect=off`;
+                url = `${DOMAIN}api/home_album_list?num_chapter=0&sort=update&tag=&limit=36&page=${page}&user=0&child_protect=off`;
                 break;
             // case 'new_added':
             //     url = `${DOMAIN}api/list_item?page=${page}&limit=40&sort=new&type=all&tag=Truy%E1%BB%87n%20si%C3%AAu%20hay&child=off&status=all&num_chapter=0`
