@@ -460,7 +460,7 @@ __exportStar(require("./compat/DyamicUI"), exports);
 },{"./base/index":7,"./compat/DyamicUI":16,"./generated/_exports":60}],62:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.NetTruyen = exports.NetTruyenInfo = exports.isLastPage = void 0;
+exports.NetTruyen = exports.isLastPage = void 0;
 const types_1 = require("@paperback/types");
 const NetTruyenParser_1 = require("./NetTruyenParser");
 const DOMAIN = 'https://www.nettruyenvv.com/';
@@ -474,27 +474,27 @@ const isLastPage = ($) => {
     return true;
 };
 exports.isLastPage = isLastPage;
-exports.NetTruyenInfo = {
-    version: '1.0.8',
-    name: 'NetTruyen',
-    icon: 'icon.png',
-    author: 'AlanNois',
-    authorWebsite: 'https://github.com/AlanNois/',
-    description: 'Extension that pulls manga from NetTruyen.',
-    contentRating: types_1.ContentRating.EVERYONE,
-    websiteBaseURL: DOMAIN,
-    sourceTags: [
-        {
-            text: 'Recommended',
-            type: types_1.BadgeColor.BLUE
-        },
-        {
-            text: 'Notifications',
-            type: types_1.BadgeColor.GREEN
-        },
-    ],
-    intents: types_1.SourceIntents.MANGA_CHAPTERS | types_1.SourceIntents.HOMEPAGE_SECTIONS
-};
+// export const NetTruyenInfo: SourceInfo = {
+//     version: '1.0.8',
+//     name: 'NetTruyen',
+//     icon: 'icon.png',
+//     author: 'AlanNois',
+//     authorWebsite: 'https://github.com/AlanNois/',
+//     description: 'Extension that pulls manga from NetTruyen.',
+//     contentRating: ContentRating.EVERYONE,
+//     websiteBaseURL: DOMAIN,
+//     sourceTags: [
+//         {
+//             text: 'Recommended',
+//             type: BadgeColor.BLUE
+//         },
+//         {
+//             text: 'Notifications',
+//             type: BadgeColor.GREEN
+//         },
+//     ],
+//     intents: SourceIntents.MANGA_CHAPTERS | SourceIntents.HOMEPAGE_SECTIONS
+// };
 class NetTruyen {
     constructor(cheerio) {
         this.cheerio = cheerio;

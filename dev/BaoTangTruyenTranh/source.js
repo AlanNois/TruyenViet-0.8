@@ -1438,8 +1438,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.BaoTangTruyenTranh = exports.BaoTangTruyenTranhInfo = exports.isLastPage = void 0;
 const types_1 = require("@paperback/types");
 const BaoTangTruyenTranhParser_1 = require("./BaoTangTruyenTranhParser");
-const DOMAIN = 'https://baotangtruyen31.top/';
-const API = 'https://api.chilltruyenmoi.com/';
+const DOMAIN = 'https://baotangtruyen32.top/';
+const API = 'https://api.chilltruyentranh.site/';
 // export const isLastPage = ($: CheerioStatic): boolean => {
 //     const pages: number[] = [];
 //     $("li", "ul.pagination").each((_, page) => {
@@ -1460,7 +1460,7 @@ const isLastPage = ($) => {
 };
 exports.isLastPage = isLastPage;
 exports.BaoTangTruyenTranhInfo = {
-    version: '1.1.4',
+    version: '1.1.5',
     name: 'BaoTangTruyenTranh',
     icon: 'icon.png',
     author: 'AlanNois',
@@ -1481,8 +1481,8 @@ exports.BaoTangTruyenTranhInfo = {
     intents: types_1.SourceIntents.MANGA_CHAPTERS | types_1.SourceIntents.HOMEPAGE_SECTIONS | types_1.SourceIntents.CLOUDFLARE_BYPASS_REQUIRED
 };
 class BaoTangTruyenTranh {
-    constructor(cheerio) {
-        this.cheerio = cheerio;
+    constructor() {
+        // constructor(private cheerio: CheerioAPI) { }
         this.requestManager = App.createRequestManager({
             requestsPerSecond: 4,
             requestTimeout: 50000,
@@ -1868,7 +1868,7 @@ class Parser {
         const manga = [];
         $.data.map((element) => {
             const title = element.name.trim();
-            const image = `${API}thumbnails/${element.thumbnail}` ?? "";
+            const image = `${API}thumbnails/${element.thumbnail}`;
             const id = element.slug;
             const chapter = element.chapters.pop();
             manga.push(App.createPartialSourceManga({

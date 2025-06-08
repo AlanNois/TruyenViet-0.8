@@ -460,7 +460,7 @@ __exportStar(require("./compat/DyamicUI"), exports);
 },{"./base/index":7,"./compat/DyamicUI":16,"./generated/_exports":60}],62:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.TimTruyen3s = exports.TimTruyen3sInfo = exports.isLastPage = void 0;
+exports.TimTruyen3s = exports.isLastPage = void 0;
 const types_1 = require("@paperback/types");
 const TimTruyen3sParser_1 = require("./TimTruyen3sParser");
 const DOMAIN = 'https://timtruyen3s.xyz/';
@@ -473,17 +473,17 @@ const isLastPage = ($) => {
     return true;
 };
 exports.isLastPage = isLastPage;
-exports.TimTruyen3sInfo = {
-    version: '1.0.3',
-    name: 'TimTruyen3s',
-    icon: 'icon.png',
-    author: 'AlanNois',
-    authorWebsite: 'https://github.com/AlanNois/',
-    description: 'Extension that pulls manga from TimTruyen3s',
-    contentRating: types_1.ContentRating.EVERYONE,
-    websiteBaseURL: DOMAIN,
-    intents: types_1.SourceIntents.MANGA_CHAPTERS | types_1.SourceIntents.HOMEPAGE_SECTIONS
-};
+// export const TimTruyen3sInfo: SourceInfo = {
+//     version: '1.0.3',
+//     name: 'TimTruyen3s',
+//     icon: 'icon.png',
+//     author: 'AlanNois',
+//     authorWebsite: 'https://github.com/AlanNois/',
+//     description: 'Extension that pulls manga from TimTruyen3s',
+//     contentRating: ContentRating.EVERYONE,
+//     websiteBaseURL: DOMAIN,
+//     intents: SourceIntents.MANGA_CHAPTERS | SourceIntents.HOMEPAGE_SECTIONS
+// }
 class TimTruyen3s {
     constructor(cheerio) {
         this.cheerio = cheerio;

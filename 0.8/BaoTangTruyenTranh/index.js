@@ -1438,8 +1438,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.BaoTangTruyenTranh = exports.BaoTangTruyenTranhInfo = exports.isLastPage = void 0;
 const types_1 = require("@paperback/types");
 const BaoTangTruyenTranhParser_1 = require("./BaoTangTruyenTranhParser");
-const DOMAIN = 'https://baotangtruyen31.top/';
-const API = 'https://api.chilltruyenmoi.com/';
+const DOMAIN = 'https://baotangtruyen32.top/';
+const API = 'https://api.chilltruyentranh.site/';
 // export const isLastPage = ($: CheerioStatic): boolean => {
 //     const pages: number[] = [];
 //     $("li", "ul.pagination").each((_, page) => {
@@ -1460,7 +1460,7 @@ const isLastPage = ($) => {
 };
 exports.isLastPage = isLastPage;
 exports.BaoTangTruyenTranhInfo = {
-    version: '1.1.4',
+    version: '1.1.5',
     name: 'BaoTangTruyenTranh',
     icon: 'icon.png',
     author: 'AlanNois',

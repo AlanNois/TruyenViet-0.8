@@ -463,7 +463,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.DocTruyen3Q = exports.DocTruyen3QInfo = exports.isLastPage = void 0;
 const types_1 = require("@paperback/types");
 const DocTruyen3QParser_1 = require("./DocTruyen3QParser");
-const DOMAIN = 'https://doctruyen3qui9.pro/';
+const DOMAIN = 'https://doctruyen3qui10.pro/';
 const isLastPage = ($) => {
     const lastPage = Number($("ul.pagination > li.page-item:not(:has(a[rel='next'])) a").last().text().trim());
     const currentPage = Number($("ul.pagination > li.active").text().trim());
@@ -471,7 +471,7 @@ const isLastPage = ($) => {
 };
 exports.isLastPage = isLastPage;
 exports.DocTruyen3QInfo = {
-    version: '1.1.13',
+    version: '1.1.14',
     name: 'DocTruyen3Q',
     icon: 'icon.png',
     author: 'AlanNois',

@@ -460,7 +460,7 @@ __exportStar(require("./compat/DyamicUI"), exports);
 },{"./base/index":7,"./compat/DyamicUI":16,"./generated/_exports":60}],62:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.NhatTruyen = exports.NhatTruyenInfo = exports.isLastPage = void 0;
+exports.NhatTruyen = exports.isLastPage = void 0;
 const types_1 = require("@paperback/types");
 const NhatTruyenParser_1 = require("./NhatTruyenParser");
 const DOMAIN = 'https://nhattruyenss.com/';
@@ -474,27 +474,27 @@ const isLastPage = ($) => {
     return true;
 };
 exports.isLastPage = isLastPage;
-exports.NhatTruyenInfo = {
-    version: '1.0.5',
-    name: 'NhatTruyen',
-    icon: 'icon.png',
-    author: 'AlanNois',
-    authorWebsite: 'https://github.com/AlanNois/',
-    description: 'Extension that pulls manga from NhatTruyen.',
-    contentRating: types_1.ContentRating.EVERYONE,
-    websiteBaseURL: DOMAIN,
-    sourceTags: [
-        {
-            text: 'Recommended',
-            type: types_1.BadgeColor.BLUE
-        },
-        {
-            text: 'Notifications',
-            type: types_1.BadgeColor.GREEN
-        },
-    ],
-    intents: types_1.SourceIntents.MANGA_CHAPTERS | types_1.SourceIntents.HOMEPAGE_SECTIONS
-};
+// export const NhatTruyenInfo: SourceInfo = {
+//     version: '1.0.5',
+//     name: 'NhatTruyen',
+//     icon: 'icon.png',
+//     author: 'AlanNois',
+//     authorWebsite: 'https://github.com/AlanNois/',
+//     description: 'Extension that pulls manga from NhatTruyen.',
+//     contentRating: ContentRating.EVERYONE,
+//     websiteBaseURL: DOMAIN,
+//     sourceTags: [
+//         {
+//             text: 'Recommended',
+//             type: BadgeColor.BLUE
+//         },
+//         {
+//             text: 'Notifications',
+//             type: BadgeColor.GREEN
+//         },
+//     ],
+//     intents: SourceIntents.MANGA_CHAPTERS | SourceIntents.HOMEPAGE_SECTIONS
+// };
 class NhatTruyen {
     constructor(cheerio) {
         this.cheerio = cheerio;
