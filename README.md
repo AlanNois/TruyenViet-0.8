@@ -19,15 +19,13 @@
 
 <div align="center">
 
-| #    | Name               | Page                            |
-| ---- | ------------------ | ------------------------------- |
-| 0    | NetTruyen          | https://nettruyenee.com/        |
-| 1    | NhatTruyen         | https://nhattruyenbing.com/     |
-| 2    | BaoTangTruyenTranh | https://baotangtruyen9.com/     |
-| 4    | GocTruyenTranh     | https://goctruyentranhvui1.com/ |
-| 5    | DocTruyen3Q        | https://doctruyen3qkr.com/      |
-| 6    | BlogTruyen         | https://blogtruyen.vn/          |
-| 7    | CManga             | https://cmangaot.com/           |
+| #   | Name               | Page                             |
+| --- | ------------------ | -------------------------------- |
+| 1   | BaoTangTruyenTranh | https://baotangtruyen10.com/     |
+| 2   | GocTruyenTranh     | https://goctruyentranhvui17.com/ |
+| 3   | DocTruyen3Q        | https://doctruyen3qui10.pro/     |
+| 4   | CManga             | https://cmangax2.com/            |
+| 5   | TruyenQQ           | https://truyenqqgo.com/          |
 
 </div>
 
