@@ -39,23 +39,23 @@ export const isLastPage = ($: CheerioStatic): boolean => {
     return currentPage >= lastPage;
 };
 
-export const ManhuaRockInfo: SourceInfo = {
-    version: '1.0.4',
-    name: 'ManhuaRock',
-    icon: 'icon.png',
-    author: 'AlanNois',
-    authorWebsite: 'https://github.com/AlanNois/',
-    description: 'Extension that pulls manga from ManhuaRock.',
-    contentRating: ContentRating.EVERYONE,
-    websiteBaseURL: DOMAIN,
-    sourceTags: [
-        {
-            text: 'Recommended',
-            type: BadgeColor.BLUE
-        }
-    ],
-    intents: SourceIntents.MANGA_CHAPTERS | SourceIntents.HOMEPAGE_SECTIONS
-};
+// export const ManhuaRockInfo: SourceInfo = {
+//     version: '1.0.4',
+//     name: 'ManhuaRock',
+//     icon: 'icon.png',
+//     author: 'AlanNois',
+//     authorWebsite: 'https://github.com/AlanNois/',
+//     description: 'Extension that pulls manga from ManhuaRock.',
+//     contentRating: ContentRating.EVERYONE,
+//     websiteBaseURL: DOMAIN,
+//     sourceTags: [
+//         {
+//             text: 'Recommended',
+//             type: BadgeColor.BLUE
+//         }
+//     ],
+//     intents: SourceIntents.MANGA_CHAPTERS | SourceIntents.HOMEPAGE_SECTIONS
+// };
 
 export class ManhuaRock implements SearchResultsProviding, MangaProviding, ChapterProviding, HomePageSectionsProviding {
 

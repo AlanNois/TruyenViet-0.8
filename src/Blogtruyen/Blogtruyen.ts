@@ -29,17 +29,17 @@ export const isLastPage = ($: CheerioStatic): boolean => {
     return currentPage >= lastPage;
 }
 
-export const BlogtruyenInfo: SourceInfo = {
-    version: '1.0.5',
-    name: 'Blogtruyen',
-    icon: 'icon.png',
-    author: 'AlanNois',
-    authorWebsite: 'https://github/AlanNois',
-    description: 'Extension that pulls manga from Blogtruyen',
-    websiteBaseURL: DOMAIN,
-    contentRating: ContentRating.MATURE,
-    intents: SourceIntents.MANGA_CHAPTERS | SourceIntents.HOMEPAGE_SECTIONS
-}
+// export const BlogtruyenInfo: SourceInfo = {
+//     version: '1.0.5',
+//     name: 'Blogtruyen',
+//     icon: 'icon.png',
+//     author: 'AlanNois',
+//     authorWebsite: 'https://github/AlanNois',
+//     description: 'Extension that pulls manga from Blogtruyen',
+//     websiteBaseURL: DOMAIN,
+//     contentRating: ContentRating.MATURE,
+//     intents: SourceIntents.MANGA_CHAPTERS | SourceIntents.HOMEPAGE_SECTIONS
+// }
 
 export class Blogtruyen implements SearchResultsProviding, MangaProviding, ChapterProviding, HomePageSectionsProviding {
     constructor(private cheerio: CheerioAPI) { }

@@ -81,7 +81,7 @@ export class Parser {
         const manga: PartialSourceManga[] = [];
         $.data.map((element: any) => {
             const title = element.name.trim();
-            const image = `${API}thumbnails/${element.thumbnail}` ?? "";
+            const image = `${API}thumbnails/${element.thumbnail}`;
             const id = element.slug;
             const chapter = element.chapters.pop();
             manga.push(App.createPartialSourceManga({

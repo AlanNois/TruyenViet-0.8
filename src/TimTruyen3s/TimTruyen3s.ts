@@ -33,17 +33,17 @@ export const isLastPage = ($: CheerioStatic): boolean => {
     return true;
 }
 
-export const TimTruyen3sInfo: SourceInfo = {
-    version: '1.0.3',
-    name: 'TimTruyen3s',
-    icon: 'icon.png',
-    author: 'AlanNois',
-    authorWebsite: 'https://github.com/AlanNois/',
-    description: 'Extension that pulls manga from TimTruyen3s',
-    contentRating: ContentRating.EVERYONE,
-    websiteBaseURL: DOMAIN,
-    intents: SourceIntents.MANGA_CHAPTERS | SourceIntents.HOMEPAGE_SECTIONS
-}
+// export const TimTruyen3sInfo: SourceInfo = {
+//     version: '1.0.3',
+//     name: 'TimTruyen3s',
+//     icon: 'icon.png',
+//     author: 'AlanNois',
+//     authorWebsite: 'https://github.com/AlanNois/',
+//     description: 'Extension that pulls manga from TimTruyen3s',
+//     contentRating: ContentRating.EVERYONE,
+//     websiteBaseURL: DOMAIN,
+//     intents: SourceIntents.MANGA_CHAPTERS | SourceIntents.HOMEPAGE_SECTIONS
+// }
 
 export class TimTruyen3s implements SearchResultsProviding, MangaProviding, ChapterProviding, HomePageSectionsProviding {
 

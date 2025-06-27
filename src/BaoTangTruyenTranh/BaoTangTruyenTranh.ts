@@ -23,8 +23,8 @@ import {
 
 import { Parser } from './BaoTangTruyenTranhParser';
 
-const DOMAIN = 'https://baotangtruyen28.com/';
-const API = 'https://api.chilltruyenmoi.com/'
+const DOMAIN = 'https://baotangtruyen32.top/';
+const API = 'https://api.chilltruyentranh.site/'
 
 // export const isLastPage = ($: CheerioStatic): boolean => {
 //     const pages: number[] = [];
@@ -46,7 +46,7 @@ export const isLastPage = ($: any): boolean => {
 }
 
 export const BaoTangTruyenTranhInfo: SourceInfo = {
-    version: '1.1.2',
+    version: '1.1.5',
     name: 'BaoTangTruyenTranh',
     icon: 'icon.png',
     author: 'AlanNois',
@@ -69,7 +69,7 @@ export const BaoTangTruyenTranhInfo: SourceInfo = {
 
 export class BaoTangTruyenTranh implements ChapterProviding, MangaProviding, SearchResultsProviding, HomePageSectionsProviding {
 
-    constructor(private cheerio: CheerioAPI) { }
+    // constructor(private cheerio: CheerioAPI) { }
 
     readonly requestManager = App.createRequestManager({
         requestsPerSecond: 4,

@@ -35,27 +35,27 @@ export const isLastPage = ($: CheerioStatic): boolean => {
     return true;
 }
 
-export const NhatTruyenInfo: SourceInfo = {
-    version: '1.0.5',
-    name: 'NhatTruyen',
-    icon: 'icon.png',
-    author: 'AlanNois',
-    authorWebsite: 'https://github.com/AlanNois/',
-    description: 'Extension that pulls manga from NhatTruyen.',
-    contentRating: ContentRating.EVERYONE,
-    websiteBaseURL: DOMAIN,
-    sourceTags: [
-        {
-            text: 'Recommended',
-            type: BadgeColor.BLUE
-        },
-        {
-            text: 'Notifications',
-            type: BadgeColor.GREEN
-        },
-    ],
-    intents: SourceIntents.MANGA_CHAPTERS | SourceIntents.HOMEPAGE_SECTIONS
-};
+// export const NhatTruyenInfo: SourceInfo = {
+//     version: '1.0.5',
+//     name: 'NhatTruyen',
+//     icon: 'icon.png',
+//     author: 'AlanNois',
+//     authorWebsite: 'https://github.com/AlanNois/',
+//     description: 'Extension that pulls manga from NhatTruyen.',
+//     contentRating: ContentRating.EVERYONE,
+//     websiteBaseURL: DOMAIN,
+//     sourceTags: [
+//         {
+//             text: 'Recommended',
+//             type: BadgeColor.BLUE
+//         },
+//         {
+//             text: 'Notifications',
+//             type: BadgeColor.GREEN
+//         },
+//     ],
+//     intents: SourceIntents.MANGA_CHAPTERS | SourceIntents.HOMEPAGE_SECTIONS
+// };
 
 export class NhatTruyen implements SearchResultsProviding, MangaProviding, ChapterProviding, HomePageSectionsProviding {
 
