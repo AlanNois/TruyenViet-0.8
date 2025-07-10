@@ -1435,7 +1435,7 @@ Object.defineProperty(exports, "decodeXMLStrict", { enumerable: true, get: funct
 },{"./decode.js":62,"./encode.js":64,"./escape.js":65}],70:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Blogtruyen = exports.BlogtruyenInfo = exports.isLastPage = void 0;
+exports.Blogtruyen = exports.isLastPage = void 0;
 const types_1 = require("@paperback/types");
 const BlogtruyenParser_1 = require("./BlogtruyenParser");
 const DOMAIN = 'https://blogtruyenmoi.com/';
@@ -1445,17 +1445,17 @@ const isLastPage = ($) => {
     return currentPage >= lastPage;
 };
 exports.isLastPage = isLastPage;
-exports.BlogtruyenInfo = {
-    version: '1.0.5',
-    name: 'Blogtruyen',
-    icon: 'icon.png',
-    author: 'AlanNois',
-    authorWebsite: 'https://github/AlanNois',
-    description: 'Extension that pulls manga from Blogtruyen',
-    websiteBaseURL: DOMAIN,
-    contentRating: types_1.ContentRating.MATURE,
-    intents: types_1.SourceIntents.MANGA_CHAPTERS | types_1.SourceIntents.HOMEPAGE_SECTIONS
-};
+// export const BlogtruyenInfo: SourceInfo = {
+//     version: '1.0.5',
+//     name: 'Blogtruyen',
+//     icon: 'icon.png',
+//     author: 'AlanNois',
+//     authorWebsite: 'https://github/AlanNois',
+//     description: 'Extension that pulls manga from Blogtruyen',
+//     websiteBaseURL: DOMAIN,
+//     contentRating: ContentRating.MATURE,
+//     intents: SourceIntents.MANGA_CHAPTERS | SourceIntents.HOMEPAGE_SECTIONS
+// }
 class Blogtruyen {
     constructor(cheerio) {
         this.cheerio = cheerio;

@@ -1435,7 +1435,7 @@ Object.defineProperty(exports, "decodeXMLStrict", { enumerable: true, get: funct
 },{"./decode.js":62,"./encode.js":64,"./escape.js":65}],70:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ManhuaRock = exports.ManhuaRockInfo = exports.isLastPage = void 0;
+exports.ManhuaRock = exports.isLastPage = void 0;
 const types_1 = require("@paperback/types");
 const ManhuaRockParser_1 = require("./ManhuaRockParser");
 const DOMAIN = 'https://manhuarock4.com/';
@@ -1452,23 +1452,23 @@ const isLastPage = ($) => {
     return currentPage >= lastPage;
 };
 exports.isLastPage = isLastPage;
-exports.ManhuaRockInfo = {
-    version: '1.0.4',
-    name: 'ManhuaRock',
-    icon: 'icon.png',
-    author: 'AlanNois',
-    authorWebsite: 'https://github.com/AlanNois/',
-    description: 'Extension that pulls manga from ManhuaRock.',
-    contentRating: types_1.ContentRating.EVERYONE,
-    websiteBaseURL: DOMAIN,
-    sourceTags: [
-        {
-            text: 'Recommended',
-            type: types_1.BadgeColor.BLUE
-        }
-    ],
-    intents: types_1.SourceIntents.MANGA_CHAPTERS | types_1.SourceIntents.HOMEPAGE_SECTIONS
-};
+// export const ManhuaRockInfo: SourceInfo = {
+//     version: '1.0.4',
+//     name: 'ManhuaRock',
+//     icon: 'icon.png',
+//     author: 'AlanNois',
+//     authorWebsite: 'https://github.com/AlanNois/',
+//     description: 'Extension that pulls manga from ManhuaRock.',
+//     contentRating: ContentRating.EVERYONE,
+//     websiteBaseURL: DOMAIN,
+//     sourceTags: [
+//         {
+//             text: 'Recommended',
+//             type: BadgeColor.BLUE
+//         }
+//     ],
+//     intents: SourceIntents.MANGA_CHAPTERS | SourceIntents.HOMEPAGE_SECTIONS
+// };
 class ManhuaRock {
     /**
      * The constructor function takes a CheerioAPI object as a parameter and assigns it to a private
