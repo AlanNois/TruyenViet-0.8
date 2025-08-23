@@ -491,7 +491,7 @@ const CuuTruyenDrm_1 = require("./CuuTruyenDrm");
 const DEFAULT_DOMAIN = 'cuutruyen.net';
 // const DOMAINS = ['cuutruyen.net', 'nettrom.com', 'hetcuutruyen.net', 'cuutruyent9sv7.xyz'];
 exports.CuuTruyenInfo = {
-    version: '1.0.0',
+    version: '1.0.1',
     name: 'Cứu Truyện',
     icon: 'icon.png',
     author: 'AlanNois',
@@ -599,7 +599,6 @@ class CuuTruyen {
     async getMangaDetails(mangaId) {
         try {
             const response = await this.apiRequest(`mangas/${mangaId}`);
-            console.log(this.parser.parseMangaDetails(response.data, mangaId));
             return this.parser.parseMangaDetails(response.data, mangaId);
         }
         catch (error) {
@@ -776,7 +775,6 @@ class CuuTruyen {
                 console.error(`Failed to load section ${section.id}:`, error);
                 section.items = [];
             }
-            console.log(section);
             sectionCallback(section);
         }
     }
