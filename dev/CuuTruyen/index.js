@@ -458,30 +458,6 @@ __exportStar(require("./base/index"), exports);
 __exportStar(require("./compat/DyamicUI"), exports);
 
 },{"./base/index":7,"./compat/DyamicUI":16,"./generated/_exports":60}],62:[function(require,module,exports){
-/*!
- * Determine if an object is a Buffer
- *
- * @author   Feross Aboukhadijeh <https://feross.org>
- * @license  MIT
- */
-
-// The _isBuffer check is for Safari 5-7 support, because it's missing
-// Object.prototype.constructor. Remove this eventually
-module.exports = function (obj) {
-  return obj != null && (isBuffer(obj) || isSlowBuffer(obj) || !!obj._isBuffer)
-}
-
-function isBuffer (obj) {
-  return !!obj.constructor && typeof obj.constructor.isBuffer === 'function' && obj.constructor.isBuffer(obj)
-}
-
-// For Node v0.10 support. Remove this eventually.
-function isSlowBuffer (obj) {
-  return typeof obj.readFloatLE === 'function' && typeof obj.slice === 'function' && isBuffer(obj.slice(0, 0))
-}
-
-},{}],63:[function(require,module,exports){
-(function (Buffer){(function (){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CuuTruyen = exports.CuuTruyenInfo = void 0;
@@ -491,7 +467,7 @@ const CuuTruyenDrm_1 = require("./CuuTruyenDrm");
 const DEFAULT_DOMAIN = 'cuutruyen.net';
 // const DOMAINS = ['cuutruyen.net', 'nettrom.com', 'hetcuutruyen.net', 'cuutruyent9sv7.xyz'];
 exports.CuuTruyenInfo = {
-    version: '1.0.1',
+    version: '1.0.0',
     name: 'CuuTruyen',
     icon: 'icon.png',
     author: 'AlanNois',
@@ -550,11 +526,11 @@ class CuuTruyen {
                         try {
                             const url = new URL(response.request.url);
                             const drmData = url.searchParams.get('drm_data') || url.hash.split('drm_data=')[1];
-                            if (drmData && Buffer.isBuffer(response.data)) {
-                                const decryptedData = await (0, CuuTruyenDrm_1.unscrambleImage)(new Uint8Array(response.data), drmData);
+                            if (drmData && response.rawData) {
+                                const decryptedData = await (0, CuuTruyenDrm_1.unscrambleImage)(new Uint8Array(response.rawData), drmData);
                                 return {
                                     ...response,
-                                    data: new TextDecoder().decode(decryptedData)
+                                    rawData: App.createRawData({ byteArray: decryptedData })
                                 };
                             }
                         }
@@ -838,15 +814,19 @@ class CuuTruyen {
 }
 exports.CuuTruyen = CuuTruyen;
 
-}).call(this)}).call(this,{"isBuffer":require("../../node_modules/is-buffer/index.js")})
-},{"../../node_modules/is-buffer/index.js":62,"./CuuTruyenDrm":64,"./CuuTruyenParser":65,"@paperback/types":61}],64:[function(require,module,exports){
+},{"./CuuTruyenDrm":63,"./CuuTruyenParser":64,"@paperback/types":61}],63:[function(require,module,exports){
 "use strict";
+// import { 
+//     PBCanvas, 
+//     PBImage, 
+//     RawData 
+// } from "@paperback/types";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.processImageUrl = exports.extractDrmData = exports.hasDrmData = exports.unscrambleImage = void 0;
 /**
  * DRM Decryption module for CuuTruyen
  * Based on the Kotlin implementation from CuuTruyenImageInterceptor
  */
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.processImageUrl = exports.extractDrmData = exports.hasDrmData = exports.unscrambleImage = void 0;
 const DECRYPTION_KEY = "3141592653589793";
 const DRM_DATA_KEY = "drm_data";
 /**
@@ -899,46 +879,6 @@ function decodeXorCipher(data, key) {
     return result;
 }
 /**
- * Create a canvas-based image manipulation utility
- */
-class ImageCanvas {
-    constructor(width, height) {
-        this.canvas = document.createElement('canvas');
-        this.canvas.width = width;
-        this.canvas.height = height;
-        this.ctx = this.canvas.getContext('2d');
-    }
-    drawImageSection(img, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight) {
-        this.ctx.drawImage(img, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight);
-    }
-    toBlob(quality = 1.0) {
-        return new Promise((resolve) => {
-            this.canvas.toBlob((blob) => {
-                resolve(blob);
-            }, 'image/jpeg', quality);
-        });
-    }
-}
-/**
- * Load image from bytes
- */
-function loadImageFromBytes(imageBytes) {
-    return new Promise((resolve, reject) => {
-        const blob = new Blob([imageBytes], { type: 'image/jpeg' });
-        const url = URL.createObjectURL(blob);
-        const img = new Image();
-        img.onload = () => {
-            URL.revokeObjectURL(url);
-            resolve(img);
-        };
-        img.onerror = () => {
-            URL.revokeObjectURL(url);
-            reject(new Error('Failed to load image'));
-        };
-        img.src = url;
-    });
-}
-/**
  * Main unscrambling function
  */
 async function unscrambleImage(imageBytes, drmData) {
@@ -951,10 +891,11 @@ async function unscrambleImage(imageBytes, drmData) {
         if (!drmString.startsWith('#v4|')) {
             throw new Error(`Invalid DRM data (does not start with expected magic bytes): ${drmString}`);
         }
-        // Load the scrambled image
-        const originalImage = await loadImageFromBytes(imageBytes);
+        // Load the scrambled image into a PBImage
+        const originalImage = App.createPBImage({ data: App.createRawData({ byteArray: imageBytes }) });
         // Create result canvas
-        const resultCanvas = new ImageCanvas(originalImage.width, originalImage.height);
+        const resultCanvas = App.createPBCanvas();
+        resultCanvas.setSize(originalImage.width, originalImage.height);
         // Parse scrambling instructions and unscramble
         const instructions = drmString.split('|').slice(1); // Skip the '#v4' part
         let sourceY = 0;
@@ -967,15 +908,17 @@ async function unscrambleImage(imageBytes, drmData) {
                 continue;
             }
             // Draw the section from source position to destination position
-            resultCanvas.drawImageSection(originalImage, 0, sourceY, originalImage.width, height, // source rect
-            0, destY, originalImage.width, height // dest rect
+            resultCanvas.drawImage(originalImage, 0, sourceY, originalImage.width, height, // source rect
+            0, destY // dest rect
             );
             sourceY += height;
         }
         // Convert result to bytes
-        const resultBlob = await resultCanvas.toBlob(1.0); // Max quality
-        const resultArrayBuffer = await resultBlob.arrayBuffer();
-        return new Uint8Array(resultArrayBuffer);
+        const encodedData = resultCanvas.encode('image/jpeg');
+        if (!encodedData) {
+            throw new Error('Failed to encode canvas to JPEG');
+        }
+        return encodedData; // Cast to Uint8Array as RawData is array-like
     }
     catch (error) {
         console.error('DRM unscrambling failed:', error);
@@ -1027,7 +970,7 @@ async function processImageUrl(url, imageBytes) {
 }
 exports.processImageUrl = processImageUrl;
 
-},{}],65:[function(require,module,exports){
+},{}],64:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CuuTruyenParser = void 0;
@@ -1367,5 +1310,5 @@ class CuuTruyenParser {
 }
 exports.CuuTruyenParser = CuuTruyenParser;
 
-},{}]},{},[63])(63)
+},{}]},{},[62])(62)
 });
