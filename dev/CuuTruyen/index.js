@@ -458,6 +458,29 @@ __exportStar(require("./base/index"), exports);
 __exportStar(require("./compat/DyamicUI"), exports);
 
 },{"./base/index":7,"./compat/DyamicUI":16,"./generated/_exports":60}],62:[function(require,module,exports){
+/*!
+ * Determine if an object is a Buffer
+ *
+ * @author   Feross Aboukhadijeh <https://feross.org>
+ * @license  MIT
+ */
+
+// The _isBuffer check is for Safari 5-7 support, because it's missing
+// Object.prototype.constructor. Remove this eventually
+module.exports = function (obj) {
+  return obj != null && (isBuffer(obj) || isSlowBuffer(obj) || !!obj._isBuffer)
+}
+
+function isBuffer (obj) {
+  return !!obj.constructor && typeof obj.constructor.isBuffer === 'function' && obj.constructor.isBuffer(obj)
+}
+
+// For Node v0.10 support. Remove this eventually.
+function isSlowBuffer (obj) {
+  return typeof obj.readFloatLE === 'function' && typeof obj.slice === 'function' && isBuffer(obj.slice(0, 0))
+}
+
+},{}],63:[function(require,module,exports){
 "use strict";
 /**
  * DRM Decryption module for CuuTruyen
@@ -645,7 +668,8 @@ async function processImageUrl(url, imageBytes) {
 }
 exports.processImageUrl = processImageUrl;
 
-},{}],63:[function(require,module,exports){
+},{}],64:[function(require,module,exports){
+(function (Buffer){(function (){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CuuTruyen = exports.isLastPage = exports.CuuTruyenInfo = void 0;
@@ -715,7 +739,7 @@ class CuuTruyen {
                         try {
                             const url = new URL(response.request.url);
                             const drmData = url.searchParams.get('drm_data') || url.hash.split('drm_data=')[1];
-                            if (drmData && response.data instanceof ArrayBuffer) {
+                            if (drmData && Buffer.isBuffer(response.data)) {
                                 const decryptedData = await (0, CuuDrm_1.unscrambleImage)(new Uint8Array(response.data), drmData);
                                 return {
                                     ...response,
@@ -995,7 +1019,8 @@ class CuuTruyen {
 }
 exports.CuuTruyen = CuuTruyen;
 
-},{"./CuuDrm":62,"./CuuTruyenParser":64,"@paperback/types":61}],64:[function(require,module,exports){
+}).call(this)}).call(this,{"isBuffer":require("../../node_modules/is-buffer/index.js")})
+},{"../../node_modules/is-buffer/index.js":62,"./CuuDrm":63,"./CuuTruyenParser":65,"@paperback/types":61}],65:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CuuTruyenParser = void 0;
@@ -1335,5 +1360,5 @@ class CuuTruyenParser {
 }
 exports.CuuTruyenParser = CuuTruyenParser;
 
-},{}]},{},[63])(63)
+},{}]},{},[64])(64)
 });
