@@ -481,6 +481,360 @@ function isSlowBuffer (obj) {
 }
 
 },{}],63:[function(require,module,exports){
+(function (Buffer){(function (){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.CuuTruyen = exports.isLastPage = exports.CuuTruyenInfo = void 0;
+const types_1 = require("@paperback/types");
+const CuuTruyenParser_1 = require("./CuuTruyenParser");
+const CuuTruyenDrm_1 = require("./CuuTruyenDrm");
+const DEFAULT_DOMAIN = 'cuutruyen.net';
+// const DOMAINS = ['cuutruyen.net', 'nettrom.com', 'hetcuutruyen.net', 'cuutruyent9sv7.xyz'];
+exports.CuuTruyenInfo = {
+    version: '1.0.0',
+    name: 'Cứu Truyện',
+    icon: 'icon.png',
+    author: 'AlanNois',
+    authorWebsite: 'https://github.com/AlanNois/',
+    description: 'Extension that pulls manga from CuuTruyen.',
+    contentRating: types_1.ContentRating.MATURE,
+    websiteBaseURL: `https://${DEFAULT_DOMAIN}`,
+    sourceTags: [
+        {
+            text: 'Recommended',
+            type: types_1.BadgeColor.BLUE
+        },
+        {
+            text: 'Vietnamese',
+            type: types_1.BadgeColor.GREEN
+        },
+        {
+            text: 'DRM Protected',
+            type: types_1.BadgeColor.YELLOW
+        }
+    ],
+    intents: types_1.SourceIntents.MANGA_CHAPTERS | types_1.SourceIntents.HOMEPAGE_SECTIONS
+};
+const isLastPage = ($) => {
+    const current = $('ul.pagination > li.active > a').text();
+    let total = $('ul.pagination > li.PagerSSCCells:last-child').text();
+    if (current) {
+        total = total ?? '';
+        return (+total) === (+current);
+    }
+    return true;
+};
+exports.isLastPage = isLastPage;
+class CuuTruyen {
+    constructor(cheerio) {
+        this.cheerio = cheerio;
+        this.domain = DEFAULT_DOMAIN;
+        this.baseUrl = `https://${this.domain}`;
+        this.apiUrl = `https://${this.domain}/api/v2`;
+        this.requestManager = App.createRequestManager({
+            requestsPerSecond: 3,
+            requestTimeout: 60000,
+            interceptor: {
+                interceptRequest: async (request) => {
+                    request.headers = {
+                        ...(request.headers ?? {}),
+                        ...{
+                            'referer': `${this.baseUrl}/`,
+                            'user-agent': await this.requestManager.getDefaultUserAgent(),
+                        }
+                    };
+                    return request;
+                },
+                interceptResponse: async (response) => {
+                    // Handle image DRM decryption
+                    if (response.request.url.includes('drm_data=')) {
+                        try {
+                            const url = new URL(response.request.url);
+                            const drmData = url.searchParams.get('drm_data') || url.hash.split('drm_data=')[1];
+                            if (drmData && Buffer.isBuffer(response.data)) {
+                                const decryptedData = await (0, CuuTruyenDrm_1.unscrambleImage)(new Uint8Array(response.data), drmData);
+                                return {
+                                    ...response,
+                                    data: new TextDecoder().decode(decryptedData)
+                                };
+                            }
+                        }
+                        catch (error) {
+                            console.error('DRM decryption failed:', error);
+                        }
+                    }
+                    return response;
+                }
+            }
+        });
+        this.parser = new CuuTruyenParser_1.CuuTruyenParser();
+    }
+    // private titleCache = new Map<number, string>();
+    getMangaShareUrl(mangaId) {
+        return `${this.baseUrl}/mangas/${mangaId}`;
+    }
+    async DOMHTML(url) {
+        const request = App.createRequest({
+            url: url,
+            method: 'GET',
+        });
+        const response = await this.requestManager.schedule(request, 1);
+        return this.cheerio.load(response.data);
+    }
+    async apiRequest(endpoint, params = {}) {
+        const url = new URL(`${this.apiUrl}/${endpoint}`);
+        Object.entries(params).forEach(([key, value]) => {
+            url.searchParams.append(key, value);
+        });
+        const request = App.createRequest({
+            url: url.toString(),
+            method: 'GET',
+        });
+        const response = await this.requestManager.schedule(request, 1);
+        if (response.status === 500) {
+            throw new Error('Server error - please try again later');
+        }
+        return JSON.parse(response.data);
+    }
+    async getMangaDetails(mangaId) {
+        try {
+            const response = await this.apiRequest(`mangas/${mangaId}`);
+            console.log(this.parser.parseMangaDetails(response.data, mangaId));
+            return this.parser.parseMangaDetails(response.data, mangaId);
+        }
+        catch (error) {
+            // Fallback to web scraping if API fails
+            const $ = await this.DOMHTML(`${this.baseUrl}/mangas/${mangaId}`);
+            return this.parser.parseMangaDetailsFromHTML($, mangaId);
+        }
+    }
+    async getChapters(mangaId) {
+        try {
+            const response = await this.apiRequest(`mangas/${mangaId}/chapters`);
+            return this.parser.parseChapterList(response.data);
+        }
+        catch (error) {
+            // Fallback to web scraping if API fails
+            const $ = await this.DOMHTML(`${this.baseUrl}/mangas/${mangaId}`);
+            return this.parser.parseChapterListFromHTML($);
+        }
+    }
+    async getChapterDetails(mangaId, chapterId) {
+        try {
+            const response = await this.apiRequest(`chapters/${chapterId}`);
+            const pages = this.parser.parseChapterPages(response.data);
+            return App.createChapterDetails({
+                id: chapterId,
+                mangaId: mangaId,
+                pages: pages,
+            });
+        }
+        catch (error) {
+            // Fallback to web scraping if API fails
+            const $ = await this.DOMHTML(`${this.baseUrl}/mangas/${mangaId}/chapters/${chapterId}`);
+            const pages = this.parser.parseChapterDetailsFromHTML($);
+            return App.createChapterDetails({
+                id: chapterId,
+                mangaId: mangaId,
+                pages: pages,
+            });
+        }
+    }
+    async supportsTagExclusion() {
+        return false;
+    }
+    async getSearchResults(query, metadata) {
+        let page = metadata?.page ?? 1;
+        // Handle ID search
+        if (query.title?.startsWith('id:')) {
+            const id = query.title.replace('id:', '').trim();
+            if (!/^\d+$/.test(id)) {
+                throw new Error('Invalid ID search format (must be numeric)');
+            }
+            try {
+                const manga = await this.getMangaDetails(id);
+                return App.createPagedResults({
+                    results: [App.createPartialSourceManga({
+                            mangaId: id,
+                            image: manga.image,
+                            title: manga.titles[0],
+                            subtitle: manga.author || ''
+                        })],
+                    metadata: undefined
+                });
+            }
+            catch (error) {
+                return App.createPagedResults({
+                    results: [],
+                    metadata: undefined
+                });
+            }
+        }
+        let endpoint = '';
+        const params = {
+            page: page.toString(),
+            per_page: '24'
+        };
+        // Handle tag-based search
+        const tagFilter = query.includedTags?.[0];
+        if (tagFilter && !query.title) {
+            endpoint = `tags/${tagFilter.id}`;
+            params.per_page = '30';
+        }
+        // Handle text search
+        else if (query.title) {
+            endpoint = 'mangas/search';
+            params.q = query.title;
+        }
+        // Default to popular
+        else {
+            endpoint = 'mangas/top';
+            params.duration = 'all';
+        }
+        try {
+            const response = await this.apiRequest(endpoint, params);
+            let results;
+            if (endpoint.startsWith('tags/')) {
+                results = this.parser.parseSearchByTag(response.data);
+            }
+            else {
+                results = this.parser.parseSearchResults(response.data);
+            }
+            const hasNextPage = response._metadata ?
+                response._metadata.current_page < response._metadata.total_pages :
+                false;
+            return App.createPagedResults({
+                results: results,
+                metadata: hasNextPage ? { page: page + 1 } : undefined
+            });
+        }
+        catch (error) {
+            // Fallback to empty results
+            return App.createPagedResults({
+                results: [],
+                metadata: undefined
+            });
+        }
+    }
+    async getHomePageSections(sectionCallback) {
+        console.log('CuuTruyen Running...');
+        const sections = [
+            App.createHomeSection({
+                id: 'popular',
+                title: "Phổ Biến Nhất",
+                containsMoreItems: true,
+                type: types_1.HomeSectionType.singleRowNormal
+            }),
+            App.createHomeSection({
+                id: 'latest',
+                title: "Mới Cập Nhật",
+                containsMoreItems: true,
+                type: types_1.HomeSectionType.singleRowNormal
+            }),
+            App.createHomeSection({
+                id: 'completed',
+                title: "Đã Hoàn Thành",
+                containsMoreItems: true,
+                type: types_1.HomeSectionType.singleRowNormal
+            })
+        ];
+        for (const section of sections) {
+            sectionCallback(section);
+            try {
+                let response;
+                switch (section.id) {
+                    case 'popular':
+                        response = await this.apiRequest('mangas/top', {
+                            duration: 'all',
+                            page: '1',
+                            per_page: '20'
+                        });
+                        break;
+                    case 'latest':
+                        response = await this.apiRequest('mangas/recently_updated', {
+                            page: '1',
+                            per_page: '20'
+                        });
+                        break;
+                    case 'completed':
+                        response = await this.apiRequest('tags/da-hoan-thanh', {
+                            page: '1',
+                            per_page: '20'
+                        });
+                        break;
+                    default:
+                        continue;
+                }
+                if (section.id === 'completed') {
+                    section.items = this.parser.parseSearchByTag(response.data);
+                }
+                else {
+                    section.items = this.parser.parseSearchResults(response.data);
+                }
+            }
+            catch (error) {
+                console.error(`Failed to load section ${section.id}:`, error);
+                section.items = [];
+            }
+            console.log(section);
+            sectionCallback(section);
+        }
+    }
+    async getViewMoreItems(homepageSectionId, metadata) {
+        const page = metadata?.page ?? 1;
+        let endpoint = '';
+        const params = {
+            page: page.toString()
+        };
+        switch (homepageSectionId) {
+            case 'popular':
+                endpoint = 'mangas/top';
+                params.duration = 'all';
+                params.per_page = '24';
+                break;
+            case 'latest':
+                endpoint = 'mangas/recently_updated';
+                params.per_page = '24';
+                break;
+            case 'completed':
+                endpoint = 'tags/da-hoan-thanh';
+                params.per_page = '30';
+                break;
+            default:
+                throw new Error("Requested to getViewMoreItems for a section ID which doesn't exist");
+        }
+        try {
+            const response = await this.apiRequest(endpoint, params);
+            let results;
+            if (homepageSectionId === 'completed') {
+                results = this.parser.parseSearchByTag(response.data);
+            }
+            else {
+                results = this.parser.parseSearchResults(response.data);
+            }
+            const hasNextPage = response._metadata ?
+                response._metadata.current_page < response._metadata.total_pages :
+                false;
+            return App.createPagedResults({
+                results: results,
+                metadata: hasNextPage ? { page: page + 1 } : undefined
+            });
+        }
+        catch (error) {
+            return App.createPagedResults({
+                results: [],
+                metadata: undefined
+            });
+        }
+    }
+    async getSearchTags() {
+        return this.parser.getTagSections();
+    }
+}
+exports.CuuTruyen = CuuTruyen;
+
+}).call(this)}).call(this,{"isBuffer":require("../../node_modules/is-buffer/index.js")})
+},{"../../node_modules/is-buffer/index.js":62,"./CuuTruyenDrm":64,"./CuuTruyenParser":65,"@paperback/types":61}],64:[function(require,module,exports){
 "use strict";
 /**
  * DRM Decryption module for CuuTruyen
@@ -668,360 +1022,7 @@ async function processImageUrl(url, imageBytes) {
 }
 exports.processImageUrl = processImageUrl;
 
-},{}],64:[function(require,module,exports){
-(function (Buffer){(function (){
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.CuuTruyen = exports.isLastPage = exports.CuuTruyenInfo = void 0;
-const types_1 = require("@paperback/types");
-const CuuTruyenParser_1 = require("./CuuTruyenParser");
-const CuuDrm_1 = require("./CuuDrm");
-const DEFAULT_DOMAIN = 'cuutruyen.net';
-// const DOMAINS = ['cuutruyen.net', 'nettrom.com', 'hetcuutruyen.net', 'cuutruyent9sv7.xyz'];
-exports.CuuTruyenInfo = {
-    version: '1.0.0',
-    name: 'Cứu Truyện',
-    icon: 'icon.png',
-    author: 'Paperback Community',
-    authorWebsite: 'https://github.com/Paperback-iOS',
-    description: 'Extension that pulls manga from CuuTruyen.',
-    contentRating: types_1.ContentRating.MATURE,
-    websiteBaseURL: `https://${DEFAULT_DOMAIN}`,
-    sourceTags: [
-        {
-            text: 'Recommended',
-            type: types_1.BadgeColor.BLUE
-        },
-        {
-            text: 'Vietnamese',
-            type: types_1.BadgeColor.GREEN
-        },
-        {
-            text: 'DRM Protected',
-            type: types_1.BadgeColor.YELLOW
-        }
-    ],
-    intents: types_1.SourceIntents.MANGA_CHAPTERS | types_1.SourceIntents.HOMEPAGE_SECTIONS
-};
-const isLastPage = ($) => {
-    const current = $('ul.pagination > li.active > a').text();
-    let total = $('ul.pagination > li.PagerSSCCells:last-child').text();
-    if (current) {
-        total = total ?? '';
-        return (+total) === (+current);
-    }
-    return true;
-};
-exports.isLastPage = isLastPage;
-class CuuTruyen {
-    constructor(cheerio) {
-        this.cheerio = cheerio;
-        this.domain = DEFAULT_DOMAIN;
-        this.baseUrl = `https://${this.domain}`;
-        this.apiUrl = `https://${this.domain}/api/v2`;
-        this.requestManager = App.createRequestManager({
-            requestsPerSecond: 3,
-            requestTimeout: 60000,
-            interceptor: {
-                interceptRequest: async (request) => {
-                    request.headers = {
-                        ...(request.headers ?? {}),
-                        ...{
-                            'referer': `${this.baseUrl}/`,
-                            'user-agent': await this.requestManager.getDefaultUserAgent(),
-                        }
-                    };
-                    return request;
-                },
-                interceptResponse: async (response) => {
-                    // Handle image DRM decryption
-                    if (response.request.url.includes('drm_data=')) {
-                        try {
-                            const url = new URL(response.request.url);
-                            const drmData = url.searchParams.get('drm_data') || url.hash.split('drm_data=')[1];
-                            if (drmData && Buffer.isBuffer(response.data)) {
-                                const decryptedData = await (0, CuuDrm_1.unscrambleImage)(new Uint8Array(response.data), drmData);
-                                return {
-                                    ...response,
-                                    data: new TextDecoder().decode(decryptedData)
-                                };
-                            }
-                        }
-                        catch (error) {
-                            console.error('DRM decryption failed:', error);
-                        }
-                    }
-                    return response;
-                }
-            }
-        });
-        this.parser = new CuuTruyenParser_1.CuuTruyenParser();
-    }
-    // private titleCache = new Map<number, string>();
-    getMangaShareUrl(mangaId) {
-        return `${this.baseUrl}/mangas/${mangaId}`;
-    }
-    async DOMHTML(url) {
-        const request = App.createRequest({
-            url: url,
-            method: 'GET',
-        });
-        const response = await this.requestManager.schedule(request, 1);
-        return this.cheerio.load(response.data);
-    }
-    async apiRequest(endpoint, params = {}) {
-        const url = new URL(`${this.apiUrl}/${endpoint}`);
-        Object.entries(params).forEach(([key, value]) => {
-            url.searchParams.append(key, value);
-        });
-        const request = App.createRequest({
-            url: url.toString(),
-            method: 'GET',
-        });
-        const response = await this.requestManager.schedule(request, 1);
-        if (response.status === 500) {
-            throw new Error('Server error - please try again later');
-        }
-        return JSON.parse(response.data);
-    }
-    async getMangaDetails(mangaId) {
-        try {
-            const response = await this.apiRequest(`mangas/${mangaId}`);
-            return this.parser.parseMangaDetails(response.data, mangaId);
-        }
-        catch (error) {
-            // Fallback to web scraping if API fails
-            const $ = await this.DOMHTML(`${this.baseUrl}/mangas/${mangaId}`);
-            return this.parser.parseMangaDetailsFromHTML($, mangaId);
-        }
-    }
-    async getChapters(mangaId) {
-        try {
-            const response = await this.apiRequest(`mangas/${mangaId}/chapters`);
-            return this.parser.parseChapterList(response.data);
-        }
-        catch (error) {
-            // Fallback to web scraping if API fails
-            const $ = await this.DOMHTML(`${this.baseUrl}/mangas/${mangaId}`);
-            return this.parser.parseChapterListFromHTML($);
-        }
-    }
-    async getChapterDetails(mangaId, chapterId) {
-        try {
-            const response = await this.apiRequest(`chapters/${chapterId}`);
-            const pages = this.parser.parseChapterPages(response.data);
-            return App.createChapterDetails({
-                id: chapterId,
-                mangaId: mangaId,
-                pages: pages,
-            });
-        }
-        catch (error) {
-            // Fallback to web scraping if API fails
-            const $ = await this.DOMHTML(`${this.baseUrl}/mangas/${mangaId}/chapters/${chapterId}`);
-            const pages = this.parser.parseChapterDetailsFromHTML($);
-            return App.createChapterDetails({
-                id: chapterId,
-                mangaId: mangaId,
-                pages: pages,
-            });
-        }
-    }
-    async supportsTagExclusion() {
-        return false;
-    }
-    async getSearchResults(query, metadata) {
-        let page = metadata?.page ?? 1;
-        // Handle ID search
-        if (query.title?.startsWith('id:')) {
-            const id = query.title.replace('id:', '').trim();
-            if (!/^\d+$/.test(id)) {
-                throw new Error('Invalid ID search format (must be numeric)');
-            }
-            try {
-                const manga = await this.getMangaDetails(id);
-                return App.createPagedResults({
-                    results: [App.createPartialSourceManga({
-                            mangaId: id,
-                            image: manga.image,
-                            title: manga.titles[0],
-                            subtitle: manga.author || ''
-                        })],
-                    metadata: undefined
-                });
-            }
-            catch (error) {
-                return App.createPagedResults({
-                    results: [],
-                    metadata: undefined
-                });
-            }
-        }
-        let endpoint = '';
-        const params = {
-            page: page.toString(),
-            per_page: '24'
-        };
-        // Handle tag-based search
-        const tagFilter = query.includedTags?.[0];
-        if (tagFilter && !query.title) {
-            endpoint = `tags/${tagFilter.id}`;
-            params.per_page = '30';
-        }
-        // Handle text search
-        else if (query.title) {
-            endpoint = 'mangas/search';
-            params.q = query.title;
-        }
-        // Default to popular
-        else {
-            endpoint = 'mangas/top';
-            params.duration = 'all';
-        }
-        try {
-            const response = await this.apiRequest(endpoint, params);
-            let results;
-            if (endpoint.startsWith('tags/')) {
-                results = this.parser.parseSearchByTag(response.data);
-            }
-            else {
-                results = this.parser.parseSearchResults(response.data);
-            }
-            const hasNextPage = response._metadata ?
-                response._metadata.current_page < response._metadata.total_pages :
-                false;
-            return App.createPagedResults({
-                results: results,
-                metadata: hasNextPage ? { page: page + 1 } : undefined
-            });
-        }
-        catch (error) {
-            // Fallback to empty results
-            return App.createPagedResults({
-                results: [],
-                metadata: undefined
-            });
-        }
-    }
-    async getHomePageSections(sectionCallback) {
-        console.log('CuuTruyen Running...');
-        const sections = [
-            App.createHomeSection({
-                id: 'popular',
-                title: "Phổ Biến Nhất",
-                containsMoreItems: true,
-                type: types_1.HomeSectionType.singleRowNormal
-            }),
-            App.createHomeSection({
-                id: 'latest',
-                title: "Mới Cập Nhật",
-                containsMoreItems: true,
-                type: types_1.HomeSectionType.singleRowNormal
-            }),
-            App.createHomeSection({
-                id: 'completed',
-                title: "Đã Hoàn Thành",
-                containsMoreItems: true,
-                type: types_1.HomeSectionType.singleRowNormal
-            })
-        ];
-        for (const section of sections) {
-            sectionCallback(section);
-            try {
-                let response;
-                switch (section.id) {
-                    case 'popular':
-                        response = await this.apiRequest('mangas/top', {
-                            duration: 'all',
-                            page: '1',
-                            per_page: '20'
-                        });
-                        break;
-                    case 'latest':
-                        response = await this.apiRequest('mangas/recently_updated', {
-                            page: '1',
-                            per_page: '20'
-                        });
-                        break;
-                    case 'completed':
-                        response = await this.apiRequest('tags/da-hoan-thanh', {
-                            page: '1',
-                            per_page: '20'
-                        });
-                        break;
-                    default:
-                        continue;
-                }
-                if (section.id === 'completed') {
-                    section.items = this.parser.parseSearchByTag(response.data);
-                }
-                else {
-                    section.items = this.parser.parseSearchResults(response.data);
-                }
-            }
-            catch (error) {
-                console.error(`Failed to load section ${section.id}:`, error);
-                section.items = [];
-            }
-            // console.log(section)
-            sectionCallback(section);
-        }
-    }
-    async getViewMoreItems(homepageSectionId, metadata) {
-        const page = metadata?.page ?? 1;
-        let endpoint = '';
-        const params = {
-            page: page.toString()
-        };
-        switch (homepageSectionId) {
-            case 'popular':
-                endpoint = 'mangas/top';
-                params.duration = 'all';
-                params.per_page = '24';
-                break;
-            case 'latest':
-                endpoint = 'mangas/recently_updated';
-                params.per_page = '24';
-                break;
-            case 'completed':
-                endpoint = 'tags/da-hoan-thanh';
-                params.per_page = '30';
-                break;
-            default:
-                throw new Error("Requested to getViewMoreItems for a section ID which doesn't exist");
-        }
-        try {
-            const response = await this.apiRequest(endpoint, params);
-            let results;
-            if (homepageSectionId === 'completed') {
-                results = this.parser.parseSearchByTag(response.data);
-            }
-            else {
-                results = this.parser.parseSearchResults(response.data);
-            }
-            const hasNextPage = response._metadata ?
-                response._metadata.current_page < response._metadata.total_pages :
-                false;
-            return App.createPagedResults({
-                results: results,
-                metadata: hasNextPage ? { page: page + 1 } : undefined
-            });
-        }
-        catch (error) {
-            return App.createPagedResults({
-                results: [],
-                metadata: undefined
-            });
-        }
-    }
-    async getSearchTags() {
-        return this.parser.getTagSections();
-    }
-}
-exports.CuuTruyen = CuuTruyen;
-
-}).call(this)}).call(this,{"isBuffer":require("../../node_modules/is-buffer/index.js")})
-},{"../../node_modules/is-buffer/index.js":62,"./CuuDrm":63,"./CuuTruyenParser":65,"@paperback/types":61}],65:[function(require,module,exports){
+},{}],65:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CuuTruyenParser = void 0;
@@ -1361,5 +1362,5 @@ class CuuTruyenParser {
 }
 exports.CuuTruyenParser = CuuTruyenParser;
 
-},{}]},{},[64])(64)
+},{}]},{},[63])(63)
 });
