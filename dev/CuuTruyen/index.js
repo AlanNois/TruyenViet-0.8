@@ -491,7 +491,7 @@ const CuuTruyenDrm_1 = require("./CuuTruyenDrm");
 const DEFAULT_DOMAIN = 'cuutruyen.net';
 // const DOMAINS = ['cuutruyen.net', 'nettrom.com', 'hetcuutruyen.net', 'cuutruyent9sv7.xyz'];
 exports.CuuTruyenInfo = {
-    version: '1.0.2',
+    version: '1.0.0',
     name: 'Cứu Truyện',
     icon: 'icon.png',
     author: 'AlanNois',
@@ -661,9 +661,9 @@ class CuuTruyen {
                 return App.createPagedResults({
                     results: [App.createPartialSourceManga({
                             mangaId: id,
-                            image: manga.image,
-                            title: manga.titles[0],
-                            subtitle: manga.author || ''
+                            image: manga.mangaInfo.image,
+                            title: manga.mangaInfo.titles[0],
+                            subtitle: manga.mangaInfo.author || ''
                         })],
                     metadata: undefined
                 });
@@ -1080,16 +1080,16 @@ class CuuTruyenParser {
         if (data.tags) {
             for (const tag of data.tags) {
                 tags.push(App.createTag({
-                    label: tag.name,
-                    id: tag.slug
+                    label: tag.name ?? '',
+                    id: tag.slug ?? ''
                 }));
             }
         }
-        const titles = [data.name || ''];
-        const author = data.author?.name || data.author_name || '';
-        const image = data.cover_url || data.cover_mobile_url || '';
-        let desc = data.description || '';
-        if (data.team) {
+        const titles = [data.name ?? ''];
+        const author = data.author?.name ?? data.author_name ?? '';
+        const image = data.cover_url ?? data.cover_mobile_url ?? '';
+        let desc = data.description ?? '';
+        if (data.team?.name) {
             desc = `Nhóm dịch: ${data.team.name}\n\n${desc}`;
         }
         // Determine status from tags
@@ -1122,17 +1122,17 @@ class CuuTruyenParser {
     parseMangaDetailsFromHTML($, mangaId) {
         const tags = [];
         $('a.tag, .tag a, .genre a, .genres a').each((_, obj) => {
-            const label = $(obj).text().trim();
+            const label = $(obj).text().trim() ?? '';
             if (label) {
-                const id = $(obj).attr('href')?.split('/').pop() || label.toLowerCase().replace(/\s+/g, '-');
+                const id = $(obj).attr('href')?.split('/').pop() ?? label.toLowerCase().replace(/\s+/g, '-');
                 tags.push(App.createTag({ label, id }));
             }
         });
-        const title = $('.manga-title, .title-detail, h1').first().text().trim();
-        const author = $('.author, .manga-author').text().trim();
-        const image = $('.manga-cover img, .cover img, .thumbnail img').attr('src') ||
-            $('.manga-cover img, .cover img, .thumbnail img').attr('data-src') || '';
-        const desc = $('.description, .manga-description, .summary').text().trim();
+        const title = $('.manga-title, .title-detail, h1').first().text().trim() ?? '';
+        const author = $('.author, .manga-author').text().trim() ?? '';
+        let image = $('.manga-cover img, .cover img, .thumbnail img').attr('src') ??
+            $('.manga-cover img, .cover img, .thumbnail img').attr('data-src') ?? '';
+        const desc = $('.description, .manga-description, .summary').text().trim() ?? '';
         // Try to determine status from Vietnamese text
         const statusText = $('.status, .manga-status').text().toLowerCase();
         let status = 'Không rõ'; // Unknown
