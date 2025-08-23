@@ -484,15 +484,15 @@ function isSlowBuffer (obj) {
 (function (Buffer){(function (){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.CuuTruyen = exports.isLastPage = exports.CuuTruyenInfo = void 0;
+exports.CuuTruyen = exports.CuuTruyenInfo = void 0;
 const types_1 = require("@paperback/types");
 const CuuTruyenParser_1 = require("./CuuTruyenParser");
 const CuuTruyenDrm_1 = require("./CuuTruyenDrm");
 const DEFAULT_DOMAIN = 'cuutruyen.net';
 // const DOMAINS = ['cuutruyen.net', 'nettrom.com', 'hetcuutruyen.net', 'cuutruyent9sv7.xyz'];
 exports.CuuTruyenInfo = {
-    version: '1.0.0',
-    name: 'Cứu Truyện',
+    version: '1.0.1',
+    name: 'CuuTruyen',
     icon: 'icon.png',
     author: 'AlanNois',
     authorWebsite: 'https://github.com/AlanNois/',
@@ -515,16 +515,15 @@ exports.CuuTruyenInfo = {
     ],
     intents: types_1.SourceIntents.MANGA_CHAPTERS | types_1.SourceIntents.HOMEPAGE_SECTIONS
 };
-const isLastPage = ($) => {
-    const current = $('ul.pagination > li.active > a').text();
-    let total = $('ul.pagination > li.PagerSSCCells:last-child').text();
-    if (current) {
-        total = total ?? '';
-        return (+total) === (+current);
-    }
-    return true;
-};
-exports.isLastPage = isLastPage;
+// export const isLastPage = ($: CheerioStatic): boolean => {
+//     const current = $('ul.pagination > li.active > a').text();
+//     let total = $('ul.pagination > li.PagerSSCCells:last-child').text();
+//     if (current) {
+//         total = total ?? '';
+//         return (+total) === (+current);
+//     }
+//     return true;
+// }
 class CuuTruyen {
     constructor(cheerio) {
         this.cheerio = cheerio;
