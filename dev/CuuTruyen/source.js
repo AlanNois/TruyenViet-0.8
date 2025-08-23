@@ -463,11 +463,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.CuuTruyen = exports.CuuTruyenInfo = void 0;
 const types_1 = require("@paperback/types");
 const CuuTruyenParser_1 = require("./CuuTruyenParser");
-const CuuTruyenDrm_1 = require("./CuuTruyenDrm");
+// import { unscrambleImage } from './CuuTruyenDrm';
 const DEFAULT_DOMAIN = 'cuutruyen.net';
 // const DOMAINS = ['cuutruyen.net', 'nettrom.com', 'hetcuutruyen.net', 'cuutruyent9sv7.xyz'];
 exports.CuuTruyenInfo = {
-    version: '1.0.0',
+    version: '1.0.1',
     name: 'CuuTruyen',
     icon: 'icon.png',
     author: 'AlanNois',
@@ -479,10 +479,6 @@ exports.CuuTruyenInfo = {
         {
             text: 'Recommended',
             type: types_1.BadgeColor.BLUE
-        },
-        {
-            text: 'Vietnamese',
-            type: types_1.BadgeColor.GREEN
         },
         {
             text: 'DRM Protected',
@@ -521,25 +517,27 @@ class CuuTruyen {
                     return request;
                 },
                 interceptResponse: async (response) => {
-                    // Handle image DRM decryption
-                    if (response.request.url.includes('drm_data=')) {
-                        try {
-                            const url = new URL(response.request.url);
-                            const drmData = url.searchParams.get('drm_data') || url.hash.split('drm_data=')[1];
-                            if (drmData && response.rawData) {
-                                const decryptedData = await (0, CuuTruyenDrm_1.unscrambleImage)(new Uint8Array(response.rawData), drmData);
-                                return {
-                                    ...response,
-                                    rawData: App.createRawData({ byteArray: decryptedData })
-                                };
-                            }
-                        }
-                        catch (error) {
-                            console.error('DRM decryption failed:', error?.message || error);
-                        }
-                    }
                     return response;
                 }
+                // interceptResponse: async (response: Response): Promise<Response> => {
+                //     // Handle image DRM decryption
+                //     if (response.request.url.includes('drm_data=')) {
+                //         try {
+                //             const url = new URL(response.request.url);
+                //             const drmData = url.searchParams.get('drm_data') || url.hash.split('drm_data=')[1];
+                //             if (drmData && response.rawData) {
+                //                 const decryptedData = await unscrambleImage(new Uint8Array(response.rawData), drmData);
+                //                 return {
+                //                     ...response,
+                //                     rawData: App.createRawData({ byteArray: decryptedData })
+                //                 };
+                //             }
+                //         } catch (error: any) {
+                //             console.error('DRM decryption failed:', error?.message || error);
+                //         }
+                //     }
+                //     return response;
+                // }
             }
         });
         this.parser = new CuuTruyenParser_1.CuuTruyenParser();
@@ -814,195 +812,77 @@ class CuuTruyen {
 }
 exports.CuuTruyen = CuuTruyen;
 
-},{"./CuuTruyenDrm":63,"./CuuTruyenParser":64,"@paperback/types":61}],63:[function(require,module,exports){
-"use strict";
-// import { 
-//     PBCanvas, 
-//     PBImage, 
-//     RawData 
-// } from "@paperback/types";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.processImageUrl = exports.extractDrmData = exports.hasDrmData = exports.unscrambleImage = void 0;
-/**
- * DRM Decryption module for CuuTruyen
- * Based on the Kotlin implementation from CuuTruyenImageInterceptor
- */
-const DECRYPTION_KEY = "3141592653589793";
-const DRM_DATA_KEY = "drm_data";
-/**
- * Base64 decode utility for browser environment
- */
-function base64Decode(base64String) {
-    // Remove any whitespace and newlines
-    const cleanBase64 = base64String.replace(/[\n\r\s]/g, '');
-    // Use browser's atob if available, otherwise implement basic decode
-    if (typeof atob !== 'undefined') {
-        const binaryString = atob(cleanBase64);
-        const bytes = new Uint8Array(binaryString.length);
-        for (let i = 0; i < binaryString.length; i++) {
-            bytes[i] = binaryString.charCodeAt(i);
-        }
-        return bytes;
-    }
-    else {
-        // Fallback base64 decoder
-        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
-        const lookup = new Uint8Array(256);
-        for (let i = 0; i < chars.length; i++) {
-            lookup[chars.charCodeAt(i)] = i;
-        }
-        const len = cleanBase64.length;
-        const bufferLength = (len * 3) / 4;
-        const bytes = new Uint8Array(bufferLength);
-        let p = 0;
-        for (let i = 0; i < len; i += 4) {
-            const encoded1 = lookup[cleanBase64.charCodeAt(i)] || 0;
-            const encoded2 = lookup[cleanBase64.charCodeAt(i + 1)] || 0;
-            const encoded3 = lookup[cleanBase64.charCodeAt(i + 2)] || 0;
-            const encoded4 = lookup[cleanBase64.charCodeAt(i + 3)] || 0;
-            bytes[p++] = (encoded1 << 2) | (encoded2 >> 4);
-            bytes[p++] = ((encoded2 & 15) << 4) | (encoded3 >> 2);
-            bytes[p++] = ((encoded3 & 3) << 6) | (encoded4 & 63);
-        }
-        return bytes;
-    }
-}
-/**
- * XOR cipher decryption
- */
-function decodeXorCipher(data, key) {
-    const keyBytes = new TextEncoder().encode(key);
-    const result = new Uint8Array(data.length);
-    for (let i = 0; i < data.length; i++) {
-        result[i] = data[i] ^ keyBytes[i % keyBytes.length];
-    }
-    return result;
-}
-/**
- * Main unscrambling function
- */
-async function unscrambleImage(imageBytes, drmData) {
-    try {
-        // Decode the DRM data
-        const drmBytes = base64Decode(drmData);
-        const decryptedBytes = decodeXorCipher(drmBytes, DECRYPTION_KEY);
-        const drmString = new TextDecoder().decode(decryptedBytes);
-        // Validate DRM data format
-        if (!drmString.startsWith('#v4|')) {
-            throw new Error(`Invalid DRM data (does not start with expected magic bytes): ${drmString}`);
-        }
-        // Load the scrambled image into a PBImage
-        const originalImage = App.createPBImage({ data: App.createRawData({ byteArray: imageBytes }) });
-        // Create result canvas
-        const resultCanvas = App.createPBCanvas();
-        resultCanvas.setSize(originalImage.width, originalImage.height);
-        // Parse scrambling instructions and unscramble
-        const instructions = drmString.split('|').slice(1); // Skip the '#v4' part
-        let sourceY = 0;
-        for (const instruction of instructions) {
-            if (!instruction.trim())
-                continue;
-            const [destY, height] = instruction.split('-').map(s => parseInt(s.trim(), 10));
-            if (isNaN(destY) || isNaN(height)) {
-                console.warn(`Invalid instruction: ${instruction}`);
-                continue;
-            }
-            // Draw the section from source position to destination position
-            resultCanvas.drawImage(originalImage, 0, sourceY, originalImage.width, height, // source rect
-            0, destY // dest rect
-            );
-            sourceY += height;
-        }
-        // Convert result to bytes
-        const encodedData = resultCanvas.encode('image/jpeg');
-        if (!encodedData) {
-            throw new Error('Failed to encode canvas to JPEG');
-        }
-        return encodedData; // Cast to Uint8Array as RawData is array-like
-    }
-    catch (error) {
-        console.error('DRM unscrambling failed:', error);
-        throw error;
-    }
-}
-exports.unscrambleImage = unscrambleImage;
-/**
- * Check if URL contains DRM data
- */
-function hasDrmData(url) {
-    return url.includes(`${DRM_DATA_KEY}=`) || url.includes(`#${DRM_DATA_KEY}=`);
-}
-exports.hasDrmData = hasDrmData;
-/**
- * Extract DRM data from URL
- */
-function extractDrmData(url) {
-    try {
-        // Try URL fragment first
-        const fragmentMatch = url.match(`#${DRM_DATA_KEY}=([^&]*)`);
-        if (fragmentMatch) {
-            return decodeURIComponent(fragmentMatch[1]);
-        }
-        // Try query parameter
-        const queryMatch = url.match(`[?&]${DRM_DATA_KEY}=([^&]*)`);
-        if (queryMatch) {
-            return decodeURIComponent(queryMatch[1]);
-        }
-        return null;
-    }
-    catch (error) {
-        console.error('Failed to extract DRM data from URL:', error);
-        return null;
-    }
-}
-exports.extractDrmData = extractDrmData;
-/**
- * Process image URL with DRM data
- */
-async function processImageUrl(url, imageBytes) {
-    const drmData = extractDrmData(url);
-    if (!drmData) {
-        // No DRM data, return original bytes
-        return imageBytes;
-    }
-    // Unscramble the image
-    return await unscrambleImage(imageBytes, drmData);
-}
-exports.processImageUrl = processImageUrl;
-
-},{}],64:[function(require,module,exports){
+},{"./CuuTruyenParser":63,"@paperback/types":61}],63:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CuuTruyenParser = void 0;
 class CuuTruyenParser {
     convertTime(timeAgo) {
-        let trimmed = Number((/\d*/.exec(timeAgo) ?? [])[0]);
-        trimmed = (trimmed === 0 && timeAgo.includes('a')) ? 1 : trimmed;
-        if (timeAgo.includes('giây') || timeAgo.includes('secs')) {
-            return new Date(Date.now() - trimmed * 1000);
+        timeAgo = timeAgo.toLowerCase();
+        let value = parseInt((/\d*/.exec(timeAgo) ?? [''])[0]);
+        // Handle "a few" or "một" (one) cases where a number might not be explicitly present
+        if (isNaN(value) || value === 0) {
+            if (timeAgo.includes('a') || timeAgo.includes('một')) {
+                value = 1;
+            }
+            else {
+                value = 0; // Default to 0 if no number found and not "a/một"
+            }
         }
-        else if (timeAgo.includes('phút')) {
-            return new Date(Date.now() - trimmed * 60000);
+        if (timeAgo.includes('giây') || timeAgo.includes('sec')) { // 'secs' or 'second'
+            return new Date(Date.now() - value * 1000);
         }
-        else if (timeAgo.includes('giờ')) {
-            return new Date(Date.now() - trimmed * 3600000);
+        else if (timeAgo.includes('phút') || timeAgo.includes('min')) { // 'mins' or 'minute'
+            return new Date(Date.now() - value * 60000);
         }
-        else if (timeAgo.includes('ngày')) {
-            return new Date(Date.now() - trimmed * 86400000);
+        else if (timeAgo.includes('giờ') || timeAgo.includes('hour')) { // 'hours'
+            return new Date(Date.now() - value * 3600000);
         }
-        else if (timeAgo.includes('năm')) {
-            return new Date(Date.now() - trimmed * 31556952000);
+        else if (timeAgo.includes('ngày') || timeAgo.includes('day')) { // 'days'
+            return new Date(Date.now() - value * 86400000);
+        }
+        else if (timeAgo.includes('năm') || timeAgo.includes('year')) { // 'years'
+            return new Date(Date.now() - value * 31556952000);
         }
         else if (timeAgo.includes(':')) {
-            const [H, D] = timeAgo.split(' ');
-            const fixD = String(D).split('/');
-            const finalD = `${fixD[1]}/${fixD[0]}/${new Date().getFullYear()}`;
-            return new Date(`${finalD} ${H}`);
+            // Format: HH:MM DD/MM (e.g., "10:30 23/08")
+            const parts = timeAgo.split(' ');
+            if (parts.length === 2) {
+                const [timePart, datePart] = parts;
+                if (timePart && datePart) {
+                    const [hourStr, minuteStr] = timePart.split(':');
+                    const [dayStr, monthStr] = datePart.split('/');
+                    const hour = parseInt(hourStr ?? '');
+                    const minute = parseInt(minuteStr ?? '');
+                    const day = parseInt(dayStr ?? '');
+                    const month = parseInt(monthStr ?? '');
+                    const year = new Date().getFullYear(); // Assume current year for this format
+                    if (!isNaN(hour) && !isNaN(minute) && !isNaN(day) && !isNaN(month)) {
+                        return new Date(year, month - 1, day, hour, minute);
+                    }
+                }
+            }
         }
-        else {
-            const split = timeAgo.split('/');
-            return new Date(`${split[1]}/${split[0]}/20${split[2]}`);
+        else if (timeAgo.includes('/')) {
+            // Format: DD/MM/YY (e.g., "23/08/25")
+            const parts = timeAgo.split('/');
+            if (parts.length === 3) {
+                const [dayStr, monthStr, yearStr] = parts;
+                if (dayStr && monthStr && yearStr) {
+                    const day = parseInt(dayStr);
+                    const month = parseInt(monthStr);
+                    let year = parseInt(yearStr);
+                    if (!isNaN(day) && !isNaN(month) && !isNaN(year)) {
+                        // Simple century inference: if YY is <= current year's last two digits + 10, assume 20YY, else 19YY
+                        const currentYearLastTwoDigits = new Date().getFullYear() % 100;
+                        const century = (year <= currentYearLastTwoDigits + 10) ? 2000 : 1900;
+                        return new Date(century + year, month - 1, day);
+                    }
+                }
+            }
         }
+        // Fallback for unparseable dates
+        return new Date(); // Return current date as a safer fallback than Date(0)
     }
     parseDate(dateString) {
         try {
@@ -1014,7 +894,7 @@ class CuuTruyenParser {
             return this.convertTime(dateString);
         }
         catch (error) {
-            return new Date(0);
+            return new Date(); // Return current date as a safer fallback than Date(0)
         }
     }
     parseMangaDetails(data, mangaId) {
