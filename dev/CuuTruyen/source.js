@@ -467,7 +467,7 @@ const CuuTruyenParser_1 = require("./CuuTruyenParser");
 const DEFAULT_DOMAIN = 'cuutruyen.net';
 // const DOMAINS = ['cuutruyen.net', 'nettrom.com', 'hetcuutruyen.net', 'cuutruyent9sv7.xyz'];
 exports.CuuTruyenInfo = {
-    version: '1.0.1',
+    version: '1.0.0',
     name: 'CuuTruyen',
     icon: 'icon.png',
     author: 'AlanNois',
@@ -497,8 +497,8 @@ exports.CuuTruyenInfo = {
 //     return true;
 // }
 class CuuTruyen {
-    constructor(cheerio) {
-        this.cheerio = cheerio;
+    constructor() {
+        // constructor(private cheerio: CheerioAPI) { }
         this.domain = DEFAULT_DOMAIN;
         this.baseUrl = `https://${this.domain}`;
         this.apiUrl = `https://${this.domain}/api/v2`;
@@ -541,19 +541,45 @@ class CuuTruyen {
             }
         });
         this.parser = new CuuTruyenParser_1.CuuTruyenParser();
+        // async filterUpdatedManga(mangaUpdatesFoundCallback: (updates: MangaUpdates) => void, time: Date, ids: string[]): Promise<void> {
+        //     try {
+        //         // Use recently updated endpoint to get recent updates
+        //         const response = await this.apiRequest<{ data: any[] }>('mangas/recently_updated', {
+        //             page: '1',
+        //             per_page: '50'
+        //         });
+        //         const updatedIds: string[] = [];
+        //         for (const manga of response.data) {
+        //             const mangaId = manga.id.toString();
+        //             if (ids.includes(mangaId)) {
+        //                 // For API-based updates, we'll consider all manga in the recently updated list
+        //                 // as potentially updated since the check time
+        //                 updatedIds.push(mangaId);
+        //             }
+        //         }
+        //         mangaUpdatesFoundCallback(App.createMangaUpdates({
+        //             ids: updatedIds
+        //         }));
+        //     } catch (error) {
+        //         console.error('Failed to filter updated manga:', error);
+        //         mangaUpdatesFoundCallback(App.createMangaUpdates({
+        //             ids: []
+        //         }));
+        //     }
+        // }
     }
     // private titleCache = new Map<number, string>();
     getMangaShareUrl(mangaId) {
         return `${this.baseUrl}/mangas/${mangaId}`;
     }
-    async DOMHTML(url) {
-        const request = App.createRequest({
-            url: url,
-            method: 'GET',
-        });
-        const response = await this.requestManager.schedule(request, 1);
-        return this.cheerio.load(response.data);
-    }
+    // private async DOMHTML(url: string): Promise<CheerioStatic> {
+    //     const request = App.createRequest({
+    //         url: url,
+    //         method: 'GET',
+    //     });
+    //     const response = await this.requestManager.schedule(request, 1);
+    //     return this.cheerio.load(response.data as string);
+    // }
     async apiRequest(endpoint, params = {}) {
         const url = new URL(`${this.apiUrl}/${endpoint}`);
         Object.entries(params).forEach(([key, value]) => {
@@ -573,54 +599,51 @@ class CuuTruyen {
         return JSON.parse(response.data);
     }
     async getMangaDetails(mangaId) {
-        try {
-            const response = await this.apiRequest(`mangas/${mangaId}`);
-            return this.parser.parseMangaDetails(response.data, mangaId);
-        }
-        catch (error) {
-            console.error(`Failed to get manga details for ${mangaId}:`, error?.message || error);
-            // Fallback to web scraping if API fails
-            const $ = await this.DOMHTML(`${this.baseUrl}/mangas/${mangaId}`);
-            return this.parser.parseMangaDetailsFromHTML($, mangaId);
-        }
+        // try {
+        const response = await this.apiRequest(`mangas/${mangaId}`);
+        return this.parser.parseMangaDetails(response.data, mangaId);
+        // } catch (error: any) {
+        //     console.error(`Failed to get manga details for ${mangaId}:`, error?.message || error);
+        // Fallback to web scraping if API fails
+        // const $ = await this.DOMHTML(`${this.baseUrl}/mangas/${mangaId}`);
+        // return this.parser.parseMangaDetailsFromHTML($, mangaId);
+        // }
     }
     async getChapters(mangaId) {
-        try {
-            const response = await this.apiRequest(`mangas/${mangaId}/chapters`);
-            return this.parser.parseChapterList(response.data);
-        }
-        catch (error) {
-            console.error(`Failed to get chapters for ${mangaId}:`, error?.message || error);
-            // Fallback to web scraping if API fails
-            const $ = await this.DOMHTML(`${this.baseUrl}/mangas/${mangaId}`);
-            return this.parser.parseChapterListFromHTML($);
-        }
+        // try {
+        const response = await this.apiRequest(`mangas/${mangaId}/chapters`);
+        return this.parser.parseChapterList(response.data);
+        // } catch (error: any) {
+        //     console.error(`Failed to get chapters for ${mangaId}:`, error?.message || error);
+        //     // Fallback to web scraping if API fails
+        //     const $ = await this.DOMHTML(`${this.baseUrl}/mangas/${mangaId}`);
+        //     return this.parser.parseChapterListFromHTML($);
+        // }
     }
     async getChapterDetails(mangaId, chapterId) {
-        try {
-            const response = await this.apiRequest(`chapters/${chapterId}`);
-            const pages = this.parser.parseChapterPages(response.data);
-            return App.createChapterDetails({
-                id: chapterId,
-                mangaId: mangaId,
-                pages: pages,
-            });
-        }
-        catch (error) {
-            console.error(`Failed to get chapter details for ${chapterId} of ${mangaId}:`, error?.message || error);
-            // Fallback to web scraping if API fails
-            const $ = await this.DOMHTML(`${this.baseUrl}/mangas/${mangaId}/chapters/${chapterId}`);
-            const pages = this.parser.parseChapterDetailsFromHTML($);
-            return App.createChapterDetails({
-                id: chapterId,
-                mangaId: mangaId,
-                pages: pages,
-            });
-        }
+        // try {
+        const response = await this.apiRequest(`chapters/${chapterId}`);
+        const pages = this.parser.parseChapterPages(response.data);
+        return App.createChapterDetails({
+            id: chapterId,
+            mangaId: mangaId,
+            pages: pages,
+        });
+        // } catch (error: any) {
+        //     console.error(`Failed to get chapter details for ${chapterId} of ${mangaId}:`, error?.message || error);
+        //     // Fallback to web scraping if API fails
+        //     const $ = await this.DOMHTML(`${this.baseUrl}/mangas/${mangaId}/chapters/${chapterId}`);
+        //     const pages = this.parser.parseChapterDetailsFromHTML($);
+        //     return App.createChapterDetails({
+        //         id: chapterId,
+        //         mangaId: mangaId,
+        //         pages: pages,
+        //     });
+        // }
     }
-    async supportsTagExclusion() {
-        return false;
-    }
+    // async supportsTagExclusion(): Promise<boolean> {
+    //     return false;
+    // }
     async getSearchResults(query, metadata) {
         let page = metadata?.page ?? 1;
         // Handle ID search
@@ -629,25 +652,25 @@ class CuuTruyen {
             if (!/^\d+$/.test(id)) {
                 throw new Error('Invalid ID search format (must be numeric)');
             }
-            try {
-                const manga = await this.getMangaDetails(id);
-                return App.createPagedResults({
-                    results: [App.createPartialSourceManga({
-                            mangaId: id,
-                            image: manga.mangaInfo.image,
-                            title: manga.mangaInfo.titles[0],
-                            subtitle: manga.mangaInfo.author || ''
-                        })],
-                    metadata: undefined
-                });
-            }
-            catch (error) {
-                console.error(`Failed to get search results for ID ${id}:`, error?.message || error);
-                return App.createPagedResults({
-                    results: [],
-                    metadata: undefined
-                });
-            }
+            // try {
+            const manga = await this.getMangaDetails(id);
+            return App.createPagedResults({
+                results: [App.createPartialSourceManga({
+                        mangaId: id,
+                        image: manga.mangaInfo.image,
+                        title: manga.mangaInfo.titles[0],
+                        subtitle: manga.mangaInfo.author || ''
+                    })],
+                // metadata: undefined
+                metadata
+            });
+            // } catch (error: any) {
+            //     console.error(`Failed to get search results for ID ${id}:`, error?.message || error);
+            //     return App.createPagedResults({
+            //         results: [],
+            //         metadata: undefined
+            //     });
+            // }
         }
         let endpoint = '';
         const params = {
@@ -670,31 +693,30 @@ class CuuTruyen {
             endpoint = 'mangas/top';
             params.duration = 'all';
         }
-        try {
-            const response = await this.apiRequest(endpoint, params);
-            let results;
-            if (endpoint.startsWith('tags/')) {
-                results = this.parser.parseSearchByTag(response.data);
-            }
-            else {
-                results = this.parser.parseSearchResults(response.data);
-            }
-            const hasNextPage = response._metadata ?
-                response._metadata.current_page < response._metadata.total_pages :
-                false;
-            return App.createPagedResults({
-                results: results,
-                metadata: hasNextPage ? { page: page + 1 } : undefined
-            });
+        // try {
+        const response = await this.apiRequest(endpoint, params);
+        let results;
+        if (endpoint.startsWith('tags/')) {
+            results = this.parser.parseSearchByTag(response.data);
         }
-        catch (error) {
-            console.error(`Failed to get search results for query "${query.title}" (endpoint: ${endpoint}):`, error?.message || error);
-            // Fallback to empty results
-            return App.createPagedResults({
-                results: [],
-                metadata: undefined
-            });
+        else {
+            results = this.parser.parseSearchResults(response.data);
         }
+        const hasNextPage = response._metadata ?
+            response._metadata.current_page < response._metadata.total_pages :
+            false;
+        return App.createPagedResults({
+            results: results,
+            metadata: hasNextPage ? { page: page + 1 } : undefined
+        });
+        // } catch (error: any) {
+        //     console.error(`Failed to get search results for query "${query.title}" (endpoint: ${endpoint}):`, error?.message || error);
+        //     // Fallback to empty results
+        //     return App.createPagedResults({
+        //         results: [],
+        //         metadata: undefined
+        //     });
+        // }
     }
     async getHomePageSections(sectionCallback) {
         const sections = [
@@ -941,45 +963,43 @@ class CuuTruyenParser {
             }),
         });
     }
-    parseMangaDetailsFromHTML($, mangaId) {
-        const tags = [];
-        $('a.tag, .tag a, .genre a, .genres a').each((_, obj) => {
-            const label = $(obj).text().trim() ?? '';
-            if (label) {
-                const id = $(obj).attr('href')?.split('/').pop() ?? label.toLowerCase().replace(/\s+/g, '-');
-                tags.push(App.createTag({ label, id }));
-            }
-        });
-        const title = $('.manga-title, .title-detail, h1').first().text().trim() ?? '';
-        const author = $('.author, .manga-author').text().trim() ?? '';
-        let image = $('.manga-cover img, .cover img, .thumbnail img').attr('src') ??
-            $('.manga-cover img, .cover img, .thumbnail img').attr('data-src') ?? '';
-        const desc = $('.description, .manga-description, .summary').text().trim() ?? '';
-        // Try to determine status from Vietnamese text
-        const statusText = $('.status, .manga-status').text().toLowerCase();
-        let status = 'Không rõ'; // Unknown
-        if (statusText.includes('đang tiến hành') || statusText.includes('ongoing')) {
-            status = 'Đang tiến hành'; // Ongoing
-        }
-        else if (statusText.includes('đã hoàn thành') || statusText.includes('completed')) {
-            status = 'Đã hoàn thành'; // Completed
-        }
-        else if (statusText.includes('tạm ngưng') || statusText.includes('hiatus')) {
-            status = 'Tạm ngưng'; // On Hiatus
-        }
-        return App.createSourceManga({
-            id: mangaId,
-            mangaInfo: App.createMangaInfo({
-                titles: [title],
-                author: author,
-                artist: author,
-                image: image.startsWith('//') ? 'https:' + image : image,
-                desc: desc,
-                status: status,
-                tags: [App.createTagSection({ id: '0', label: 'genres', tags })],
-            }),
-        });
-    }
+    // parseMangaDetailsFromHTML($: CheerioStatic, mangaId: string): SourceManga {
+    //     const tags: Tag[] = [];
+    //     $('a.tag, .tag a, .genre a, .genres a').each((_: any, obj: any) => {
+    //         const label = $(obj).text().trim() ?? '';
+    //         if (label) {
+    //             const id = $(obj).attr('href')?.split('/').pop() ?? label.toLowerCase().replace(/\s+/g, '-');
+    //             tags.push(App.createTag({ label, id }));
+    //         }
+    //     });
+    //     const title = $('.manga-title, .title-detail, h1').first().text().trim() ?? '';
+    //     const author = $('.author, .manga-author').text().trim() ?? '';
+    //     let image = $('.manga-cover img, .cover img, .thumbnail img').attr('src') ??
+    //         $('.manga-cover img, .cover img, .thumbnail img').attr('data-src') ?? '';
+    //     const desc = $('.description, .manga-description, .summary').text().trim() ?? '';
+    //     // Try to determine status from Vietnamese text
+    //     const statusText = $('.status, .manga-status').text().toLowerCase();
+    //     let status = 'Không rõ'; // Unknown
+    //     if (statusText.includes('đang tiến hành') || statusText.includes('ongoing')) {
+    //         status = 'Đang tiến hành'; // Ongoing
+    //     } else if (statusText.includes('đã hoàn thành') || statusText.includes('completed')) {
+    //         status = 'Đã hoàn thành'; // Completed
+    //     } else if (statusText.includes('tạm ngưng') || statusText.includes('hiatus')) {
+    //         status = 'Tạm ngưng'; // On Hiatus
+    //     }
+    //     return App.createSourceManga({
+    //         id: mangaId,
+    //         mangaInfo: App.createMangaInfo({
+    //             titles: [title],
+    //             author: author,
+    //             artist: author,
+    //             image: image.startsWith('//') ? 'https:' + image : image,
+    //             desc: desc,
+    //             status: status,
+    //             tags: [App.createTagSection({ id: '0', label: 'genres', tags })],
+    //         }),
+    //     });
+    // }
     parseChapterList(data) {
         const chapters = [];
         for (const chapterData of data) {
@@ -997,32 +1017,31 @@ class CuuTruyenParser {
         }
         return chapters.reverse(); // Newest first
     }
-    parseChapterListFromHTML($) {
-        const chapters = [];
-        $('.chapter-list .chapter, .list-chapter .chapter, .chapters .chapter').each((_, obj) => {
-            const $chapter = $(obj);
-            const url = $chapter.find('a').attr('href');
-            if (!url)
-                return;
-            const id = url.split('/').pop() || '';
-            const fullName = $chapter.find('a').text().trim();
-            // Extract chapter number and name
-            const chapMatch = fullName.match(/chương\s*(\d+(?:\.\d+)?)/i);
-            const chapNum = chapMatch ? parseFloat(chapMatch[1]) : 0;
-            const name = fullName.replace(/chương\s*\d+(?:\.\d+)?:?\s*/i, '').trim();
-            const timeText = $chapter.find('.time, .chapter-time, .date').text().trim();
-            const time = timeText ? this.convertTime(timeText) : new Date();
-            chapters.push(App.createChapter({
-                id: id,
-                chapNum: chapNum,
-                name: name,
-                langCode: '🇻🇳',
-                time: time,
-                group: ''
-            }));
-        });
-        return chapters.reverse(); // Newest first
-    }
+    // parseChapterListFromHTML($: CheerioStatic): Chapter[] {
+    //     const chapters: Chapter[] = [];
+    //     $('.chapter-list .chapter, .list-chapter .chapter, .chapters .chapter').each((_: any, obj: any) => {
+    //         const $chapter = $(obj);
+    //         const url = $chapter.find('a').attr('href');
+    //         if (!url) return;
+    //         const id = url.split('/').pop() || '';
+    //         const fullName = $chapter.find('a').text().trim();
+    //         // Extract chapter number and name
+    //         const chapMatch = fullName.match(/chương\s*(\d+(?:\.\d+)?)/i);
+    //         const chapNum = chapMatch ? parseFloat(chapMatch[1]!) : 0;
+    //         const name = fullName.replace(/chương\s*\d+(?:\.\d+)?:?\s*/i, '').trim();
+    //         const timeText = $chapter.find('.time, .chapter-time, .date').text().trim();
+    //         const time = timeText ? this.convertTime(timeText) : new Date();
+    //         chapters.push(App.createChapter({
+    //             id: id,
+    //             chapNum: chapNum,
+    //             name: name,
+    //             langCode: '🇻🇳',
+    //             time: time,
+    //             group: ''
+    //         }));
+    //     });
+    //     return chapters.reverse(); // Newest first
+    // }
     parseChapterPages(data) {
         const pages = [];
         if (data.pages) {
@@ -1045,23 +1064,22 @@ class CuuTruyenParser {
         }
         return pages;
     }
-    parseChapterDetailsFromHTML($) {
-        const pages = [];
-        $('.page-chapter img, .chapter-content img, .reading-detail img').each((_, obj) => {
-            const $img = $(obj);
-            let src = $img.attr('data-src') || $img.attr('data-original') || $img.attr('src');
-            if (src) {
-                if (src.startsWith('//')) {
-                    src = 'https:' + src;
-                }
-                else if (!src.startsWith('http')) {
-                    src = 'https:' + src;
-                }
-                pages.push(src);
-            }
-        });
-        return pages;
-    }
+    // parseChapterDetailsFromHTML($: CheerioStatic): string[] {
+    //     const pages: string[] = [];
+    //     $('.page-chapter img, .chapter-content img, .reading-detail img').each((_: any, obj: any) => {
+    //         const $img = $(obj);
+    //         let src = $img.attr('data-src') || $img.attr('data-original') || $img.attr('src');
+    //         if (src) {
+    //             if (src.startsWith('//')) {
+    //                 src = 'https:' + src;
+    //             } else if (!src.startsWith('http')) {
+    //                 src = 'https:' + src;
+    //             }
+    //             pages.push(src);
+    //         }
+    //     });
+    //     return pages;
+    // }
     parseSearchResults(data) {
         const results = [];
         for (const manga of data) {
@@ -1081,33 +1099,32 @@ class CuuTruyenParser {
     parseSearchByTag(data) {
         return this.parseSearchResults(data.mangas);
     }
-    parseSearchResultsFromHTML($) {
-        const tiles = [];
-        $('.manga-item, .item, .book-item').each((_, manga) => {
-            const $manga = $(manga);
-            const title = $manga.find('.title, .manga-title, h3 a, .book-title').first().text().trim();
-            const url = $manga.find('a').first().attr('href');
-            if (!url || !title)
-                return;
-            const id = url.split('/').pop();
-            let image = $manga.find('img').first().attr('data-src') ||
-                $manga.find('img').first().attr('data-original') ||
-                $manga.find('img').first().attr('src') || '';
-            if (image.startsWith('//')) {
-                image = 'https:' + image;
-            }
-            const subtitle = $manga.find('.author, .manga-author, .latest-chapter').first().text().trim();
-            if (id) {
-                tiles.push(App.createPartialSourceManga({
-                    mangaId: id,
-                    image: image || 'https://i.imgur.com/GYUxEX8.png',
-                    title: title,
-                    subtitle: subtitle,
-                }));
-            }
-        });
-        return tiles;
-    }
+    // parseSearchResultsFromHTML($: CheerioStatic): PartialSourceManga[] {
+    //     const tiles: PartialSourceManga[] = [];
+    //     $('.manga-item, .item, .book-item').each((_: any, manga: any) => {
+    //         const $manga = $(manga);
+    //         const title = $manga.find('.title, .manga-title, h3 a, .book-title').first().text().trim();
+    //         const url = $manga.find('a').first().attr('href');
+    //         if (!url || !title) return;
+    //         const id = url.split('/').pop();
+    //         let image = $manga.find('img').first().attr('data-src') ||
+    //             $manga.find('img').first().attr('data-original') ||
+    //             $manga.find('img').first().attr('src') || '';
+    //         if (image.startsWith('//')) {
+    //             image = 'https:' + image;
+    //         }
+    //         const subtitle = $manga.find('.author, .manga-author, .latest-chapter').first().text().trim();
+    //         if (id) {
+    //             tiles.push(App.createPartialSourceManga({
+    //                 mangaId: id,
+    //                 image: image || 'https://i.imgur.com/GYUxEX8.png',
+    //                 title: title,
+    //                 subtitle: subtitle,
+    //             }));
+    //         }
+    //     });
+    //     return tiles;
+    // }
     getTagSections() {
         // Static tag list based on the Kotlin implementation
         const tags = [
