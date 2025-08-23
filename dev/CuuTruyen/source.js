@@ -491,7 +491,7 @@ const CuuTruyenDrm_1 = require("./CuuTruyenDrm");
 const DEFAULT_DOMAIN = 'cuutruyen.net';
 // const DOMAINS = ['cuutruyen.net', 'nettrom.com', 'hetcuutruyen.net', 'cuutruyent9sv7.xyz'];
 exports.CuuTruyenInfo = {
-    version: '1.0.1',
+    version: '1.0.2',
     name: 'Cứu Truyện',
     icon: 'icon.png',
     author: 'AlanNois',
@@ -560,7 +560,7 @@ class CuuTruyen {
                             }
                         }
                         catch (error) {
-                            console.error('DRM decryption failed:', error);
+                            console.error('DRM decryption failed:', error?.message || error);
                         }
                     }
                     return response;
@@ -594,6 +594,9 @@ class CuuTruyen {
         if (response.status === 500) {
             throw new Error('Server error - please try again later');
         }
+        if (!response.data) {
+            throw new Error('API response data is empty or undefined.');
+        }
         return JSON.parse(response.data);
     }
     async getMangaDetails(mangaId) {
@@ -602,6 +605,7 @@ class CuuTruyen {
             return this.parser.parseMangaDetails(response.data, mangaId);
         }
         catch (error) {
+            console.error(`Failed to get manga details for ${mangaId}:`, error?.message || error);
             // Fallback to web scraping if API fails
             const $ = await this.DOMHTML(`${this.baseUrl}/mangas/${mangaId}`);
             return this.parser.parseMangaDetailsFromHTML($, mangaId);
@@ -613,6 +617,7 @@ class CuuTruyen {
             return this.parser.parseChapterList(response.data);
         }
         catch (error) {
+            console.error(`Failed to get chapters for ${mangaId}:`, error?.message || error);
             // Fallback to web scraping if API fails
             const $ = await this.DOMHTML(`${this.baseUrl}/mangas/${mangaId}`);
             return this.parser.parseChapterListFromHTML($);
@@ -629,6 +634,7 @@ class CuuTruyen {
             });
         }
         catch (error) {
+            console.error(`Failed to get chapter details for ${chapterId} of ${mangaId}:`, error?.message || error);
             // Fallback to web scraping if API fails
             const $ = await this.DOMHTML(`${this.baseUrl}/mangas/${mangaId}/chapters/${chapterId}`);
             const pages = this.parser.parseChapterDetailsFromHTML($);
@@ -663,6 +669,7 @@ class CuuTruyen {
                 });
             }
             catch (error) {
+                console.error(`Failed to get search results for ID ${id}:`, error?.message || error);
                 return App.createPagedResults({
                     results: [],
                     metadata: undefined
@@ -708,6 +715,7 @@ class CuuTruyen {
             });
         }
         catch (error) {
+            console.error(`Failed to get search results for query "${query.title}" (endpoint: ${endpoint}):`, error?.message || error);
             // Fallback to empty results
             return App.createPagedResults({
                 results: [],
@@ -716,7 +724,6 @@ class CuuTruyen {
         }
     }
     async getHomePageSections(sectionCallback) {
-        console.log('CuuTruyen Running...');
         const sections = [
             App.createHomeSection({
                 id: 'popular',
@@ -772,7 +779,7 @@ class CuuTruyen {
                 }
             }
             catch (error) {
-                console.error(`Failed to load section ${section.id}:`, error);
+                console.error(`Failed to load section ${section.id}:`, error?.message || error);
                 section.items = [];
             }
             sectionCallback(section);
@@ -819,6 +826,7 @@ class CuuTruyen {
             });
         }
         catch (error) {
+            console.error(`Failed to get view more items for section ${homepageSectionId}:`, error?.message || error);
             return App.createPagedResults({
                 results: [],
                 metadata: undefined
