@@ -2564,9 +2564,8 @@ class CuuTruyen {
                         }
                         // console.log(`DRM Key: ${drmKey}`);
                         if (drmKey && response.rawData) {
-                            const img_bytes = new Uint8Array(response.rawData);
-                            const decryptedData = await (0, CuuTruyenDrm_1.unscrambleImage)(img_bytes, drmKey);
-                            response.rawData = App.createRawData({ byteArray: decryptedData });
+                            const decryptedData = await (0, CuuTruyenDrm_1.unscrambleImage)(response.rawData, drmKey);
+                            response.rawData = decryptedData;
                         }
                     }
                     return response;
@@ -2809,7 +2808,7 @@ async function unscrambleImage(imageBytes, drmData) {
         throw new Error(`Invalid DRM data (does not start with expected magic bytes): ${drmString}`);
     }
     // Load the scrambled image into a PBImage
-    const originalImage = App.createPBImage({ data: App.createRawData({ byteArray: imageBytes }) });
+    const originalImage = App.createPBImage({ data: imageBytes });
     // console.log('OK')
     // Create result canvas
     const resultCanvas = App.createPBCanvas();
@@ -2837,11 +2836,8 @@ async function unscrambleImage(imageBytes, drmData) {
         );
         sourceY += height;
     }
-    const fin_img = resultCanvas.encode('image/png');
-    if (!fin_img) {
-        throw new Error('Failed to encode unscrambled image to PNG format.');
-    }
-    return new Uint8Array(fin_img);
+    resultCanvas.encode('png');
+    return resultCanvas.data;
 }
 exports.unscrambleImage = unscrambleImage;
 
