@@ -612,7 +612,7 @@ class CuuTruyen {
         else {
             mangas = this.parser.parseSearchResults(response.data.mangas);
         }
-        metadata = page + 1;
+        metadata = { page: page + 1 };
         return App.createPagedResults({
             results: mangas,
             metadata: Math.min(response._metadata.total_pages, metadata),
@@ -673,7 +673,7 @@ class CuuTruyen {
         else {
             mangas = this.parser.parseSearchResults(response.data);
         }
-        metadata = page + 1;
+        metadata = { page: page + 1 };
         return App.createPagedResults({
             results: mangas,
             metadata: Math.min(response._metadata.total_pages, metadata),
