@@ -466,7 +466,7 @@ const CuuTruyenParser_1 = require("./CuuTruyenParser");
 const CuuTruyenSetting_1 = require("./CuuTruyenSetting");
 const CuuTruyenDrm_1 = require("./CuuTruyenDrm");
 exports.CuuTruyenInfo = {
-    version: '1.1.0',
+    version: '0.0.2',
     name: 'CuuTruyen',
     icon: 'icon.png',
     author: 'AlanNois',
@@ -505,6 +505,7 @@ class CuuTruyen {
                     return request;
                 },
                 interceptResponse: async (response) => {
+                    console.log(`Response URL: ${response.request.url}`);
                     // Handle image DRM decryption
                     if (response.request.url.includes('drm_data=')) {
                         try {
@@ -610,7 +611,7 @@ class CuuTruyen {
         else {
             mangas = this.parser.parseSearchResults(response.data.mangas);
         }
-        metadata += 1;
+        metadata = page + 1;
         return App.createPagedResults({
             results: mangas,
             metadata: Math.min(response._metadata.total_pages, metadata),
@@ -671,7 +672,7 @@ class CuuTruyen {
         else {
             mangas = this.parser.parseSearchResults(response.data);
         }
-        metadata += 1;
+        metadata = page + 1;
         return App.createPagedResults({
             results: mangas,
             metadata: Math.min(response._metadata.total_pages, metadata),
