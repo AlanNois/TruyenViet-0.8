@@ -2486,7 +2486,7 @@ const CuuTruyenParser_1 = require("./CuuTruyenParser");
 const CuuTruyenSetting_1 = require("./CuuTruyenSetting");
 const CuuTruyenDrm_1 = require("./CuuTruyenDrm");
 exports.CuuTruyenInfo = {
-    version: 'beta 0.1.4',
+    version: '1.0.0',
     name: 'CuuTruyen',
     icon: 'icon.png',
     author: 'AlanNois',
@@ -2567,7 +2567,7 @@ class CuuTruyen {
                             const decryptedData = await (0, CuuTruyenDrm_1.unscrambleImage)(response.rawData, drmKey);
                             return {
                                 ...response,
-                                rawData: App.createRawData({ byteArray: decryptedData })
+                                rawData: decryptedData
                             };
                         }
                     }
@@ -2839,12 +2839,7 @@ async function unscrambleImage(imageBytes, drmData) {
         );
         sourceY += height;
     }
-    // Convert result to bytes
-    const encodedData = resultCanvas.encode('image/jpeg');
-    if (!encodedData) {
-        throw new Error('Failed to encode canvas to JPEG');
-    }
-    return encodedData; // Cast to Uint8Array as RawData is array-like
+    return resultCanvas.data;
 }
 exports.unscrambleImage = unscrambleImage;
 
