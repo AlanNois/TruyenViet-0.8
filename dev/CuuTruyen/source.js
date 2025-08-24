@@ -466,7 +466,7 @@ const CuuTruyenParser_1 = require("./CuuTruyenParser");
 const CuuTruyenSetting_1 = require("./CuuTruyenSetting");
 const CuuTruyenDrm_1 = require("./CuuTruyenDrm");
 exports.CuuTruyenInfo = {
-    version: '0.0.2',
+    version: '0.0.3',
     name: 'CuuTruyen',
     icon: 'icon.png',
     author: 'AlanNois',
@@ -505,12 +505,13 @@ class CuuTruyen {
                     return request;
                 },
                 interceptResponse: async (response) => {
-                    console.log(`Response URL: ${response.request.url}`);
+                    // console.log(`Response URL: ${response.request.url}`);
                     // Handle image DRM decryption
                     if (response.request.url.includes('drm_data=')) {
                         try {
                             const url = new URL(response.request.url);
                             const drmData = url.searchParams.get('drm_data') || url.hash.split('drm_data=')[1];
+                            console.log(`DRM Data: ${drmData}`);
                             if (drmData && response.rawData) {
                                 const decryptedData = await (0, CuuTruyenDrm_1.unscrambleImage)(new Uint8Array(response.rawData), drmData);
                                 return {
@@ -752,6 +753,7 @@ async function unscrambleImage(imageBytes, drmData) {
         const drmBytes = base64Decode(drmData);
         const decryptedBytes = decodeXorCipher(drmBytes, DECRYPTION_KEY);
         const drmString = new TextDecoder().decode(decryptedBytes);
+        console.log(`DRM String: ${drmString}`);
         // Validate DRM data format
         if (!drmString.startsWith('#v4|')) {
             throw new Error(`Invalid DRM data (does not start with expected magic bytes): ${drmString}`);
