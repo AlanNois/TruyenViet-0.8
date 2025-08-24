@@ -2486,7 +2486,7 @@ const CuuTruyenParser_1 = require("./CuuTruyenParser");
 const CuuTruyenSetting_1 = require("./CuuTruyenSetting");
 const CuuTruyenDrm_1 = require("./CuuTruyenDrm");
 exports.CuuTruyenInfo = {
-    version: 'beta 0.1.1',
+    version: 'beta 0.1.2',
     name: 'CuuTruyen',
     icon: 'icon.png',
     author: 'AlanNois',
@@ -2767,10 +2767,30 @@ function base64Decode(base64String) {
     }
 }
 /**
+ * Encodes a string into a Uint8Array (UTF-8 equivalent for basic ASCII)
+ */
+function encodeString(text) {
+    const bytes = new Uint8Array(text.length);
+    for (let i = 0; i < text.length; i++) {
+        bytes[i] = text.charCodeAt(i);
+    }
+    return bytes;
+}
+/**
+ * Decodes a Uint8Array into a string (UTF-8 equivalent for basic ASCII)
+ */
+function decodeString(bytes) {
+    let result = '';
+    for (let i = 0; i < bytes.length; i++) {
+        result += String.fromCharCode(bytes[i]);
+    }
+    return result;
+}
+/**
  * XOR cipher decryption
  */
 function decodeXorCipher(data, key) {
-    const keyBytes = new TextEncoder().encode(key);
+    const keyBytes = encodeString(key);
     const result = new Uint8Array(data.length);
     for (let i = 0; i < data.length; i++) {
         result[i] = data[i] ^ keyBytes[i % keyBytes.length];
@@ -2781,55 +2801,49 @@ function decodeXorCipher(data, key) {
  * Main unscrambling function
  */
 async function unscrambleImage(imageBytes, drmData) {
-    try {
-        // Decode the DRM data
-        const drmBytes = base64Decode(drmData);
-        const decryptedBytes = decodeXorCipher(drmBytes, DECRYPTION_KEY);
-        const drmString = new TextDecoder().decode(decryptedBytes);
-        console.log(`DRM String: ${drmString}`);
-        // Validate DRM data format
-        if (!drmString.startsWith('#v4|')) {
-            throw new Error(`Invalid DRM data (does not start with expected magic bytes): ${drmString}`);
-        }
-        // Load the scrambled image into a PBImage
-        const originalImage = App.createPBImage({ data: App.createRawData({ byteArray: imageBytes }) });
-        // Create result canvas
-        const resultCanvas = App.createPBCanvas();
-        resultCanvas.setSize(originalImage.width, originalImage.height);
-        // Parse scrambling instructions and unscramble
-        const instructions = drmString.split('|').slice(1); // Skip the '#v4' part
-        let sourceY = 0;
-        for (const instruction of instructions) {
-            if (!instruction.trim())
-                continue;
-            const parts = instruction.split('-');
-            if (parts.length !== 2) {
-                console.warn(`Invalid instruction format: ${instruction}`);
-                continue;
-            }
-            const destY = parseInt(parts[0].trim(), 10);
-            const height = parseInt(parts[1].trim(), 10);
-            if (isNaN(destY) || isNaN(height)) {
-                console.warn(`Invalid instruction values: ${instruction}`);
-                continue;
-            }
-            // Draw the section from source position to destination position
-            resultCanvas.drawImage(originalImage, 0, sourceY, originalImage.width, height, // source rect
-            0, destY // dest rect
-            );
-            sourceY += height;
-        }
-        // Convert result to bytes
-        const encodedData = resultCanvas.encode('image/jpeg');
-        if (!encodedData) {
-            throw new Error('Failed to encode canvas to JPEG');
-        }
-        return encodedData; // Cast to Uint8Array as RawData is array-like
+    // Decode the DRM data
+    const drmBytes = base64Decode(drmData);
+    const decryptedBytes = decodeXorCipher(drmBytes, DECRYPTION_KEY);
+    const drmString = decodeString(decryptedBytes);
+    console.log(`DRM String: ${drmString}`);
+    // Validate DRM data format
+    if (!drmString.startsWith('#v4|')) {
+        throw new Error(`Invalid DRM data (does not start with expected magic bytes): ${drmString}`);
     }
-    catch (error) {
-        console.error('DRM unscrambling failed:', error);
-        throw error;
+    // Load the scrambled image into a PBImage
+    const originalImage = App.createPBImage({ data: App.createRawData({ byteArray: imageBytes }) });
+    // Create result canvas
+    const resultCanvas = App.createPBCanvas();
+    resultCanvas.setSize(originalImage.width, originalImage.height);
+    // Parse scrambling instructions and unscramble
+    const instructions = drmString.split('|').slice(1); // Skip the '#v4' part
+    let sourceY = 0;
+    for (const instruction of instructions) {
+        if (!instruction.trim())
+            continue;
+        const parts = instruction.split('-');
+        if (parts.length !== 2) {
+            console.warn(`Invalid instruction format: ${instruction}`);
+            continue;
+        }
+        const destY = parseInt(parts[0].trim(), 10);
+        const height = parseInt(parts[1].trim(), 10);
+        if (isNaN(destY) || isNaN(height)) {
+            console.warn(`Invalid instruction values: ${instruction}`);
+            continue;
+        }
+        // Draw the section from source position to destination position
+        resultCanvas.drawImage(originalImage, 0, sourceY, originalImage.width, height, // source rect
+        0, destY // dest rect
+        );
+        sourceY += height;
     }
+    // Convert result to bytes
+    const encodedData = resultCanvas.encode('image/jpeg');
+    if (!encodedData) {
+        throw new Error('Failed to encode canvas to JPEG');
+    }
+    return encodedData; // Cast to Uint8Array as RawData is array-like
 }
 exports.unscrambleImage = unscrambleImage;
 
