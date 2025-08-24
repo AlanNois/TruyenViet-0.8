@@ -2486,7 +2486,7 @@ const CuuTruyenParser_1 = require("./CuuTruyenParser");
 const CuuTruyenSetting_1 = require("./CuuTruyenSetting");
 const CuuTruyenDrm_1 = require("./CuuTruyenDrm");
 exports.CuuTruyenInfo = {
-    version: '0.0.1',
+    version: '0.0.6',
     name: 'CuuTruyen',
     icon: 'icon.png',
     author: 'AlanNois',
@@ -2528,20 +2528,15 @@ class CuuTruyen {
                     // console.log(`Response URL: ${response.request.url}`);
                     // Handle image DRM decryption
                     if (response.request.url.includes('drm_data=')) {
-                        console.log(`OK`);
-                        try {
-                            const url = new URL(response.request.url);
-                            const drmData = url.searchParams.get('drm_data') || url.hash.split('drm_data=')[1];
-                            if (drmData && response.rawData) {
-                                const decryptedData = await (0, CuuTruyenDrm_1.unscrambleImage)(new Uint8Array(response.rawData), drmData);
-                                return {
-                                    ...response,
-                                    rawData: App.createRawData({ byteArray: decryptedData })
-                                };
-                            }
-                        }
-                        catch (error) {
-                            console.error('DRM decryption failed:', error?.message || error);
+                        const url = new URL(response.request.url);
+                        const drmData = url.searchParams.get('drm_data') || url.hash.split('drm_data=')[1];
+                        console.log(`DRM Data: ${drmData}`);
+                        if (drmData && response.rawData) {
+                            const decryptedData = await (0, CuuTruyenDrm_1.unscrambleImage)(new Uint8Array(response.rawData), drmData);
+                            return {
+                                ...response,
+                                rawData: App.createRawData({ byteArray: decryptedData })
+                            };
                         }
                     }
                     return response;
@@ -2632,10 +2627,10 @@ class CuuTruyen {
         else {
             mangas = this.parser.parseSearchResults(response.data.mangas);
         }
-        metadata.page = page + 1;
+        metadata = { page: page + 1 };
         return App.createPagedResults({
             results: mangas,
-            metadata: Math.min(response._metadata.total_pages, metadata),
+            metadata: Math.min(response._metadata.total_pages, metadata.page),
         });
     }
     async getHomePageSections(sectionCallback) {
@@ -2693,10 +2688,10 @@ class CuuTruyen {
         else {
             mangas = this.parser.parseSearchResults(response.data);
         }
-        metadata.page = page + 1;
+        metadata = { page: page + 1 };
         return App.createPagedResults({
             results: mangas,
-            metadata: Math.min(response._metadata.total_pages, metadata),
+            metadata: Math.min(response._metadata.total_pages, metadata.page),
         });
     }
     async getSearchTags() {
