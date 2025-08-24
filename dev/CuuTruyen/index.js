@@ -2486,7 +2486,7 @@ const CuuTruyenParser_1 = require("./CuuTruyenParser");
 const CuuTruyenSetting_1 = require("./CuuTruyenSetting");
 const CuuTruyenDrm_1 = require("./CuuTruyenDrm");
 exports.CuuTruyenInfo = {
-    version: '1.0.1',
+    version: '1.0.0',
     name: 'CuuTruyen',
     icon: 'icon.png',
     author: 'AlanNois',
@@ -2802,14 +2802,14 @@ async function unscrambleImage(imageBytes, drmData) {
     const drmBytes = base64Decode(drmData);
     const decryptedBytes = decodeXorCipher(drmBytes, DECRYPTION_KEY);
     const drmString = decodeString(decryptedBytes);
-    console.log(`DRM String: ${drmString}`);
+    // console.log(`DRM String: ${drmString}`);
     // Validate DRM data format
     if (!drmString.startsWith('#v4|')) {
         throw new Error(`Invalid DRM data (does not start with expected magic bytes): ${drmString}`);
     }
     // Load the scrambled image into a PBImage
     const originalImage = App.createPBImage({ data: imageBytes });
-    console.log('OK');
+    // console.log('OK')
     // Create result canvas
     const resultCanvas = App.createPBCanvas();
     resultCanvas.setSize(originalImage.width, originalImage.height);
@@ -2836,7 +2836,7 @@ async function unscrambleImage(imageBytes, drmData) {
         );
         sourceY += height;
     }
-    return resultCanvas.data;
+    return App.createPBImage({ data: resultCanvas.data }).data;
 }
 exports.unscrambleImage = unscrambleImage;
 
