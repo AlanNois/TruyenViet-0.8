@@ -2486,7 +2486,7 @@ const CuuTruyenParser_1 = require("./CuuTruyenParser");
 const CuuTruyenSetting_1 = require("./CuuTruyenSetting");
 const CuuTruyenDrm_1 = require("./CuuTruyenDrm");
 exports.CuuTruyenInfo = {
-    version: 'beta 0.1.3',
+    version: 'beta 0.1.4',
     name: 'CuuTruyen',
     icon: 'icon.png',
     author: 'AlanNois',
@@ -2811,7 +2811,7 @@ async function unscrambleImage(imageBytes, drmData) {
         throw new Error(`Invalid DRM data (does not start with expected magic bytes): ${drmString}`);
     }
     // Load the scrambled image into a PBImage
-    const originalImage = App.createPBImage({ data: App.createRawData({ byteArray: imageBytes }) });
+    const originalImage = App.createPBImage({ data: imageBytes });
     console.log('OK');
     // Create result canvas
     const resultCanvas = App.createPBCanvas();
