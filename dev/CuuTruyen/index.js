@@ -2486,7 +2486,7 @@ const CuuTruyenParser_1 = require("./CuuTruyenParser");
 const CuuTruyenSetting_1 = require("./CuuTruyenSetting");
 const CuuTruyenDrm_1 = require("./CuuTruyenDrm");
 exports.CuuTruyenInfo = {
-    version: '0.0.1',
+    version: '0.1.1',
     name: 'CuuTruyen',
     icon: 'icon.png',
     author: 'AlanNois',
@@ -2836,7 +2836,7 @@ async function unscrambleImage(imageBytes, drmData) {
         );
         sourceY += height;
     }
-    resultCanvas.encode('png');
+    resultCanvas.encode('jpg');
     return resultCanvas.data;
 }
 exports.unscrambleImage = unscrambleImage;
