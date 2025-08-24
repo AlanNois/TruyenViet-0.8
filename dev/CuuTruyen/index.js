@@ -2486,7 +2486,7 @@ const CuuTruyenParser_1 = require("./CuuTruyenParser");
 const CuuTruyenSetting_1 = require("./CuuTruyenSetting");
 const CuuTruyenDrm_1 = require("./CuuTruyenDrm");
 exports.CuuTruyenInfo = {
-    version: '0.0.1',
+    version: 'fuckkkkk',
     name: 'CuuTruyen',
     icon: 'icon.png',
     author: 'AlanNois',
@@ -2564,8 +2564,9 @@ class CuuTruyen {
                         }
                         // console.log(`DRM Key: ${drmKey}`);
                         if (drmKey && response.rawData) {
-                            const decryptedData = await (0, CuuTruyenDrm_1.unscrambleImage)(response.rawData, drmKey);
-                            response.rawData = decryptedData;
+                            // const decryptedData = await unscrambleImage(response.rawData, drmKey);
+                            // response.rawData = decryptedData;
+                            response.rawData = App.createRawData({ byteArray: await (0, CuuTruyenDrm_1.unscrambleImage)(App.createByteArray(response.rawData ?? new Uint8Array()), drmKey) });
                         }
                     }
                     return response;
@@ -2797,6 +2798,49 @@ function decodeXorCipher(data, key) {
 /**
  * Main unscrambling function
  */
+// export async function unscrambleImage(imageBytes: RawData, drmData: string): Promise<RawData> {
+//     // Decode the DRM data
+//     const drmBytes = base64Decode(drmData);
+//     const decryptedBytes = decodeXorCipher(drmBytes, DECRYPTION_KEY);
+//     const drmString = decodeString(decryptedBytes);
+//     // console.log(`DRM String: ${drmString}`);
+//     // Validate DRM data format
+//     if (!drmString.startsWith('#v4|')) {
+//         throw new Error(`Invalid DRM data (does not start with expected magic bytes): ${drmString}`);
+//     }
+//     // Load the scrambled image into a PBImage
+//     const originalImage = App.createPBImage({ data: imageBytes });
+//     // console.log('OK')
+//     // Create result canvas
+//     const resultCanvas = App.createPBCanvas();
+//     resultCanvas.setSize(originalImage.width, originalImage.height);
+//     // Parse scrambling instructions and unscramble
+//     const instructions = drmString.split('|').slice(1); // Skip the '#v4' part
+//     let sourceY = 0;
+//     for (const instruction of instructions) {
+//         if (!instruction.trim()) continue;
+//         const parts = instruction.split('-');
+//         if (parts.length !== 2) {
+//             console.warn(`Invalid instruction format: ${instruction}`);
+//             continue;
+//         }
+//         const destY = parseInt(parts[0]!.trim(), 10);
+//         const height = parseInt(parts[1]!.trim(), 10);
+//         if (isNaN(destY) || isNaN(height)) {
+//             console.warn(`Invalid instruction values: ${instruction}`);
+//             continue;
+//         }
+//         // Draw the section from source position to destination position
+//         resultCanvas.drawImage(
+//             originalImage,
+//             0, sourceY, originalImage.width, height!,  // source rect
+//             0, destY!                                   // dest rect
+//         );
+//         sourceY += height!;
+//     }
+//     resultCanvas.encode('jpg');
+//     return resultCanvas.data!;
+// }
 async function unscrambleImage(imageBytes, drmData) {
     // Decode the DRM data
     const drmBytes = base64Decode(drmData);
@@ -2808,8 +2852,7 @@ async function unscrambleImage(imageBytes, drmData) {
         throw new Error(`Invalid DRM data (does not start with expected magic bytes): ${drmString}`);
     }
     // Load the scrambled image into a PBImage
-    const originalImage = App.createPBImage({ data: imageBytes });
-    return originalImage.data;
+    const originalImage = App.createPBImage({ data: App.createRawData({ byteArray: imageBytes }) });
     // console.log('OK')
     // Create result canvas
     const resultCanvas = App.createPBCanvas();
@@ -2838,7 +2881,7 @@ async function unscrambleImage(imageBytes, drmData) {
         sourceY += height;
     }
     resultCanvas.encode('jpg');
-    return resultCanvas.data;
+    return new Uint8Array(resultCanvas.data);
 }
 exports.unscrambleImage = unscrambleImage;
 
