@@ -2486,7 +2486,7 @@ const CuuTruyenParser_1 = require("./CuuTruyenParser");
 const CuuTruyenSetting_1 = require("./CuuTruyenSetting");
 const CuuTruyenDrm_1 = require("./CuuTruyenDrm");
 exports.CuuTruyenInfo = {
-    version: 'beta 0.1.2',
+    version: 'beta 0.1.3',
     name: 'CuuTruyen',
     icon: 'icon.png',
     author: 'AlanNois',
@@ -2562,9 +2562,9 @@ class CuuTruyen {
                                 }
                             }
                         }
-                        console.log(`DRM Key: ${drmKey}`);
+                        // console.log(`DRM Key: ${drmKey}`);
                         if (drmKey && response.rawData) {
-                            const decryptedData = await (0, CuuTruyenDrm_1.unscrambleImage)(new Uint8Array(response.rawData), drmKey);
+                            const decryptedData = await (0, CuuTruyenDrm_1.unscrambleImage)(response.rawData, drmKey);
                             return {
                                 ...response,
                                 rawData: App.createRawData({ byteArray: decryptedData })
@@ -2812,6 +2812,7 @@ async function unscrambleImage(imageBytes, drmData) {
     }
     // Load the scrambled image into a PBImage
     const originalImage = App.createPBImage({ data: App.createRawData({ byteArray: imageBytes }) });
+    console.log('OK');
     // Create result canvas
     const resultCanvas = App.createPBCanvas();
     resultCanvas.setSize(originalImage.width, originalImage.height);
