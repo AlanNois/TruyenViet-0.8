@@ -2486,7 +2486,7 @@ const CuuTruyenParser_1 = require("./CuuTruyenParser");
 const CuuTruyenSetting_1 = require("./CuuTruyenSetting");
 const CuuTruyenDrm_1 = require("./CuuTruyenDrm");
 exports.CuuTruyenInfo = {
-    version: '1.0.0',
+    version: '1.0.1',
     name: 'CuuTruyen',
     icon: 'icon.png',
     author: 'AlanNois',
@@ -2565,10 +2565,7 @@ class CuuTruyen {
                         // console.log(`DRM Key: ${drmKey}`);
                         if (drmKey && response.rawData) {
                             const decryptedData = await (0, CuuTruyenDrm_1.unscrambleImage)(response.rawData, drmKey);
-                            return {
-                                ...response,
-                                rawData: decryptedData
-                            };
+                            response.rawData = decryptedData;
                         }
                     }
                     return response;
