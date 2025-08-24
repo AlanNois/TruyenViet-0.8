@@ -15,23 +15,19 @@
 
 **CuuTruyen Extension:**
 
-While I have a potential solution to bypass the DRM protection for CuuTruyen, adapting it to work seamlessly with the PaperBack extension is currently beyond my capabilities. To achieve this, I would require assistance from developers familiar with the GitHub environment and coding.
+- Added [CuuTruyen](https://cuutruyen.com/) extension as an new source for reading manga.
 
 **Call for Collaboration:**
 
 If you're a coder interested in contributing to this project, here's how you can help:
 
-1. **Project Discussion:** Open an issue on this repository to discuss potential approaches for developing the CuuTruyen extension.
+1. **Project Discussion:** Open an issue on this repository to discuss potential approaches for developing the extension.
 2. **Code Contributions:** If you have the expertise and are willing to contribute code, feel free to fork the repository, make your modifications, and submit a pull request.
-
-**Looking Forward:**
-
-I'm committed to finding a solution for CuuTruyen, and I believe that collaboration with skilled developers can make it happen. Let's work together to enhance the user experience!
 
 **Additional Notes:**
 
 - You can remove the extensions since the extensions are no longer maintained.
-- "I have dengue fever, which may cause some delays in updates. I apologize in advance for any inconvenience this might cause if the extension malfunctions during this time.
+
 
 **Stay Updated:**
 
