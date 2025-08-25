@@ -1,173 +1,304 @@
-// import {
-//     MangaUpdates,
-//     TagSection,
-//     SourceManga,
-//     Chapter,
-//     ChapterDetails,
-//     HomeSection,
-//     HomeSectionType,
-//     SearchRequest,
-//     PagedResults,
-//     Request,
-//     Response,
-//     ChapterProviding,
-//     MangaProviding,
-//     SearchResultsProviding,
-//     HomePageSectionsProviding,
-//     SourceInfo,
-//     ContentRating,
-//     SourceIntents,
-//     BadgeColor
-// } from '@paperback/types';
+import {
+    // MangaUpdates,
+    TagSection,
+    SourceManga,
+    Chapter,
+    ChapterDetails,
+    HomeSection,
+    HomeSectionType,
+    SearchRequest,
+    PagedResults,
+    Request,
+    Response,
+    ChapterProviding,
+    MangaProviding,
+    SearchResultsProviding,
+    HomePageSectionsProviding,
+    SourceInfo,
+    ContentRating,
+    SourceIntents,
+    BadgeColor,
+    DUISection,
+} from '@paperback/types';
 
-// import { createCanvas, loadImage } from 'canvas';
+import { Parser } from './CuuTruyenParser';
+import { getDomain, domainSettings, resetSettings } from './CuuTruyenSetting';
+import { unscrambleImage } from './CuuTruyenDrm';
 
-// import { Parser } from './CuuTruyenParser';
-// import { cuudrm } from './CuuDrm';
+export const CuuTruyenInfo: SourceInfo = {
+    version: '1.0.1',
+    name: 'CuuTruyen',
+    icon: 'icon.png',
+    author: 'AlanNois',
+    authorWebsite: 'https://github.com/AlanNois',
+    description: 'Extension that pulls manga from Cuutruyen',
+    websiteBaseURL: 'https://cuutruyen.net',
+    contentRating: ContentRating.MATURE,
+    sourceTags: [
+        {
+            text: 'Recommended',
+            type: BadgeColor.GREEN
+        },
+        {
+            text: 'DRM protected',
+            type: BadgeColor.YELLOW
+        }
+    ],
+    intents: SourceIntents.MANGA_CHAPTERS | SourceIntents.HOMEPAGE_SECTIONS | SourceIntents.SETTINGS_UI
+};
 
-// const DOMAIN = 'https://nettrom.com/';
+export class CuuTruyen implements ChapterProviding, MangaProviding, SearchResultsProviding, HomePageSectionsProviding {
 
-// export const isLastPage = ($: any): boolean => {
-//     const current = $.current_page;
-//     const total = $.total_pages;
+    stateManager = App.createSourceStateManager();
+    parser = new Parser();
 
-//     if (current) {
-//         return (+total) === (+current);
-//     }
+    private domainPromise: Promise<string>;
 
-//     return true;
-// }
+    constructor() {
+        this.domainPromise = getDomain(this.stateManager);
+    }
 
-// export const CuuTruyenInfo: SourceInfo = {
-//     version: '1.0.0',
-//     name: 'CuuTruyen',
-//     icon: 'icon.png',
-//     author: 'AlanNois',
-//     authorWebsite: 'https://github.com/AlanNois/',
-//     description: 'Extension that pulls manga from CuuTruyen.',
-//     contentRating: ContentRating.EVERYONE,
-//     websiteBaseURL: DOMAIN,
-//     sourceTags: [
-//         {
-//             text: 'Recomended',
-//             type: BadgeColor.BLUE
-//         }
-//     ],
-//     intents: SourceIntents.MANGA_CHAPTERS | SourceIntents.HOMEPAGE_SECTIONS
-// }
+    private async getBaseUrl(): Promise<string> {
+        const domain = await this.domainPromise;
+        return `https://${domain}`;
+    }
 
-// export class CuuTruyen implements SearchResultsProviding, MangaProviding, ChapterProviding, HomePageSectionsProviding {
+    private async getApiUrl(): Promise<string> {
+        const domain = await this.domainPromise;
+        return `https://${domain}/api/v2`;
+    }
 
-//     constructor(private cheerio: CheerioAPI) { }
+    readonly requestManager = App.createRequestManager({
+        requestsPerSecond: 5,
+        requestTimeout: 15000,
+        interceptor: {
+            interceptRequest: async (request: Request): Promise<Request> => {
+                request.headers = {
+                    ...(request.headers ?? {}),
+                    ...{
+                        'referer': `${await this.getBaseUrl()}/`,
+                        'user-agent': await this.requestManager.getDefaultUserAgent(),
+                    }
+                };
+                return request;
+            },
+            interceptResponse: async (response: Response): Promise<Response> => {
+                // console.log(`Response URL: ${response.request.url}`);
+                // Handle image DRM decryption
+                if (response.request.url.includes('drm_data=')) {
+                    const urlString = response.request.url;
+                    let drmKey: string | null = null;
 
-//     readonly requestManager = App.createRequestManager({
-//         requestsPerSecond: 3,
-//         requestTimeout: 50000,
-//         interceptor: {
-//             interceptRequest: async (request: Request): Promise<Request> => {
+                    // Try to extract from query parameters
+                    const queryStringIndex = urlString.indexOf('?');
+                    if (queryStringIndex !== -1) {
+                        const queryAndHash = urlString.substring(queryStringIndex + 1);
+                        const hashIndexInQuery = queryAndHash.indexOf('#');
+                        const queryString = hashIndexInQuery !== -1 ? queryAndHash.substring(0, hashIndexInQuery) : queryAndHash;
 
-//                 const fragmentIndex = request.url.indexOf('#');
-//                 if (fragmentIndex !== -1) {
-//                     const urlWithoutFragment = request.url.substring(0, fragmentIndex);
-//                     const fragment = request.url.substring(fragmentIndex + 1);
+                        const drmDataParamIndex = queryString.indexOf('drm_data=');
+                        if (drmDataParamIndex !== -1) {
+                            const startIndex = drmDataParamIndex + 'drm_data='.length;
+                            let endIndex = queryString.indexOf('&', startIndex);
+                            if (endIndex === -1) {
+                                endIndex = queryString.length;
+                            }
+                            drmKey = queryString.substring(startIndex, endIndex);
+                        }
+                    }
 
-//                     if (fragment.startsWith('drm_data=')) {
-//                         request.drmData = fragment.split('drm_data=')[1]; // Store DRM data in a custom property
-//                     }
+                    // If not found in query, try to extract from hash
+                    if (!drmKey) {
+                        const hashIndex = urlString.indexOf('#');
+                        if (hashIndex !== -1) {
+                            const hashString = urlString.substring(hashIndex + 1);
+                            const drmDataHashIndex = hashString.indexOf('drm_data=');
+                            if (drmDataHashIndex !== -1) {
+                                const startIndex = drmDataHashIndex + 'drm_data='.length;
+                                let endIndex = hashString.indexOf('&', startIndex);
+                                if (endIndex === -1) {
+                                    endIndex = hashString.length;
+                                }
+                                drmKey = hashString.substring(startIndex, endIndex);
+                            }
+                        }
+                    }
 
-//                     request.url = urlWithoutFragment; // Remove fragment from the URL
-//                 }
+                    // console.log(`DRM Key: ${drmKey}`);
+                    if (drmKey && response.rawData) {
+                        const decryptedData = await unscrambleImage(response.rawData, drmKey);
+                        response.rawData = decryptedData;
+                        // response.rawData = App.createRawData({ byteArray: await unscrambleImage(App.createByteArray(response.rawData ?? new Uint8Array()), drmKey) })
+                    }
+                }
+                return response;
+            }
+        }
+    });
 
+    async getSourceMenu(): Promise<DUISection> {
+        return App.createDUISection(
+            {
 
-//                 request.headers = {
-//                     ...(request.headers ?? {}),
-//                     ...{
-//                         'referer': DOMAIN,
-//                         'user-agent': await this.requestManager.getDefaultUserAgent(),
-//                     }
-//                 };
-//                 return request
-//             },
-//             interceptResponse: async (response: Response): Promise<Response> => {
-//                 const request = response.request
+                id: 'main',
+                header: 'Source Settings',
+                rows: async () => {
+                    return [
+                        domainSettings(this.stateManager),
+                        resetSettings(this.stateManager)
+                    ]
+                },
+                isHidden: false
+            }
+        )
 
-//                 if (request.url.includes('drm_data') !== true) {
-//                     return response
-//                 }
+    }
 
-//                 const drmData = request.url.split('#drm_data').pop()?.replace('\n', '');
-//                 response.rawData = this.unscrambleImage(response.rawData, drmData)
+    getMangaShareUrl(mangaId: string): string {
+        return `${this.getBaseUrl()}/mangas/${mangaId}`;
+    }
 
-//                 return response
-//             }
-//         }
-//     });
+    private async apiRequest(endpoint: string, params: string = ''): Promise<any> {
+        const url = `${await this.getApiUrl()}/${endpoint}${params ? `?${params}` : ''}`;
+        const request = App.createRequest({
+            url,
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json, text/plain, */*',
+            },
+        });
+        const response = await this.requestManager.schedule(request, 1);
+        if (!response.data) {
+            throw new Error('API response data is empty or undefined.');
+        }
+        return JSON.parse(response.data as string);
+    }
 
-//     unscrambleImage(rawData: any, drmData : any) {
-//         try {
-//             const image = loadImage(rawData);
+    async getMangaDetails(mangaId: string): Promise<SourceManga> {
+        const response = await this.apiRequest(`mangas/${mangaId}`);
+        return this.parser.parseMangaDetails(response.data, mangaId);
+    }
 
-//             const width = image.width;
-//             const height = image.height;
+    async getChapters(mangaId: string): Promise<Chapter[]> {
+        const response = await this.apiRequest(`mangas/${mangaId}/chapters`);
+        return this.parser.parseChaptersList(response.data);
+    }
 
-//             const canvas = createCanvas(width, height);
-//             const ctx = canvas.getContext("2d");
+    async getChapterDetails(mangaId: string, chapterId: string): Promise<ChapterDetails> {
+        const response = await this.apiRequest(`chapters/${chapterId}`);
+        const pages = this.parser.parseChapterDetails(response.data);
+        return App.createChapterDetails({
+            id: chapterId,
+            mangaId,
+            pages,
+        });
+    }
 
-//             const decryptScript = cuudrm.render_image(null, null, drmData)
+    async getSearchResults(query: SearchRequest, metadata: any): Promise<PagedResults> {
+        let page = metadata?.page ?? 1;
 
-//             decryptScript.forEach((coordinates: any) => {
-//                 const [sx, sy, , sHeight, dx, dy, , dHeight] = coordinates;
+        const tag = query.includedTags[0]?.id;
+        let endpoint: string;
+        let params: string;
 
-//                 // const srcRect = { x: Number(sx), y: Number(sy), width: Number(image.width), height: Number(sHeight) };
-//                 // const dstRect = { x: Number(dx), y: Number(dy), width: Number(image.width), height: Number(dHeight) };
+        if (query.title) {
+            endpoint = 'mangas/search';
+            params = `q=${encodeURIComponent(query.title)}&page=${page}&per_page=50`;
+        } else if (tag) {
+            endpoint = `tags/${tag}`;
+            params = `page=${page}&per_page=50`;
+        } else {
+            // Default case if neither title nor tag is provided
+            endpoint = 'mangas/search';
+            params = `q=&page=${page}&per_page=50`;
+        }
 
-//                 ctx.drawImage(image, sx, sy, image.width, sHeight, dx, dy, image.width, dHeight);
-//             });
+        const response = await this.apiRequest(endpoint, params);
+        let mangas;
+        if (!tag) {
+            mangas = this.parser.parseSearchResults(response.data);
+        } else {
+            mangas = this.parser.parseSearchResults(response.data.mangas);
+        }
 
-//             const output = canvas.toBuffer("image/jpeg", {
-//                 quality: 100
-//             })
+        const lastPage = response._metadata.total_pages;
+        metadata = lastPage > page ? { page: page + 1 } : lastPage;
 
-//             return output
-//         } catch (error) {
-//             console.error("Error:", error);
-//             // Handle errors appropriately (e.g., throw an exception)
-//         }
-//     }
+        return App.createPagedResults({
+            results: mangas,
+            metadata,
+        });
+    }
 
-//     getMangaShareUrl(mangaId: string): string {
-//         return `${DOMAIN}${mangaId}`
-//     }
+    async getHomePageSections(sectionCallback: (section: HomeSection) => void): Promise<void> {
+        console.log("CuuTruyen Running...")
+        const sections = [
+            App.createHomeSection({ id: 'popular', title: "Phổ Biến Nhất", containsMoreItems: true, type: HomeSectionType.singleRowNormal}),
+            App.createHomeSection({ id: 'latest', title: "Mới Cập Nhật", containsMoreItems: true, type: HomeSectionType.singleRowNormal}),
+            App.createHomeSection({ id: 'completed', title: "Đã Hoàn Thành", containsMoreItems: true, type: HomeSectionType.singleRowNormal})
+        ];
+        for (const section of sections) {
+            sectionCallback(section); // Send initial section with no items
+            let response;
+            switch (section.id) {
+                case 'popular':
+                    response = await this.apiRequest('mangas/top', 'duiration=all&page=1&per_page=25');
+                    break;
+                case 'latest':
+                    response = await this.apiRequest('mangas/recently_updated', 'page=1&per_page=25');
+                    break;
+                case 'completed':
+                    response = await this.apiRequest('tags/da-hoan-thanh', 'page=1&per_page=25');
+                    break;
+                default:
+                    continue;
+            }
 
-//     parser = new Parser()
+            if (section.id === 'completed') {
+                section.items = this.parser.parseSearchResults(response.data.mangas);
+            } else {
+                section.items = this.parser.parseSearchResults(response.data);
+            }
 
-//     private async getAPI(url: string): Promise<string> {
-//         const request = App.createRequest({
-//             url,
-//             method: 'GET',
-//         })
+            sectionCallback(section); // Send section with items
+        }
+    }
 
-//         const response = await this.requestManager.schedule(request, 2);
-//         return response.data as string
-//     }
+    async getViewMoreItems(homepageSectionId: string, metadata: any): Promise<PagedResults> {
+        let page = metadata?.page ?? 1;
+        let response;
+        switch (homepageSectionId) {
+            case 'popular':
+                response = await this.apiRequest('mangas/top', `duiration=all&page=${page}&per_page=25`);
+                break;
+            case 'latest':
+                response = await this.apiRequest('mangas/recently_updated', `page=${page}&per_page=25`);
+                break;
+            case 'completed':
+                response = await this.apiRequest('tags/da-hoan-thanh', `page=${page}&per_page=25`);
+                break;
+            default:
+                throw new Error('Invalid section ID');
+        }
 
-//     async getMangaDetails(mangaId: string): Promise<SourceManga> {
-//         const json = JSON.parse(await this.getAPI(`${DOMAIN}api/v2/${mangaId}`));
-//         return this.parser.parseMangaDetails(json, mangaId)
-//     }
+        let mangas;
+        if (homepageSectionId === 'completed') {
+            mangas = this.parser.parseSearchResults(response.data.mangas);
+        } else {
+            mangas = this.parser.parseSearchResults(response.data);
+        }
 
-//     async getChapters(mangaId: string): Promise<Chapter[]> {
-//         const json = JSON.parse(await this.getAPI(`${DOMAIN}api/v2/${mangaId}`));
-//         return this.parser.parseChapterList(json)
-//     }
+        const lastPage = response._metadata.total_pages;
+        metadata = lastPage > page ? {page : page + 1} : lastPage;
 
-//     async async getChapterDetails(mangaId: string, chapterId: string): Promise<ChapterDetails> {
-//         const json = JSON.parse(await this.getAPI(`${DOMAIN}api/v2/${chapterId}`));
-//         const pages = this.parser.parseChapterDetails(json);
-//         return App.createChapterDetails({
-//             id: chapterId,
-//             mangaId,
-//             pages
-//         })
-//     }
-// }
+        return App.createPagedResults({
+            results: mangas,
+            metadata,
+        });
+    }
+
+    async getSearchTags(): Promise<TagSection[]> {
+        return this.parser.parseTags()
+    }
+
+}
