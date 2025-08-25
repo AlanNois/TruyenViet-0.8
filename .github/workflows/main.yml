@@ -9,6 +9,10 @@ jobs:
     name: Bundle and Publish Sources
     runs-on: ubuntu-latest
 
+    # Add this permissions block
+    permissions:
+      contents: write
+
     strategy:
       matrix:
         node-version: [20.x] 
