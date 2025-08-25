@@ -3033,7 +3033,8 @@ var Domains;
     Domains["CUUTRUYEN"] = "cuutruyen.net";
     Domains["NETTROM"] = "nettrom.com";
     Domains["HETCUUTRUYEN"] = "hetcuutruyen.net";
-    Domains["CUUTRUYENT9SV7"] = "cuutruyent9sv7.xyz";
+    Domains["CUUTRUYENPIP7Z"] = "cuutruyenpip7z.site";
+    Domains["CUUTRUYEN5C844"] = "cuutruyen5c844.site";
 })(Domains || (Domains = {}));
 const getDomain = async (stateManager) => {
     return await stateManager.retrieve('domain') ?? Domains.CUUTRUYEN;
@@ -3060,7 +3061,8 @@ const domainSettings = (stateManager) => {
                                     Domains.CUUTRUYEN,
                                     Domains.NETTROM,
                                     Domains.HETCUUTRUYEN,
-                                    Domains.CUUTRUYENT9SV7
+                                    Domains.CUUTRUYENPIP7Z,
+                                    Domains.CUUTRUYEN5C844
                                 ],
                                 labelResolver: async (option) => {
                                     switch (option) {
@@ -3070,8 +3072,10 @@ const domainSettings = (stateManager) => {
                                             return 'Net Trom (.com)';
                                         case Domains.HETCUUTRUYEN:
                                             return 'Het Cuu Truyen (.net)';
-                                        case Domains.CUUTRUYENT9SV7:
-                                            return 'Cuu Truyen T9SV7 (.xyz)';
+                                        case Domains.CUUTRUYENPIP7Z:
+                                            return 'Cuu Truyen Pip7z (.site)';
+                                        case Domains.CUUTRUYEN5C844:
+                                            return 'Cuu Truyen 5c844 (.site)';
                                         default:
                                             return option;
                                     }
