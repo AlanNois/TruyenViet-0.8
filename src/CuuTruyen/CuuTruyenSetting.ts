@@ -8,7 +8,8 @@ enum Domains {
     CUUTRUYEN = 'cuutruyen.net',
     NETTROM = 'nettrom.com',
     HETCUUTRUYEN = 'hetcuutruyen.net',
-    CUUTRUYENT9SV7 = 'cuutruyent9sv7.xyz',
+    CUUTRUYENPIP7Z = 'cuutruyenpip7z.site',
+    CUUTRUYEN5C844 = 'cuutruyen5c844.site',
 }
 
 export const getDomain = async (stateManager: SourceStateManager): Promise<string> => {
@@ -38,7 +39,8 @@ export const domainSettings = (stateManager: SourceStateManager): DUINavigationB
                                         Domains.CUUTRUYEN,
                                         Domains.NETTROM,
                                         Domains.HETCUUTRUYEN,
-                                        Domains.CUUTRUYENT9SV7
+                                        Domains.CUUTRUYENPIP7Z,
+                                        Domains.CUUTRUYEN5C844
                                     ],
                                     labelResolver: async (option: string) => {
                                         switch (option) {
@@ -48,8 +50,10 @@ export const domainSettings = (stateManager: SourceStateManager): DUINavigationB
                                                 return 'Net Trom (.com)'
                                             case Domains.HETCUUTRUYEN:
                                                 return 'Het Cuu Truyen (.net)'
-                                            case Domains.CUUTRUYENT9SV7:
-                                                return 'Cuu Truyen T9SV7 (.xyz)'
+                                            case Domains.CUUTRUYENPIP7Z:
+                                                return 'Cuu Truyen Pip7z (.site)'
+                                            case Domains.CUUTRUYEN5C844:
+                                                return 'Cuu Truyen 5c844 (.site)'
                                             default:
                                                 return option
                                         }
