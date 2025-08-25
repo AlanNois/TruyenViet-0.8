@@ -149,28 +149,28 @@ export class Parser {
         //Số lượng chapter
         for (const tag of $('option', 'select#minchapter').toArray()) {
             const label = $(tag).text().trim();
-            const id = 'minchapter.' + $(tag).attr('value') ?? label;
+            const id = 'minchapter.' + ($(tag).attr('value') ?? label);
             if (!id || !label) continue;
             arrayTags2.push({ id: id, label: label });
         }
         //Tình trạng
         for (const tag of $('option', 'select#status').toArray()) {
             const label = $(tag).text().trim();
-            const id = 'status.' + $(tag).attr('value') ?? label;
+            const id = 'status.' + ($(tag).attr('value') ?? label);
             if (!id || !label) continue;
             arrayTags3.push({ id: id, label: label });
         }
         //Quốc gia
         for (const tag of $('option', 'select#country').toArray()) {
             const label = $(tag).text().trim();
-            const id = 'country.' + $(tag).attr('value') ?? label;
+            const id = 'country.' + ($(tag).attr('value') ?? label);
             if (!id || !label) continue;
             arrayTags4.push({ id: id, label: label });
         }
         //Sắp xếp theo
         for (const tag of $('option', 'select#sort').toArray()) {
             const label = $(tag).text().trim();
-            const id = 'sort.' + $(tag).attr('value') ?? label;
+            const id = 'sort.' + ($(tag).attr('value') ?? label);
             if (!id || !label) continue;
             arrayTags5.push({ id: id, label: label });
         }
