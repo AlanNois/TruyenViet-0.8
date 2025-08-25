@@ -134,7 +134,7 @@ export class CuuTruyen implements ChapterProviding, MangaProviding, SearchResult
                 return response;
             }
         }
-    });
+    }); 
 
     async getSourceMenu(): Promise<DUISection> {
         return App.createDUISection(
