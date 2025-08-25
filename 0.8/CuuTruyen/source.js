@@ -2486,7 +2486,7 @@ const CuuTruyenParser_1 = require("./CuuTruyenParser");
 const CuuTruyenSetting_1 = require("./CuuTruyenSetting");
 const CuuTruyenDrm_1 = require("./CuuTruyenDrm");
 exports.CuuTruyenInfo = {
-    version: '1.0.0',
+    version: '1.0.1',
     name: 'CuuTruyen',
     icon: 'icon.png',
     author: 'AlanNois',
@@ -2589,7 +2589,7 @@ class CuuTruyen {
             header: 'Source Settings',
             rows: async () => {
                 return [
-                    (0, CuuTruyenSetting_1.domainSetting)(this.stateManager),
+                    (0, CuuTruyenSetting_1.domainSettings)(this.stateManager),
                     (0, CuuTruyenSetting_1.resetSettings)(this.stateManager)
                 ];
             },
@@ -3027,49 +3027,60 @@ exports.Parser = Parser;
 },{}],68:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.resetSettings = exports.domainSetting = exports.getDomain = exports.Domains = void 0;
-// const DOMAINS = ['cuutruyen.net', 'nettrom.com', 'hetcuutruyen.net', 'cuutruyent9sv7.xyz'];
+exports.resetSettings = exports.domainSettings = exports.getDomain = void 0;
 var Domains;
 (function (Domains) {
     Domains["CUUTRUYEN"] = "cuutruyen.net";
     Domains["NETTROM"] = "nettrom.com";
     Domains["HETCUUTRUYEN"] = "hetcuutruyen.net";
     Domains["CUUTRUYENT9SV7"] = "cuutruyent9sv7.xyz";
-})(Domains = exports.Domains || (exports.Domains = {}));
+})(Domains || (Domains = {}));
 const getDomain = async (stateManager) => {
-    return await stateManager.retrieve('domain_row') ?? Domains.CUUTRUYEN;
+    return await stateManager.retrieve('domain') ?? Domains.CUUTRUYEN;
 };
 exports.getDomain = getDomain;
-const domainSetting = (stateManager) => {
+const domainSettings = (stateManager) => {
     return App.createDUINavigationButton({
-        id: 'domain',
-        label: 'Domain Setting',
+        id: 'domain_settings',
+        label: 'Domain Settings',
         form: App.createDUIForm({
             sections: async () => [
                 App.createDUISection({
                     isHidden: false,
-                    id: 'domain_section',
+                    id: 'content',
                     rows: async () => {
                         await Promise.all([
                             (0, exports.getDomain)(stateManager)
                         ]);
                         return await [
                             App.createDUISelect({
-                                id: 'domain_row',
+                                id: 'domain',
                                 label: 'Domain',
-                                options: [Domains.CUUTRUYEN, Domains.NETTROM, Domains.HETCUUTRUYEN, Domains.CUUTRUYENT9SV7],
+                                options: [
+                                    Domains.CUUTRUYEN,
+                                    Domains.NETTROM,
+                                    Domains.HETCUUTRUYEN,
+                                    Domains.CUUTRUYENT9SV7
+                                ],
                                 labelResolver: async (option) => {
                                     switch (option) {
-                                        case Domains.CUUTRUYEN: return 'cuutruyen.net';
-                                        case Domains.NETTROM: return 'nettrom.com';
-                                        case Domains.HETCUUTRUYEN: return 'hetcuutruyen.net';
-                                        case Domains.CUUTRUYENT9SV7: return 'cuutruyent9sv7.xyz';
-                                        default: return '';
+                                        case Domains.CUUTRUYEN:
+                                            return 'Cuu Truyen (.net)';
+                                        case Domains.NETTROM:
+                                            return 'Net Trom (.com)';
+                                        case Domains.HETCUUTRUYEN:
+                                            return 'Het Cuu Truyen (.net)';
+                                        case Domains.CUUTRUYENT9SV7:
+                                            return 'Cuu Truyen T9SV7 (.xyz)';
+                                        default:
+                                            return option;
                                     }
                                 },
                                 value: App.createDUIBinding({
-                                    get: async () => (0, exports.getDomain)(stateManager),
-                                    set: async (value) => { await stateManager.store('domain_row', value); }
+                                    get: async () => [await (0, exports.getDomain)(stateManager)],
+                                    set: async (value) => {
+                                        await stateManager.store('domain', value[0]);
+                                    }
                                 }),
                                 allowsMultiselect: false
                             })
@@ -3080,13 +3091,13 @@ const domainSetting = (stateManager) => {
         })
     });
 };
-exports.domainSetting = domainSetting;
+exports.domainSettings = domainSettings;
 function resetSettings(stateManager) {
     return App.createDUIButton({
         id: 'reset',
         label: 'Reset to Default',
         onTap: async () => {
-            await stateManager.store('domain_row', [Domains.CUUTRUYEN]);
+            await stateManager.store('domain', Domains.CUUTRUYEN);
         }
     });
 }
