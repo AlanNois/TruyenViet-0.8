@@ -31,9 +31,6 @@ jobs:
         run: echo "branch=$(echo ${GITHUB_REF#refs/heads/})" >> $GITHUB_OUTPUT
         id: extract_branch
 
-      - name: Set BASE_URL
-        run: echo "BASE_URL=https://alannois.github.io/TruyenViet-0.8/${{ steps.extract_branch.outputs.branch }}" >> $GITHUB_ENV
-
       - name: Checkout existing bundles
         uses: actions/checkout@v4.1.2
         continue-on-error: true
@@ -43,6 +40,8 @@ jobs:
 
       - run: npm install
       - run: npm run bundle -- --folder=${{ steps.extract_branch.outputs.branch }}
+        env:
+          GITHUB_REPOSITORY: AlanNois/TruyenViet-0.8
 
       - name: Deploy to GitHub Pages
         uses: JamesIves/github-pages-deploy-action@v4.5.0
