@@ -1,6 +1,6 @@
 # TruyenViet's extension for Paperback
 
-|  \#  |     Source     | Lang |               Maintainer                |                   Add to Paperback                   |
+| \#  |     Source     | Lang |               Maintainer                |                   Add to Paperback                   |
 | :-: | :------------: | :--: | :-------------------------------------: | :--------------------------------------------------: |
 |  1  | Dev (unstable) |  🇻🇳  | [AlanNois](https://github.com/AlanNois) | [Add](https://alannois.github.io/TruyenViet-0.8/dev) |
 |  2  |  0.8 (stable)  |  🇻🇳  | [AlanNois](https://github.com/AlanNois) | [Add](https://alannois.github.io/TruyenViet-0.8/0.8) |
@@ -9,12 +9,12 @@
 
 **Extensions Update:**
 
-  * The extensions for `Nettruyen` and `Nhattruyen` are no longer maintained due to the websites being offline. These extensions will not receive further updates.
-  * Fixed a bug with images in some chapters of the `TruyenQQ` extension.
+- The extensions for `Nettruyen` and `Nhattruyen` are no longer maintained due to the websites being offline. These extensions will not receive further updates.
+- Fixed a bug with images in some chapters of the `TruyenQQ` extension.
 
 **CuuTruyen Extension:**
 
-  * Added the `CuuTruyen` extension as a new source for reading manga.
+- Added the `CuuTruyen` extension as a new source for reading manga.
 
 **Call for Collaboration:**
 
@@ -25,7 +25,7 @@ If you're a coder interested in contributing to this project, here's how you can
 
 **Additional Notes:**
 
-  * You can remove the extensions that are no longer maintained.
+- You can remove the extensions that are no longer maintained.
 
 **Stay Updated:**
 
