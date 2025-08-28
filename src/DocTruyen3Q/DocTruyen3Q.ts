@@ -32,7 +32,7 @@ export const isLastPage = ($: CheerioStatic): boolean => {
 }
 
 export const DocTruyen3QInfo: SourceInfo = {
-    version: '1.1.15',
+    version: '1.1.16',
     name: 'DocTruyen3Q',
     icon: 'icon.png',
     author: 'AlanNois',
@@ -136,7 +136,7 @@ export class DocTruyen3Q implements SearchResultsProviding, MangaProviding, Chap
             }
         }
 
-        const url = `${DOMAIN}/tim-truyen/`
+        const url = `${DOMAIN}tim-truyen`
         const search_query = (!query.title) ? '?' : `?keyword=${query.title}&`;
         const param = `${search.cate}${search_query}sort=${search.sort}&status=${search.status}&page=${page}`
         const $ = await this.DOMHTML(`${url}${encodeURI(param)}`);
