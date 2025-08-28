@@ -39,6 +39,7 @@ jobs:
           path: bundles
 
       - run: npm install
+      - run: npx paperback --version
       - run: npm run bundle -- --folder=${{ steps.extract_branch.outputs.branch }}
 
       - name: Deploy to GitHub Pages
