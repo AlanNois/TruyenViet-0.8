@@ -1460,7 +1460,7 @@ const isLastPage = ($) => {
 };
 exports.isLastPage = isLastPage;
 exports.BaoTangTruyenTranhInfo = {
-    version: '1.1.7',
+    version: '1.1.8',
     name: 'BaoTangTruyenTranh',
     icon: 'icon.png',
     author: 'AlanNois',
@@ -1628,7 +1628,6 @@ class BaoTangTruyenTranh {
                     section.items = this.parser.parseSection($, API);
                     break;
             }
-            console.log(section);
             sectionCallback(section);
         }
     }
@@ -1886,7 +1885,7 @@ class Parser {
             const title = element.comic_name.trim();
             const image = `${API}thumbnails/${element.thumbnail}`;
             const id = element.slug;
-            const subtitle = element.latest_chapter.title.trim() + ' | ' + this.convertTime(element.latest_chapter.created_at);
+            const subtitle = element.latest_chapter ? element.latest_chapter.title.trim() + ' | ' + this.convertTime(element.latest_chapter.created_at) : '';
             return App.createPartialSourceManga({
                 mangaId: String(id),
                 image: String(image),
@@ -1903,7 +1902,7 @@ class Parser {
             const image = `${API}thumbnails/${element.thumbnail}`;
             const id = element.slug;
             const latest_chapter = element.chapters.pop();
-            const subtitle = latest_chapter.title.trim() + ' | ' + this.convertTime(latest_chapter.created_at);
+            const subtitle = element.latest_chapter ? latest_chapter.title.trim() + ' | ' + this.convertTime(latest_chapter.created_at) : '';
             return App.createPartialSourceManga({
                 mangaId: String(id),
                 image: String(image),
