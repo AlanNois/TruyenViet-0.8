@@ -4,7 +4,6 @@
   "repositoryName": "TruyenViet's Extensions (0.8)",
   "description": "TruyenViet's extensions for 0.8",
   "main": "index.js",
-  "baseURL": "https://alannois.github.io/TruyenViet-0.8/0.8",
   "scripts": {
     "mctest": "npx mocha --timeout 300000 -r ts-node/register src/**/*.test.ts",
     "bundle": "npx paperback bundle",
