@@ -46,7 +46,7 @@ export const isLastPage = ($: any): boolean => {
 }
 
 export const BaoTangTruyenTranhInfo: SourceInfo = {
-    version: '1.1.7',
+    version: '1.1.8',
     name: 'BaoTangTruyenTranh',
     icon: 'icon.png',
     author: 'AlanNois',
@@ -230,7 +230,6 @@ export class BaoTangTruyenTranh implements ChapterProviding, MangaProviding, Sea
                     section.items = this.parser.parseSection($, API);
                     break;
             }
-            console.log(section)
             sectionCallback(section);
         }
     }
