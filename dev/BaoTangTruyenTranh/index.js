@@ -1460,7 +1460,7 @@ const isLastPage = ($) => {
 };
 exports.isLastPage = isLastPage;
 exports.BaoTangTruyenTranhInfo = {
-    version: '1.1.9',
+    version: '1.1.10',
     name: 'BaoTangTruyenTranh',
     icon: 'icon.png',
     author: 'AlanNois',
@@ -1926,7 +1926,7 @@ class Parser {
             const image = `${API}thumbnails/${element.thumbnail}`;
             const id = element.slug;
             const latest_chapter = element.chapters.pop();
-            const subtitle = element.latest_chapter ? latest_chapter.title.trim() + ' | ' + this.convertTime(latest_chapter.created_at) : '';
+            const subtitle = latest_chapter ? latest_chapter.title.trim() + ' | ' + this.convertTime(latest_chapter.created_at) : '';
             return App.createPartialSourceManga({
                 mangaId: String(id),
                 image: String(image),
