@@ -22,7 +22,7 @@ import {
 import { Parser } from './GocTruyenTranhParser';
 
 const DOMAIN = 'https://goctruyentranhvui17.com/';
-const Auth = 'Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJWxINuIEhvw6BuZyDEkGluaCIsImNvbWljSWRzIjpbXSwicm9sZUlkIjpudWxsLCJncm91cElkIjpudWxsLCJhZG1pbiI6ZmFsc2UsInJhbmsiOjAsInBlcm1pc3Npb24iOltdLCJpZCI6IjAwMDA1MjYzNzAiLCJ0ZWFtIjpmYWxzZSwiaWF0IjoxNzE1NDI0NDU3LCJlbWFpbCI6Im51bGwifQ.EjYw-HvoWM6RhbNzJkp06sSh61leaPcND0gb94PlDKeTYxfxU-f6WaxINAVjVYOP0pcVcG3YmfBVb4FVEBqPxQ'
+const Auth = 'Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJWxINuIEhvw6BuZyDEkGluaCIsImNvbWljSWRzIjpbXSwicm9sZUlkIjpudWxsLCJncm91cElkIjpudWxsLCJhZG1pbiI6ZmFsc2UsInJhbmsiOjAsInBlcm1pc3Npb24iOltdLCJpZCI6IjAwMDA1MjYzNzAiLCJ0ZWFtIjpmYWxzZSwiaWF0IjoxNzE1NDI0NDU3LCJlbWFpbCI6Im51bGwifQ.EjYw-HvoWM6RhbNzJkp06sSh61leaPcND0gb94PlDKeTYxfxU-f6WaxINAVjVYOP0pcVcG3YmfBVb4FVEBqPxQ';
 
 export const GocTruyenTranhInfo: SourceInfo = {
     version: '1.1.22',
@@ -35,12 +35,12 @@ export const GocTruyenTranhInfo: SourceInfo = {
     contentRating: ContentRating.EVERYONE,
     sourceTags: [
         {
-            text: "Recommended",
+            text: 'Recommended',
             type: BadgeColor.BLUE
         },
     ],
     intents: SourceIntents.MANGA_CHAPTERS | SourceIntents.HOMEPAGE_SECTIONS | SourceIntents.CLOUDFLARE_BYPASS_REQUIRED
-}
+};
 
 export class GocTruyenTranh implements SearchResultsProviding, MangaProviding, ChapterProviding, HomePageSectionsProviding {
 
@@ -57,7 +57,7 @@ export class GocTruyenTranh implements SearchResultsProviding, MangaProviding, C
                         'referer': DOMAIN,
                         'user-agent': await this.requestManager.getDefaultUserAgent()
                     }
-                }
+                };
                 return request;
             },
             interceptResponse: async (response: Response): Promise<Response> => {
@@ -78,7 +78,7 @@ export class GocTruyenTranh implements SearchResultsProviding, MangaProviding, C
             method: 'GET',
         });
         const response = await this.requestManager.schedule(request, 1);
-        this.CloudFlareError(response.status)
+        this.CloudFlareError(response.status);
         return this.cheerio.load(response.data as string);
     }
 
@@ -88,7 +88,7 @@ export class GocTruyenTranh implements SearchResultsProviding, MangaProviding, C
             method: 'GET',
         });
         const response = await this.requestManager.schedule(request, 1);
-        this.CloudFlareError(response.status)
+        this.CloudFlareError(response.status);
         return JSON.parse(response.data as string);
     }
 
@@ -108,7 +108,6 @@ export class GocTruyenTranh implements SearchResultsProviding, MangaProviding, C
 
         // Combine manga ID and chapter number into a single query parameter
         const comicId = `${mangaNumber}&chapterNumber=${chapterNumber}`;
-        let pages: string[];
 
         const request = App.createRequest({
             url: `${DOMAIN}api/chapter/limitation`,
@@ -119,11 +118,11 @@ export class GocTruyenTranh implements SearchResultsProviding, MangaProviding, C
                 'x-requested-with': 'XMLHttpRequest'
             },
             data: { comicId }
-        })
-        const response = await this.requestManager.schedule(request, 1)
-        const json = JSON.parse(response.data as string)
+        });
+        const response = await this.requestManager.schedule(request, 1);
+        const json = JSON.parse(response.data as string);
 
-        pages = this.parser.parseChapterDetails(json, null, DOMAIN)
+        const pages = this.parser.parseChapterDetails(json, null, DOMAIN);
 
         return App.createChapterDetails({
             id: chapterId,
@@ -134,7 +133,7 @@ export class GocTruyenTranh implements SearchResultsProviding, MangaProviding, C
 
 
     async getSearchResults(query: SearchRequest, metadata: any): Promise<PagedResults> {
-        let page = metadata?.page ?? 0;
+        const page = metadata?.page ?? 0;
 
         const tags = query.includedTags?.map(tag => tag.id) ?? [];
         const url = query.title ? encodeURI(`${DOMAIN}api/comic/search?name=${query.title}`) : `${DOMAIN}api/comic/search/category?p=${page}&value=${tags[0]}`;
@@ -146,11 +145,11 @@ export class GocTruyenTranh implements SearchResultsProviding, MangaProviding, C
         return App.createPagedResults({
             results: tiles,
             metadata
-        })
+        });
     }
 
     async getHomePageSections(sectionCallback: (section: HomeSection) => void): Promise<void> {
-        console.log('GocTruyenTranh Running...')
+        console.log('GocTruyenTranh Running...');
         const sections: HomeSection[] = [
             App.createHomeSection({ id: 'hot', title: 'TRUYỆN HOT NHẤT', containsMoreItems: true, type: HomeSectionType.singleRowNormal }),
             App.createHomeSection({ id: 'new_added', title: 'TRUYỆN MỚI', containsMoreItems: true, type: HomeSectionType.singleRowNormal }),
@@ -171,11 +170,11 @@ export class GocTruyenTranh implements SearchResultsProviding, MangaProviding, C
                     url = `${DOMAIN}api/comic/search/recent?p=0`;
                     break;
                 default:
-                    throw new Error(`Invalid home section ID`);
+                    throw new Error('Invalid home section ID');
             }
 
 
-            let json = await this.callAPI(url);
+            const json = await this.callAPI(url);
 
             switch (section.id) {
                 case 'hot':
@@ -193,7 +192,7 @@ export class GocTruyenTranh implements SearchResultsProviding, MangaProviding, C
     }
 
     async getViewMoreItems(homepageSectionId: string, metadata: any): Promise<PagedResults> {
-        let page = metadata?.page ?? 0;
+        const page = metadata?.page ?? 0;
         let url: string;
         switch (homepageSectionId) {
             case 'hot':
@@ -206,7 +205,7 @@ export class GocTruyenTranh implements SearchResultsProviding, MangaProviding, C
                 url = `${DOMAIN}api/comic/search/recent?p=${page}`;
                 break;
             default:
-                throw new Error("Requested to getViewMoreItems for a section ID which doesn't exist");
+                throw new Error('Requested to getViewMoreItems for a section ID which doesn\'t exist');
         }
 
         const json = await this.callAPI(url);
@@ -215,7 +214,7 @@ export class GocTruyenTranh implements SearchResultsProviding, MangaProviding, C
         return App.createPagedResults({
             results: tiles,
             metadata
-        })
+        });
     }
 
     async getSearchTags(): Promise<TagSection[]> {
@@ -226,11 +225,11 @@ export class GocTruyenTranh implements SearchResultsProviding, MangaProviding, C
 
     CloudFlareError(status: number): void {
         if (status == 503 || status == 403) {
-            throw new Error(`CLOUDFLARE BYPASS ERROR:\nPlease go to home page ${GocTruyenTranh.name} source and press the cloud icon.`)
+            throw new Error(`CLOUDFLARE BYPASS ERROR:\nPlease go to home page ${GocTruyenTranh.name} source and press the cloud icon.`);
         }
     }
 
-    async getCloudflareBypassRequestAsync() {
+    async getCloudflareBypassRequestAsync(): Promise<Request> {
         return App.createRequest({
             url: `${DOMAIN}/trang-chu`,
             method: 'GET',
@@ -239,7 +238,7 @@ export class GocTruyenTranh implements SearchResultsProviding, MangaProviding, C
                 'origin': `${DOMAIN}`,
                 'user-agent': await this.requestManager.getDefaultUserAgent()
             }
-        })
+        });
     }
 
 }

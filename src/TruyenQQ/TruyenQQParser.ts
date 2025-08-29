@@ -4,7 +4,7 @@ import {
     Tag,
     TagSection,
     PartialSourceManga
-} from '@paperback/types'
+} from '@paperback/types';
 
 export class Parser {
 
@@ -38,14 +38,14 @@ export class Parser {
 
         $('a', '.list01').each((_: any, obj: any) => {
             const label = $(obj).text().trim();
-            const id = $(obj).attr('href')?.split('/')[4] ?? label
-            tags.push(App.createTag({ label, id }))
+            const id = $(obj).attr('href')?.split('/')[4] ?? label;
+            tags.push(App.createTag({ label, id }));
         });
 
-        const titles = [$('.book_other h1').text().trim()]
+        const titles = [$('.book_other h1').text().trim()];
         const author = $('ul.list-info > li.author > p.col-xs-9').text();
         const artist = $('ul.list-info > li.author > p.col-xs-9').text();
-        const image = $('.book_avatar > img').attr('src') ?? "";
+        const image = $('.book_avatar > img').attr('src') ?? '';
         const desc = $('div.detail-content > p').text();
         const status = $('ul.list-info > li.status > p.col-xs-9').text();
 
@@ -60,16 +60,16 @@ export class Parser {
                 status,
                 tags: [App.createTagSection({ id: '0', label: 'genre', tags })]
             })
-        })
+        });
     }
 
     parseChapterList($: CheerioStatic): Chapter[] {
         const chapters: Chapter[] = [];
 
-        $(".works-chapter-list > .works-chapter-item").each((_: any, obj: any) => {
+        $('.works-chapter-list > .works-chapter-item').each((_: any, obj: any) => {
             const id = String($('.col-md-10.col-sm-10.col-xs-8 > a', obj).attr('href')?.split('/').pop());
-            const time = $('.col-md-2.col-sm-2.col-xs-4', obj).text().trim()
-            const name = $('.col-md-10.col-sm-10.col-xs-8 > a', obj).text()
+            const time = $('.col-md-2.col-sm-2.col-xs-4', obj).text().trim();
+            const name = $('.col-md-10.col-sm-10.col-xs-8 > a', obj).text();
             const chapNum = name.split(' ')[1];
             const timeFinal = this.convertTime(time);
 
@@ -83,7 +83,7 @@ export class Parser {
         });
 
         if (chapters.length == 0) {
-            throw new Error('No chapters found')
+            throw new Error('No chapters found');
         }
 
         return chapters;
@@ -107,7 +107,7 @@ export class Parser {
             }
         });
 
-        return pages
+        return pages;
     }
 
     parseSearchResults($: CheerioStatic): PartialSourceManga[] {
@@ -116,9 +116,9 @@ export class Parser {
         $('.list_grid li').each((_: any, manga: any) => {
             const title = $('.book_name > h3 > a', manga).text().trim();
             const id = $('.book_name > h3 > a', manga).attr('href')?.split('/').pop();
-            let image = $('.book_avatar > a > img', manga).attr("src") ?? "";
-            image = !image ? "https://i.imgur.com/GYUxEX8.png" : image;
-            const subtitle = $('.last_chapter > a', manga).text().trim()
+            let image = $('.book_avatar > a > img', manga).attr('src') ?? '';
+            image = !image ? 'https://i.imgur.com/GYUxEX8.png' : image;
+            const subtitle = $('.last_chapter > a', manga).text().trim();
 
             tiles.push(App.createPartialSourceManga({
                 mangaId: String(id),
@@ -190,9 +190,9 @@ export class Parser {
         $('#div_suggest .list_grid li').each((_: any, manga: any) => {
             const title = $('.book_name > h3 > a', manga).text().trim();
             const id = $('.book_name > h3 > a', manga).attr('href')?.split('/').pop();
-            let image = $('.book_avatar > a > img', manga).attr("src") ?? "";
-            image = !image ? "https://i.imgur.com/GYUxEX8.png" : image;
-            const subtitle = $('.last_chapter > a', manga).text().trim()
+            let image = $('.book_avatar > a > img', manga).attr('src') ?? '';
+            image = !image ? 'https://i.imgur.com/GYUxEX8.png' : image;
+            const subtitle = $('.last_chapter > a', manga).text().trim();
 
             featuredItems.push(App.createPartialSourceManga({
                 mangaId: String(id),

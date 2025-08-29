@@ -37,7 +37,7 @@ export const isLastPage = ($: CheerioStatic): boolean => {
 };
 
 export const TruyenQQInfo: SourceInfo = {
-    version: '1.0.10',
+    version: '1.0.11',
     name: 'TruyenQQ',
     icon: 'icon.png',
     author: 'AlanNois',
@@ -167,7 +167,12 @@ export class TruyenQQ implements SearchResultsProviding, MangaProviding, Chapter
         const paramExgenres = search.exgenres ? `&notcategory==${search.exgenres}` : '';
 
         const url = `${DOMAIN}${query.title ? 'tim-kiem' : 'tim-kiem-nang-cao'}/trang-${page}.html`;
-        const param = encodeURI(`?q=${query.title ?? ''}&category=${search.genres}${paramExgenres}&country=${search.country}&status=${search.status}&minchapter=${search.minchapter}&sort=${search.sort}`);
+        const param = encodeURI(
+            `?q=${query.title ?? ''}
+            &category=${search.genres}${paramExgenres}
+            &country=${search.country}&status=${search.status}
+            &minchapter=${search.minchapter}&sort=${search.sort}`
+        );
         const $ = await this.DOMHTML(url + param);
         const tiles = this.parser.parseSearchResults($);
         metadata = !isLastPage($) ? { page: page + 1 } : undefined;
@@ -235,8 +240,8 @@ export class TruyenQQ implements SearchResultsProviding, MangaProviding, Chapter
 
     async getViewMoreItems(homepageSectionId: string, metadata: any): Promise<PagedResults> {
         const page: number = metadata?.page ?? 1;
-        let param = "";
-        let url = "";
+        let param = '';
+        let url = '';
 
         switch (homepageSectionId) {
             case 'hot':
