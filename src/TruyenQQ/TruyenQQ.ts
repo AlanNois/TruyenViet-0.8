@@ -21,7 +21,7 @@ import {
 
 import { Parser } from './TruyenQQParser';
 
-const DOMAIN = 'https://truyenqqgo.com/'
+const DOMAIN = 'https://truyenqqgo.com/';
 
 export const isLastPage = ($: CheerioStatic): boolean => {
     const current = $('div.page_redirect > a > p.active').text();
@@ -37,7 +37,7 @@ export const isLastPage = ($: CheerioStatic): boolean => {
 };
 
 export const TruyenQQInfo: SourceInfo = {
-    version: '1.0.9',
+    version: '1.0.10',
     name: 'TruyenQQ',
     icon: 'icon.png',
     author: 'AlanNois',
@@ -71,7 +71,7 @@ export class TruyenQQ implements SearchResultsProviding, MangaProviding, Chapter
                         // 'user-agent': 'a',
                     }
                 };
-                return request
+                return request;
             },
             interceptResponse: async (response: Response): Promise<Response> => {
                 return response;
@@ -80,7 +80,7 @@ export class TruyenQQ implements SearchResultsProviding, MangaProviding, Chapter
     });
 
     getMangaShareUrl(mangaId: string): string {
-        return `${DOMAIN}truyen-tranh/${mangaId}`
+        return `${DOMAIN}truyen-tranh/${mangaId}`;
     }
 
     parser = new Parser();
@@ -91,7 +91,7 @@ export class TruyenQQ implements SearchResultsProviding, MangaProviding, Chapter
             method: 'GET',
         });
         const response = await this.requestManager.schedule(request, 1);
-        this.CloudFlareError(response.status)
+        this.CloudFlareError(response.status);
         return this.cheerio.load(response.data as string);
     }
 
@@ -112,7 +112,7 @@ export class TruyenQQ implements SearchResultsProviding, MangaProviding, Chapter
             id: chapterId,
             mangaId: mangaId,
             pages: pages,
-        })
+        });
     }
 
     async supportsTagExclusion(): Promise<boolean> {
@@ -120,7 +120,7 @@ export class TruyenQQ implements SearchResultsProviding, MangaProviding, Chapter
     }
 
     async getSearchResults(query: SearchRequest, metadata: any): Promise<PagedResults> {
-        let page = metadata?.page ?? 1;
+        const page = metadata?.page ?? 1;
 
         const search = {
             genres: '',
@@ -145,7 +145,7 @@ export class TruyenQQ implements SearchResultsProviding, MangaProviding, Chapter
             if (value.indexOf('.') === -1) {
                 genres.push(value);
             } else {
-                const [key, val] = value.split(".");
+                const [key, val] = value.split('.');
                 switch (key) {
                     case 'minchapter':
                         search.minchapter = String(val);
@@ -162,8 +162,8 @@ export class TruyenQQ implements SearchResultsProviding, MangaProviding, Chapter
                 }
             }
         }
-        search.genres = genres.join(",");
-        search.exgenres = exgenres.join(",");
+        search.genres = genres.join(',');
+        search.exgenres = exgenres.join(',');
         const paramExgenres = search.exgenres ? `&notcategory==${search.exgenres}` : '';
 
         const url = `${DOMAIN}${query.title ? 'tim-kiem' : 'tim-kiem-nang-cao'}/trang-${page}.html`;
@@ -179,13 +179,13 @@ export class TruyenQQ implements SearchResultsProviding, MangaProviding, Chapter
     }
 
     async getHomePageSections(sectionCallback: (section: HomeSection) => void): Promise<void> {
-        console.log('TruyenQQ Running...')
+        console.log('TruyenQQ Running...');
         const sections: HomeSection[] = [
-            App.createHomeSection({ id: 'featured', title: "Truyện Đề Cử", containsMoreItems: false, type: HomeSectionType.featured }),
-            App.createHomeSection({ id: 'hot', title: "Truyện Yêu Thích", containsMoreItems: true, type: HomeSectionType.singleRowNormal }),
-            App.createHomeSection({ id: 'new_updated', title: "Truyện Mới Cập Nhật", containsMoreItems: true, type: HomeSectionType.singleRowNormal }),
-            App.createHomeSection({ id: 'new_added', title: "Truyện Mới Thêm Gần Đây", containsMoreItems: true, type: HomeSectionType.singleRowNormal }),
-            App.createHomeSection({ id: 'full', title: "Truyện Đã Hoàn Thành", containsMoreItems: true, type: HomeSectionType.singleRowNormal }),
+            App.createHomeSection({ id: 'featured', title: 'Truyện Đề Cử', containsMoreItems: false, type: HomeSectionType.featured }),
+            App.createHomeSection({ id: 'hot', title: 'Truyện Yêu Thích', containsMoreItems: true, type: HomeSectionType.singleRowNormal }),
+            App.createHomeSection({ id: 'new_updated', title: 'Truyện Mới Cập Nhật', containsMoreItems: true, type: HomeSectionType.singleRowNormal }),
+            App.createHomeSection({ id: 'new_added', title: 'Truyện Mới Thêm Gần Đây', containsMoreItems: true, type: HomeSectionType.singleRowNormal }),
+            App.createHomeSection({ id: 'full', title: 'Truyện Đã Hoàn Thành', containsMoreItems: true, type: HomeSectionType.singleRowNormal }),
         ];
 
         for (const section of sections) {
@@ -208,7 +208,7 @@ export class TruyenQQ implements SearchResultsProviding, MangaProviding, Chapter
                     url = `${DOMAIN}truyen-hoan-thanh.html`;
                     break;
                 default:
-                    throw new Error("Invalid homepage section ID");
+                    throw new Error('Invalid homepage section ID');
             }
 
             const $ = await this.DOMHTML(url);
@@ -234,29 +234,29 @@ export class TruyenQQ implements SearchResultsProviding, MangaProviding, Chapter
     }
 
     async getViewMoreItems(homepageSectionId: string, metadata: any): Promise<PagedResults> {
-        let page: number = metadata?.page ?? 1;
+        const page: number = metadata?.page ?? 1;
         let param = "";
         let url = "";
 
         switch (homepageSectionId) {
-            case "hot":
+            case 'hot':
                 param = `trang-${page}.html`;
                 url = `${DOMAIN}truyen-yeu-thich/`;
                 break;
-            case "new_updated":
+            case 'new_updated':
                 param = `trang-${page}.html`;
                 url = `${DOMAIN}truyen-moi-cap-nhat/`;
                 break;
-            case "new_added":
+            case 'new_added':
                 param = `trang-${page}.html`;
                 url = `${DOMAIN}truyen-tranh-moi/`;
                 break;
-            case "full":
+            case 'full':
                 param = `trang-${page}.html?status=2`;
                 url = `${DOMAIN}truyen-hoan-thanh/`;
                 break;
             default:
-                throw new Error("Requested to getViewMoreItems for a section ID which doesn't exist");
+                throw new Error('Requested to getViewMoreItems for a section ID which doesn\'t exist');
         }
 
         const request = App.createRequest({
@@ -285,11 +285,11 @@ export class TruyenQQ implements SearchResultsProviding, MangaProviding, Chapter
 
     CloudFlareError(status: number): void {
         if (status == 503 || status == 403) {
-            throw new Error(`CLOUDFLARE BYPASS ERROR:\nPlease go to home page ${TruyenQQ.name} source and press the cloud icon.`)
+            throw new Error(`CLOUDFLARE BYPASS ERROR:\nPlease go to home page ${TruyenQQ.name} source and press the cloud icon.`);
         }
     }
 
-    async getCloudflareBypassRequestAsync() {
+    async getCloudflareBypassRequestAsync(): Promise<Request> {
         return App.createRequest({
             url: DOMAIN,
             method: 'GET',
@@ -298,6 +298,6 @@ export class TruyenQQ implements SearchResultsProviding, MangaProviding, Chapter
                 'origin': `${DOMAIN}/`,
                 'user-agent': await this.requestManager.getDefaultUserAgent()
             }
-        })
+        });
     }
 }
