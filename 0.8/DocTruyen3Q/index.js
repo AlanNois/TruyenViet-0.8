@@ -465,8 +465,8 @@ const types_1 = require("@paperback/types");
 const DocTruyen3QParser_1 = require("./DocTruyen3QParser");
 const DOMAIN = 'https://doctruyen3qui13.pro/';
 const isLastPage = ($) => {
-    const lastPage = Number($("ul.pagination > li.page-item:not(:has(a[rel='next'])) a").last().text().trim());
-    const currentPage = Number($("ul.pagination > li.active").text().trim());
+    const lastPage = Number($('ul.pagination > li.page-item:not(:has(a[rel=\'next\'])) a').last().text().trim());
+    const currentPage = Number($('ul.pagination > li.active').text().trim());
     return currentPage >= lastPage;
 };
 exports.isLastPage = isLastPage;
@@ -481,7 +481,7 @@ exports.DocTruyen3QInfo = {
     websiteBaseURL: DOMAIN,
     sourceTags: [
         {
-            text: "Recommended",
+            text: 'Recommended',
             type: types_1.BadgeColor.BLUE
         },
     ],
@@ -542,11 +542,11 @@ class DocTruyen3Q {
         });
     }
     async getSearchResults(query, metadata) {
-        let page = metadata?.page ?? 1;
+        const page = metadata?.page ?? 1;
         const search = {
             cate: '',
-            status: "2",
-            sort: "1",
+            status: '2',
+            sort: '1',
         };
         const tags = query.includedTags?.map(tag => tag.id) ?? [];
         for (const value of tags) {
@@ -574,15 +574,14 @@ class DocTruyen3Q {
             metadata
         });
     }
-    ;
     async getHomePageSections(sectionCallback) {
         console.log('DocTruyen3Q Running...');
         const sections = [
-            App.createHomeSection({ id: 'featured', title: "TRUYỆN ĐỀ CỬ", containsMoreItems: false, type: types_1.HomeSectionType.featured, }),
-            App.createHomeSection({ id: 'viewest', title: "TRUYỆN XEM NHIỀU NHẤT", containsMoreItems: true, type: types_1.HomeSectionType.singleRowNormal, }),
-            App.createHomeSection({ id: 'hot', title: "TRUYỆN HOT NHẤT", containsMoreItems: true, type: types_1.HomeSectionType.singleRowNormal, }),
-            App.createHomeSection({ id: 'new_updated', title: "TRUYỆN MỚI CẬP NHẬT", containsMoreItems: true, type: types_1.HomeSectionType.singleRowNormal, }),
-            App.createHomeSection({ id: 'full', title: "TRUYỆN ĐÃ HOÀN THÀNH", containsMoreItems: true, type: types_1.HomeSectionType.singleRowNormal, })
+            App.createHomeSection({ id: 'featured', title: 'TRUYỆN ĐỀ CỬ', containsMoreItems: false, type: types_1.HomeSectionType.featured, }),
+            App.createHomeSection({ id: 'viewest', title: 'TRUYỆN XEM NHIỀU NHẤT', containsMoreItems: true, type: types_1.HomeSectionType.singleRowNormal, }),
+            App.createHomeSection({ id: 'hot', title: 'TRUYỆN HOT NHẤT', containsMoreItems: true, type: types_1.HomeSectionType.singleRowNormal, }),
+            App.createHomeSection({ id: 'new_updated', title: 'TRUYỆN MỚI CẬP NHẬT', containsMoreItems: true, type: types_1.HomeSectionType.singleRowNormal, }),
+            App.createHomeSection({ id: 'full', title: 'TRUYỆN ĐÃ HOÀN THÀNH', containsMoreItems: true, type: types_1.HomeSectionType.singleRowNormal, })
         ];
         for (const section of sections) {
             sectionCallback(section);
@@ -604,7 +603,7 @@ class DocTruyen3Q {
                     url = `${DOMAIN}tim-truyen?status=1&sort=2`;
                     break;
                 default:
-                    throw new Error(`Invalid home section ID`);
+                    throw new Error('Invalid home section ID');
             }
             const $ = await this.DOMHTML(url);
             switch (section.id) {
@@ -633,7 +632,7 @@ class DocTruyen3Q {
         }
     }
     async getViewMoreItems(homepageSectionId, metadata) {
-        let page = metadata?.page ?? 1;
+        const page = metadata?.page ?? 1;
         let url;
         let param;
         switch (homepageSectionId) {
@@ -654,10 +653,10 @@ class DocTruyen3Q {
                 param = `?status=1&sort=2&page=${page}`;
                 break;
             default:
-                throw new Error("Requested to getViewMoreItems for a section ID which doesn't exist");
+                throw new Error('Requested to getViewMoreItems for a section ID which doesn\'t exist');
         }
         const $ = await this.DOMHTML(`${url}${encodeURI(param)}`);
-        let manga = this.parser.parseViewMoreItems($, homepageSectionId);
+        const manga = this.parser.parseViewMoreItems($, homepageSectionId);
         metadata = (0, exports.isLastPage)($) ? undefined : { page: page + 1 };
         return App.createPagedResults({
             results: manga,
@@ -719,16 +718,16 @@ class Parser {
             time = new Date(Date.now() - trimmed * 31556952000);
         }
         else {
-            if (timeAgo.includes(":")) {
-                let split = timeAgo.split(' ');
-                let H = split[0]; //vd => 21:08
-                let D = split[1]; //vd => 25/08 
-                let fixD = D?.split('/');
-                let finalD = fixD?.[1] + '/' + fixD?.[0] + '/' + new Date().getFullYear();
+            if (timeAgo.includes(':')) {
+                const split = timeAgo.split(' ');
+                const H = split[0]; //vd => 21:08
+                const D = split[1]; //vd => 25/08 
+                const fixD = D?.split('/');
+                const finalD = fixD?.[1] + '/' + fixD?.[0] + '/' + new Date().getFullYear();
                 time = new Date(finalD + ' ' + H);
             }
             else {
-                let split = timeAgo.split('-'); //vd => 05/12/18
+                const split = timeAgo.split('-'); //vd => 05/12/18
                 time = new Date(split[1] + '/' + split[0] + '/' + split[2]);
             }
         }
@@ -819,7 +818,7 @@ class Parser {
         $('.content-search-left > .main-left .item-manga > .item').each((_, obj) => {
             const title = $('.caption > h3 > a', obj).text().trim();
             let image = $('.image-item > a > img.image-item', obj).attr('data-original') ?? $('.image-item > a > img', obj).attr('src') ?? $('.image-item > a > img', obj).attr('data-cfsrc');
-            image = !image ? "https://i.imgur.com/GYUxEX8.png" : image;
+            image = !image ? 'https://i.imgur.com/GYUxEX8.png' : image;
             const mangaId = String($('.caption > h3 > a', obj).attr('href')?.split('/').slice(4).join('/'));
             const subtitle = $('ul > li:first-child > a', obj).text().trim();
             if (!mangaId || !title)
@@ -838,7 +837,7 @@ class Parser {
         $('.owl-carousel .slide-item').each((_, obj) => {
             const title = $('.slide-info > h3 > a', obj).text().trim();
             let image = $('a > img', obj).attr('data-cfsrc') ?? $('a > img', obj).attr('src') ?? $('a > img', obj).attr('data-src');
-            image = !image ? "https://i.imgur.com/GYUxEX8.png" : image;
+            image = !image ? 'https://i.imgur.com/GYUxEX8.png' : image;
             const mangaId = String($('.slide-info > h3 > a', obj).attr('href')?.split('/').slice(4).join('/'));
             const subtitle = $('.detail-slide > a', obj).text().trim();
             if (!mangaId || !title)
@@ -863,7 +862,7 @@ class Parser {
             else {
                 image = $('.image-item > a > img', obj).attr('data-original') ?? $('.image-item > a > img', obj).attr('data-cfsrc') ?? $('.image-item > a > img', obj).attr('src');
             }
-            image = !image ? "https://i.imgur.com/GYUxEX8.png" : image;
+            image = !image ? 'https://i.imgur.com/GYUxEX8.png' : image;
             const mangaId = String($('.caption > h3 > a', obj).attr('href')?.split('/').slice(4).join('/'));
             const subtitle = $('ul > li:first-child > a', obj).text().trim();
             if (!mangaId || !title)

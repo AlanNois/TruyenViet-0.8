@@ -1474,7 +1474,7 @@ exports.BaoTangTruyenTranhInfo = {
             type: types_1.BadgeColor.GREEN,
         },
         {
-            text: "Recommended",
+            text: 'Recommended',
             type: types_1.BadgeColor.BLUE,
         }
     ],
@@ -1614,7 +1614,7 @@ class BaoTangTruyenTranh {
                     url = `${API}getAllComics?page=1&limit=36&sort=views&genres=T%E1%BA%A5t+c%E1%BA%A3`;
                     break;
                 default:
-                    throw new Error("Invalid home section ID");
+                    throw new Error('Invalid home section ID');
             }
             const $ = await this.callAPI(url);
             switch (section.id) {
@@ -1632,7 +1632,7 @@ class BaoTangTruyenTranh {
         }
     }
     async getViewMoreItems(homepageSectionId, metadata) {
-        let page = metadata?.page ?? 1;
+        const page = metadata?.page ?? 1;
         let url = '';
         // let select = 1;
         switch (homepageSectionId) {
@@ -1767,9 +1767,12 @@ exports.BaoTangTruyenTranh = BaoTangTruyenTranh;
 
 },{"./BaoTangTruyenTranhParser":71,"@paperback/types":61}],71:[function(require,module,exports){
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Parser = void 0;
-const entities = require("entities");
+const entities_1 = __importDefault(require("entities"));
 class Parser {
     constructor() {
         // parseViewMore($: CheerioStatic): PartialSourceManga[] {
@@ -1800,7 +1803,7 @@ class Parser {
         //     return returnObject;
         // }
         this.decodeHTMLEntity = (str) => {
-            return entities.decodeHTML(str);
+            return entities_1.default.decodeHTML(str);
         };
     }
     parseMangaDetails($, mangaId, API) {
@@ -1830,7 +1833,6 @@ class Parser {
             })
         });
     }
-    ;
     parseChapterList($) {
         const chapters = [];
         $.chapters.map((obj) => {
@@ -1948,7 +1950,7 @@ class Parser {
             if (isoRegex.test(timeAgo)) {
                 time = new Date(timeAgo);
             }
-            else if (timeAgo.includes(":")) {
+            else if (timeAgo.includes(':')) {
                 const split = timeAgo.split(' ');
                 if (split.length >= 2) {
                     const H = split[0];
