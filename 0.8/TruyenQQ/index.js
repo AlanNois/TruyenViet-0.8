@@ -477,7 +477,7 @@ const isLastPage = ($) => {
 };
 exports.isLastPage = isLastPage;
 exports.TruyenQQInfo = {
-    version: '1.0.9',
+    version: '1.0.11',
     name: 'TruyenQQ',
     icon: 'icon.png',
     author: 'AlanNois',
@@ -551,7 +551,7 @@ class TruyenQQ {
         return true;
     }
     async getSearchResults(query, metadata) {
-        let page = metadata?.page ?? 1;
+        const page = metadata?.page ?? 1;
         const search = {
             genres: '',
             exgenres: '',
@@ -574,7 +574,7 @@ class TruyenQQ {
                 genres.push(value);
             }
             else {
-                const [key, val] = value.split(".");
+                const [key, val] = value.split('.');
                 switch (key) {
                     case 'minchapter':
                         search.minchapter = String(val);
@@ -591,11 +591,14 @@ class TruyenQQ {
                 }
             }
         }
-        search.genres = genres.join(",");
-        search.exgenres = exgenres.join(",");
+        search.genres = genres.join(',');
+        search.exgenres = exgenres.join(',');
         const paramExgenres = search.exgenres ? `&notcategory==${search.exgenres}` : '';
         const url = `${DOMAIN}${query.title ? 'tim-kiem' : 'tim-kiem-nang-cao'}/trang-${page}.html`;
-        const param = encodeURI(`?q=${query.title ?? ''}&category=${search.genres}${paramExgenres}&country=${search.country}&status=${search.status}&minchapter=${search.minchapter}&sort=${search.sort}`);
+        const param = encodeURI(`?q=${query.title ?? ''}
+            &category=${search.genres}${paramExgenres}
+            &country=${search.country}&status=${search.status}
+            &minchapter=${search.minchapter}&sort=${search.sort}`);
         const $ = await this.DOMHTML(url + param);
         const tiles = this.parser.parseSearchResults($);
         metadata = !(0, exports.isLastPage)($) ? { page: page + 1 } : undefined;
@@ -607,11 +610,11 @@ class TruyenQQ {
     async getHomePageSections(sectionCallback) {
         console.log('TruyenQQ Running...');
         const sections = [
-            App.createHomeSection({ id: 'featured', title: "Truyện Đề Cử", containsMoreItems: false, type: types_1.HomeSectionType.featured }),
-            App.createHomeSection({ id: 'hot', title: "Truyện Yêu Thích", containsMoreItems: true, type: types_1.HomeSectionType.singleRowNormal }),
-            App.createHomeSection({ id: 'new_updated', title: "Truyện Mới Cập Nhật", containsMoreItems: true, type: types_1.HomeSectionType.singleRowNormal }),
-            App.createHomeSection({ id: 'new_added', title: "Truyện Mới Thêm Gần Đây", containsMoreItems: true, type: types_1.HomeSectionType.singleRowNormal }),
-            App.createHomeSection({ id: 'full', title: "Truyện Đã Hoàn Thành", containsMoreItems: true, type: types_1.HomeSectionType.singleRowNormal }),
+            App.createHomeSection({ id: 'featured', title: 'Truyện Đề Cử', containsMoreItems: false, type: types_1.HomeSectionType.featured }),
+            App.createHomeSection({ id: 'hot', title: 'Truyện Yêu Thích', containsMoreItems: true, type: types_1.HomeSectionType.singleRowNormal }),
+            App.createHomeSection({ id: 'new_updated', title: 'Truyện Mới Cập Nhật', containsMoreItems: true, type: types_1.HomeSectionType.singleRowNormal }),
+            App.createHomeSection({ id: 'new_added', title: 'Truyện Mới Thêm Gần Đây', containsMoreItems: true, type: types_1.HomeSectionType.singleRowNormal }),
+            App.createHomeSection({ id: 'full', title: 'Truyện Đã Hoàn Thành', containsMoreItems: true, type: types_1.HomeSectionType.singleRowNormal }),
         ];
         for (const section of sections) {
             sectionCallback(section);
@@ -633,7 +636,7 @@ class TruyenQQ {
                     url = `${DOMAIN}truyen-hoan-thanh.html`;
                     break;
                 default:
-                    throw new Error("Invalid homepage section ID");
+                    throw new Error('Invalid homepage section ID');
             }
             const $ = await this.DOMHTML(url);
             switch (section.id) {
@@ -657,28 +660,28 @@ class TruyenQQ {
         }
     }
     async getViewMoreItems(homepageSectionId, metadata) {
-        let page = metadata?.page ?? 1;
-        let param = "";
-        let url = "";
+        const page = metadata?.page ?? 1;
+        let param = '';
+        let url = '';
         switch (homepageSectionId) {
-            case "hot":
+            case 'hot':
                 param = `trang-${page}.html`;
                 url = `${DOMAIN}truyen-yeu-thich/`;
                 break;
-            case "new_updated":
+            case 'new_updated':
                 param = `trang-${page}.html`;
                 url = `${DOMAIN}truyen-moi-cap-nhat/`;
                 break;
-            case "new_added":
+            case 'new_added':
                 param = `trang-${page}.html`;
                 url = `${DOMAIN}truyen-tranh-moi/`;
                 break;
-            case "full":
+            case 'full':
                 param = `trang-${page}.html?status=2`;
                 url = `${DOMAIN}truyen-hoan-thanh/`;
                 break;
             default:
-                throw new Error("Requested to getViewMoreItems for a section ID which doesn't exist");
+                throw new Error('Requested to getViewMoreItems for a section ID which doesn\'t exist');
         }
         const request = App.createRequest({
             url,
@@ -762,7 +765,7 @@ class Parser {
         const titles = [$('.book_other h1').text().trim()];
         const author = $('ul.list-info > li.author > p.col-xs-9').text();
         const artist = $('ul.list-info > li.author > p.col-xs-9').text();
-        const image = $('.book_avatar > img').attr('src') ?? "";
+        const image = $('.book_avatar > img').attr('src') ?? '';
         const desc = $('div.detail-content > p').text();
         const status = $('ul.list-info > li.status > p.col-xs-9').text();
         return App.createSourceManga({
@@ -780,7 +783,7 @@ class Parser {
     }
     parseChapterList($) {
         const chapters = [];
-        $(".works-chapter-list > .works-chapter-item").each((_, obj) => {
+        $('.works-chapter-list > .works-chapter-item').each((_, obj) => {
             const id = String($('.col-md-10.col-sm-10.col-xs-8 > a', obj).attr('href')?.split('/').pop());
             const time = $('.col-md-2.col-sm-2.col-xs-4', obj).text().trim();
             const name = $('.col-md-10.col-sm-10.col-xs-8 > a', obj).text();
@@ -819,8 +822,8 @@ class Parser {
         $('.list_grid li').each((_, manga) => {
             const title = $('.book_name > h3 > a', manga).text().trim();
             const id = $('.book_name > h3 > a', manga).attr('href')?.split('/').pop();
-            let image = $('.book_avatar > a > img', manga).attr("src") ?? "";
-            image = !image ? "https://i.imgur.com/GYUxEX8.png" : image;
+            let image = $('.book_avatar > a > img', manga).attr('src') ?? '';
+            image = !image ? 'https://i.imgur.com/GYUxEX8.png' : image;
             const subtitle = $('.last_chapter > a', manga).text().trim();
             tiles.push(App.createPartialSourceManga({
                 mangaId: String(id),
@@ -892,8 +895,8 @@ class Parser {
         $('#div_suggest .list_grid li').each((_, manga) => {
             const title = $('.book_name > h3 > a', manga).text().trim();
             const id = $('.book_name > h3 > a', manga).attr('href')?.split('/').pop();
-            let image = $('.book_avatar > a > img', manga).attr("src") ?? "";
-            image = !image ? "https://i.imgur.com/GYUxEX8.png" : image;
+            let image = $('.book_avatar > a > img', manga).attr('src') ?? '';
+            image = !image ? 'https://i.imgur.com/GYUxEX8.png' : image;
             const subtitle = $('.last_chapter > a', manga).text().trim();
             featuredItems.push(App.createPartialSourceManga({
                 mangaId: String(id),

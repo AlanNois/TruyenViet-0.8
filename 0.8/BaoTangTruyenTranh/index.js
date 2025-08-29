@@ -1460,7 +1460,7 @@ const isLastPage = ($) => {
 };
 exports.isLastPage = isLastPage;
 exports.BaoTangTruyenTranhInfo = {
-    version: '1.1.8',
+    version: '1.1.10',
     name: 'BaoTangTruyenTranh',
     icon: 'icon.png',
     author: 'AlanNois',
@@ -1767,12 +1767,32 @@ exports.BaoTangTruyenTranh = BaoTangTruyenTranh;
 
 },{"./BaoTangTruyenTranhParser":71,"@paperback/types":61}],71:[function(require,module,exports){
 "use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Parser = void 0;
-const entities_1 = __importDefault(require("entities"));
+const entities = __importStar(require("entities"));
 class Parser {
     constructor() {
         // parseViewMore($: CheerioStatic): PartialSourceManga[] {
@@ -1803,7 +1823,7 @@ class Parser {
         //     return returnObject;
         // }
         this.decodeHTMLEntity = (str) => {
-            return entities_1.default.decodeHTML(str);
+            return entities.decodeHTML(str);
         };
     }
     parseMangaDetails($, mangaId, API) {
@@ -1904,7 +1924,7 @@ class Parser {
             const image = `${API}thumbnails/${element.thumbnail}`;
             const id = element.slug;
             const latest_chapter = element.chapters.pop();
-            const subtitle = element.latest_chapter ? latest_chapter.title.trim() + ' | ' + this.convertTime(latest_chapter.created_at) : '';
+            const subtitle = latest_chapter ? latest_chapter.title.trim() + ' | ' + this.convertTime(latest_chapter.created_at) : '';
             return App.createPartialSourceManga({
                 mangaId: String(id),
                 image: String(image),

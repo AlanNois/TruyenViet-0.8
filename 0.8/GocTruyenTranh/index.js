@@ -1451,7 +1451,7 @@ exports.GocTruyenTranhInfo = {
     contentRating: types_1.ContentRating.EVERYONE,
     sourceTags: [
         {
-            text: "Recommended",
+            text: 'Recommended',
             type: types_1.BadgeColor.BLUE
         },
     ],
@@ -1515,7 +1515,6 @@ class GocTruyenTranh {
         const [mangaNumber, chapterNumber] = [mangaId.split('::')[1], chapterId.split('-')[1]];
         // Combine manga ID and chapter number into a single query parameter
         const comicId = `${mangaNumber}&chapterNumber=${chapterNumber}`;
-        let pages;
         const request = App.createRequest({
             url: `${DOMAIN}api/chapter/limitation`,
             method: 'POST',
@@ -1528,7 +1527,7 @@ class GocTruyenTranh {
         });
         const response = await this.requestManager.schedule(request, 1);
         const json = JSON.parse(response.data);
-        pages = this.parser.parseChapterDetails(json, null, DOMAIN);
+        const pages = this.parser.parseChapterDetails(json, null, DOMAIN);
         return App.createChapterDetails({
             id: chapterId,
             mangaId: mangaId,
@@ -1536,7 +1535,7 @@ class GocTruyenTranh {
         });
     }
     async getSearchResults(query, metadata) {
-        let page = metadata?.page ?? 0;
+        const page = metadata?.page ?? 0;
         const tags = query.includedTags?.map(tag => tag.id) ?? [];
         const url = query.title ? encodeURI(`${DOMAIN}api/comic/search?name=${query.title}`) : `${DOMAIN}api/comic/search/category?p=${page}&value=${tags[0]}`;
         const json = await this.callAPI(url);
@@ -1568,9 +1567,9 @@ class GocTruyenTranh {
                     url = `${DOMAIN}api/comic/search/recent?p=0`;
                     break;
                 default:
-                    throw new Error(`Invalid home section ID`);
+                    throw new Error('Invalid home section ID');
             }
-            let json = await this.callAPI(url);
+            const json = await this.callAPI(url);
             switch (section.id) {
                 case 'hot':
                     section.items = this.parser.parseViewMoreItems(json, DOMAIN).slice(0, 10);
@@ -1586,7 +1585,7 @@ class GocTruyenTranh {
         }
     }
     async getViewMoreItems(homepageSectionId, metadata) {
-        let page = metadata?.page ?? 0;
+        const page = metadata?.page ?? 0;
         let url;
         switch (homepageSectionId) {
             case 'hot':
@@ -1599,7 +1598,7 @@ class GocTruyenTranh {
                 url = `${DOMAIN}api/comic/search/recent?p=${page}`;
                 break;
             default:
-                throw new Error("Requested to getViewMoreItems for a section ID which doesn't exist");
+                throw new Error('Requested to getViewMoreItems for a section ID which doesn\'t exist');
         }
         const json = await this.callAPI(url);
         const tiles = this.parser.parseViewMoreItems(json, DOMAIN);
@@ -1635,9 +1634,32 @@ exports.GocTruyenTranh = GocTruyenTranh;
 
 },{"./GocTruyenTranhParser":71,"@paperback/types":61}],71:[function(require,module,exports){
 "use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Parser = void 0;
-const entities = require("entities"); //Import package for decoding HTML entities
+const entities = __importStar(require("entities")); //Import package for decoding HTML entities
 class Parser {
     convertTime(timeAgo) {
         let time;
@@ -1665,16 +1687,16 @@ class Parser {
             time = new Date(Date.now() - trimmed * 31556952000);
         }
         else {
-            if (timeAgo.includes(":")) {
-                let split = timeAgo.split(' ');
-                let H = split[0]; //vd => 21:08
-                let D = split[1]; //vd => 25/08 
-                let fixD = String(D).split('/');
-                let finalD = fixD[1] + '/' + fixD[0] + '/' + new Date().getFullYear();
+            if (timeAgo.includes(':')) {
+                const split = timeAgo.split(' ');
+                const H = split[0]; //vd => 21:08
+                const D = split[1]; //vd => 25/08 
+                const fixD = String(D).split('/');
+                const finalD = fixD[1] + '/' + fixD[0] + '/' + new Date().getFullYear();
                 time = new Date(finalD + ' ' + H);
             }
             else {
-                let split = timeAgo.split('-'); //vd => 05/12/18
+                const split = timeAgo.split('-'); //vd => 05/12/18
                 time = new Date(split[1] + '/' + split[0] + '/' + split[2]);
             }
         }
@@ -1692,16 +1714,17 @@ class Parser {
         let status = '';
         $('.information-section > div').each((_, obj) => {
             switch ($(obj).text().trim().split('\n')[0]) {
-                case "Tác giả:":
+                case 'Tác giả:':
                     author = String($(obj).text().split('\n')[1]).trim();
                     artist = String($(obj).text().split('\n')[1]).trim();
                     break;
-                case "Trạng thái:":
+                case 'Trạng thái:':
                     status = String($(obj).text().split('\n')[1]).trim();
                     break;
             }
         });
-        const image = String($('.v-image > img').attr('src')?.indexOf('https') === -1 ? DOMAIN + $('.v-image > img').attr('src') : $('.v-image > img').attr('src'));
+        const image = String($('.v-image > img').attr('src')?.indexOf('https') === -1 ?
+            DOMAIN + $('.v-image > img').attr('src') : $('.v-image > img').attr('src'));
         const desc = this.decodeHTMLEntity($('.v-card-text.pt-1.px-4.pb-4.text-secondary.font-weight-medium').text());
         const rating = parseFloat($('.pr-3 > b').text().trim());
         return App.createSourceManga({
@@ -1720,7 +1743,7 @@ class Parser {
     }
     parseChapterList(json) {
         const chapters = [];
-        for (let obj of json.result.chapters) {
+        for (const obj of json.result.chapters) {
             const chapNum = parseFloat(obj.numberChapter);
             const id = `chuong-${chapNum}`;
             const timeStr = obj.stringUpdateTime;
@@ -1744,7 +1767,7 @@ class Parser {
             $('.image-section > .img-block > img').each((_, obj) => {
                 if (!obj.attribs['src'])
                     return;
-                let link = obj.attribs['src'];
+                const link = obj.attribs['src'];
                 pages.push(encodeURI(link));
             });
         }
@@ -1758,14 +1781,14 @@ class Parser {
     parseSearchResults(json, DOMAIN) {
         const tiles = [];
         const array = json.result.data ?? json.result;
-        for (let obj of array) {
-            let title = obj.name;
-            let subtitle = `Chương ${obj.chapterLatest[0]}`;
+        for (const obj of array) {
+            const title = obj.name;
+            const subtitle = `Chương ${obj.chapterLatest[0]}`;
             const image = obj.photo;
-            let mangaId = `${obj.nameEn}::${obj.id}`;
+            const mangaId = `${obj.nameEn}::${obj.id}`;
             tiles.push(App.createPartialSourceManga({
                 mangaId,
-                image: encodeURI(image.indexOf('https') === -1 ? DOMAIN + image : image) ?? "",
+                image: encodeURI(image.indexOf('https') === -1 ? DOMAIN + image : image) ?? '',
                 title,
                 subtitle
             }));
@@ -1775,15 +1798,15 @@ class Parser {
     parseViewMoreItems(json, DOMAIN) {
         const manga = [];
         const collectedIds = [];
-        for (let obj of json.result.data) {
-            let title = obj.name;
-            let subtitle = 'Chương ' + obj.chapterLatest[0];
+        for (const obj of json.result.data) {
+            const title = obj.name;
+            const subtitle = 'Chương ' + obj.chapterLatest[0];
             const image = obj.photo;
-            let mangaId = `${obj.nameEn}::${obj.id}`;
+            const mangaId = `${obj.nameEn}::${obj.id}`;
             if (!collectedIds.includes(mangaId)) {
                 manga.push(App.createPartialSourceManga({
                     mangaId,
-                    image: encodeURI(image.indexOf('https') === -1 ? DOMAIN + image : image) ?? "",
+                    image: encodeURI(image.indexOf('https') === -1 ? DOMAIN + image : image) ?? '',
                     title,
                     subtitle,
                 }));
@@ -1794,7 +1817,7 @@ class Parser {
     }
     parseTags(json) {
         const tags = [];
-        for (let obj of json.result) {
+        for (const obj of json.result) {
             const label = obj.name;
             const id = obj.id;
             tags.push(App.createTag({ label, id }));
