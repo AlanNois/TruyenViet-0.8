@@ -24,7 +24,7 @@ import {
 import { Parser } from './BaoTangTruyenTranhParser';
 
 const DOMAIN = 'https://baotangtruyen34.top/';
-const API = 'https://api.chilltruyentranh.site/'
+const API = 'https://api.chilltruyentranh.site/';
 
 // export const isLastPage = ($: CheerioStatic): boolean => {
 //     const pages: number[] = [];
@@ -43,7 +43,7 @@ export const isLastPage = ($: any): boolean => {
     const lastPage = Number(pagination.total_pages);
     const currentPage = Number(pagination.current_page);
     return currentPage >= lastPage;
-}
+};
 
 export const BaoTangTruyenTranhInfo: SourceInfo = {
     version: '1.1.8',
@@ -60,12 +60,12 @@ export const BaoTangTruyenTranhInfo: SourceInfo = {
             type: BadgeColor.GREEN,
         },
         {
-            text: "Recommended",
+            text: 'Recommended',
             type: BadgeColor.BLUE,
         }
     ],
     intents: SourceIntents.MANGA_CHAPTERS | SourceIntents.HOMEPAGE_SECTIONS | SourceIntents.CLOUDFLARE_BYPASS_REQUIRED
-}
+};
 
 export class BaoTangTruyenTranh implements ChapterProviding, MangaProviding, SearchResultsProviding, HomePageSectionsProviding {
 
@@ -82,7 +82,7 @@ export class BaoTangTruyenTranh implements ChapterProviding, MangaProviding, Sea
                         'referer': DOMAIN,
                         'user-agent': await this.requestManager.getDefaultUserAgent()
                     }
-                }
+                };
                 return request;
             },
             interceptResponse: async (response: Response): Promise<Response> => {
@@ -151,7 +151,7 @@ export class BaoTangTruyenTranh implements ChapterProviding, MangaProviding, Sea
             id: chapterId,
             mangaId: mangaId,
             pages: pages,
-        })
+        });
     }
 
     async getSearchResults(query: SearchRequest, metadata: any): Promise<PagedResults> {
@@ -181,7 +181,7 @@ export class BaoTangTruyenTranh implements ChapterProviding, MangaProviding, Sea
         // const searchUrl = query.title
         //     ? `${DOMAIN}tim-truyen?keyword=${query.title}&page=${page}`
         //     : `${DOMAIN}tim-truyen?page=${page}&cate=${search.cate}&status=${search.status}&sort=${search.sort}`;
-        const searchUrl = `${API}getAllComics?page=${page}&limit=20&name=${query.title}`
+        const searchUrl = `${API}getAllComics?page=${page}&limit=20&name=${query.title}`;
         const url = encodeURI(searchUrl);
         const $ = await this.callAPI(url);
         const tiles = this.parser.parseSearchResults($, API);
@@ -190,11 +190,11 @@ export class BaoTangTruyenTranh implements ChapterProviding, MangaProviding, Sea
         return App.createPagedResults({
             results: tiles,
             metadata,
-        })
+        });
     }
 
     async getHomePageSections(sectionCallback: (section: HomeSection) => void): Promise<void> {
-        console.log('BaoTangTruyenTranh Running...')
+        console.log('BaoTangTruyenTranh Running...');
         const sections: HomeSection[] = [
             App.createHomeSection({ id: 'featured', title: 'TRUYỆN ĐỀ CỬ', containsMoreItems: false, type: HomeSectionType.featured }),
             App.createHomeSection({ id: 'new_updated', title: 'TRUYỆN MỚI CẬP NHẬT', containsMoreItems: true, type: HomeSectionType.singleRowNormal }),
@@ -215,7 +215,7 @@ export class BaoTangTruyenTranh implements ChapterProviding, MangaProviding, Sea
                     url = `${API}getAllComics?page=1&limit=36&sort=views&genres=T%E1%BA%A5t+c%E1%BA%A3`;
                     break;
                 default:
-                    throw new Error("Invalid home section ID");
+                    throw new Error('Invalid home section ID');
             }
 
             const $ = await this.callAPI(url);
@@ -235,7 +235,7 @@ export class BaoTangTruyenTranh implements ChapterProviding, MangaProviding, Sea
     }
 
     async getViewMoreItems(homepageSectionId: string, metadata: any): Promise<PagedResults> {
-        let page: number = metadata?.page ?? 1;
+        const page: number = metadata?.page ?? 1;
         let url = '';
         // let select = 1;
 
@@ -255,12 +255,12 @@ export class BaoTangTruyenTranh implements ChapterProviding, MangaProviding, Sea
         const $ = await this.callAPI(url);
         const manga = this.parser.parseSection($, API);
         metadata = !isLastPage($) ? { page: page + 1 } : undefined;
-        console.log(manga)
+        console.log(manga);
 
         return App.createPagedResults({
             results: manga,
             metadata,
-        })
+        });
     }
 
     // async getSearchTags(): Promise<TagSection[]> {
@@ -364,11 +364,11 @@ export class BaoTangTruyenTranh implements ChapterProviding, MangaProviding, Sea
 
     CloudFlareError(status: number): void {
         if (status == 503 || status == 403) {
-            throw new Error(`CLOUDFLARE BYPASS ERROR:\nPlease go to home page ${BaoTangTruyenTranh.name} source and press the cloud icon.`)
+            throw new Error(`CLOUDFLARE BYPASS ERROR:\nPlease go to home page ${BaoTangTruyenTranh.name} source and press the cloud icon.`);
         }
     }
 
-    async getCloudflareBypassRequestAsync() {
+    async getCloudflareBypassRequestAsync(): Promise<Request> {
         return App.createRequest({
             url: DOMAIN,
             method: 'GET',
@@ -377,6 +377,6 @@ export class BaoTangTruyenTranh implements ChapterProviding, MangaProviding, Sea
                 'origin': `${DOMAIN}/`,
                 'user-agent': await this.requestManager.getDefaultUserAgent()
             }
-        })
+        });
     }
 }

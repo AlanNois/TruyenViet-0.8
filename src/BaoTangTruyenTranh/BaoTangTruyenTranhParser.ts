@@ -4,9 +4,9 @@ import {
     Tag,
     // MangaUpdates,
     PartialSourceManga
-} from '@paperback/types'
+} from '@paperback/types';
 
-const entities = require("entities");
+import entities from 'entities';
 
 export class Parser {
 
@@ -38,8 +38,8 @@ export class Parser {
                 status,
                 tags: [App.createTagSection({ id: '0', label: 'tag', tags: tags })]
             })
-        })
-    };
+        });
+    }
 
     parseChapterList($: any): Chapter[] {
         const chapters: Chapter[] = [];
@@ -54,7 +54,7 @@ export class Parser {
                 name = 'LOCKED (' + `Only unlock(with ${obj.unlock_cost} point) and read on website` + ')';
             }
             const time = obj.created_at.trim();
-            const timeFinal = this.convertTime(this.decodeHTMLEntity(time))
+            const timeFinal = this.convertTime(this.decodeHTMLEntity(time));
             chapters.push(App.createChapter({
                 // id: id.split('/').slice(-4).join('/'),
                 id,
@@ -64,7 +64,7 @@ export class Parser {
                 time: timeFinal,
             }));
         });
-        console.log(chapters)
+        console.log(chapters);
         return chapters;
     }
 
@@ -74,7 +74,7 @@ export class Parser {
             return encodeURI(image);
         });
 
-        return pages
+        return pages;
     }
 
     parseSearchResults($: any, API: string): PartialSourceManga[] {
@@ -117,7 +117,7 @@ export class Parser {
             const title = element.name.trim();
             const image = `${API}thumbnails/${element.thumbnail}`;
             const id = element.slug;
-            const latest_chapter = element.chapters.pop()
+            const latest_chapter = element.chapters.pop();
             const subtitle = element.latest_chapter ? latest_chapter.title.trim() + ' | ' + this.convertTime(latest_chapter.created_at) : '';
             return App.createPartialSourceManga({
                 mangaId: String(id),
@@ -172,7 +172,7 @@ export class Parser {
         }
 
         let time: Date;
-        let trimmed: number = Number((/\d*/.exec(timeAgo) ?? [])[0]);
+        let trimmed = Number((/\d*/.exec(timeAgo) ?? [])[0]);
         trimmed = (trimmed === 0 && timeAgo.includes('a')) ? 1 : trimmed;
 
         if (timeAgo.includes('giây')) {
@@ -194,7 +194,7 @@ export class Parser {
             const isoRegex = /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/;
             if (isoRegex.test(timeAgo)) {
                 time = new Date(timeAgo);
-            } else if (timeAgo.includes(":")) {
+            } else if (timeAgo.includes(':')) {
                 const split = timeAgo.split(' ');
                 if (split.length >= 2) {
                     const H = split[0];

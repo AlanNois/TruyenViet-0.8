@@ -25,11 +25,11 @@ import { Parser } from './DocTruyen3QParser';
 const DOMAIN = 'https://doctruyen3qui13.pro/';
 
 export const isLastPage = ($: CheerioStatic): boolean => {
-    const lastPage = Number($("ul.pagination > li.page-item:not(:has(a[rel='next'])) a").last().text().trim());
-    const currentPage = Number($("ul.pagination > li.active").text().trim());
+    const lastPage = Number($('ul.pagination > li.page-item:not(:has(a[rel=\'next\'])) a').last().text().trim());
+    const currentPage = Number($('ul.pagination > li.active').text().trim());
 
     return currentPage >= lastPage;
-}
+};
 
 export const DocTruyen3QInfo: SourceInfo = {
     version: '1.1.16',
@@ -42,7 +42,7 @@ export const DocTruyen3QInfo: SourceInfo = {
     websiteBaseURL: DOMAIN,
     sourceTags: [
         {
-            text: "Recommended",
+            text: 'Recommended',
             type: BadgeColor.BLUE
         },
     ],
@@ -87,7 +87,7 @@ export class DocTruyen3Q implements SearchResultsProviding, MangaProviding, Chap
             method: 'GET',
         });
         const response = await this.requestManager.schedule(request, 1);
-        this.CloudFlareError(response.status)
+        this.CloudFlareError(response.status);
         return this.cheerio.load(response.data as string);
     }
 
@@ -108,17 +108,17 @@ export class DocTruyen3Q implements SearchResultsProviding, MangaProviding, Chap
             id: chapterId,
             mangaId: mangaId,
             pages: pages,
-        })
+        });
     }
 
     async getSearchResults(query: SearchRequest, metadata: any): Promise<PagedResults> {
-        let page: number = metadata?.page ?? 1;
+        const page: number = metadata?.page ?? 1;
 
         const search = {
             cate: '',
-            status: "2",
-            sort: "1",
-        }
+            status: '2',
+            sort: '1',
+        };
 
         const tags = query.includedTags?.map(tag => tag.id) ?? [];
         for (const value of tags) {
@@ -136,9 +136,9 @@ export class DocTruyen3Q implements SearchResultsProviding, MangaProviding, Chap
             }
         }
 
-        const url = `${DOMAIN}tim-truyen`
+        const url = `${DOMAIN}tim-truyen`;
         const search_query = (!query.title) ? '?' : `?keyword=${query.title}&`;
-        const param = `${search.cate}${search_query}sort=${search.sort}&status=${search.status}&page=${page}`
+        const param = `${search.cate}${search_query}sort=${search.sort}&status=${search.status}&page=${page}`;
         const $ = await this.DOMHTML(`${url}${encodeURI(param)}`);
         const tiles = this.parser.parseSearchResults($);
         metadata = isLastPage($) ? undefined : { page: page + 1 };
@@ -147,16 +147,16 @@ export class DocTruyen3Q implements SearchResultsProviding, MangaProviding, Chap
             results: tiles,
             metadata
         });
-    };
+    }
 
     async getHomePageSections(sectionCallback: (section: HomeSection) => void): Promise<void> {
-        console.log('DocTruyen3Q Running...')
+        console.log('DocTruyen3Q Running...');
         const sections: HomeSection[] = [
-            App.createHomeSection({ id: 'featured', title: "TRUYỆN ĐỀ CỬ", containsMoreItems: false, type: HomeSectionType.featured, }),
-            App.createHomeSection({ id: 'viewest', title: "TRUYỆN XEM NHIỀU NHẤT", containsMoreItems: true, type: HomeSectionType.singleRowNormal, }),
-            App.createHomeSection({ id: 'hot', title: "TRUYỆN HOT NHẤT", containsMoreItems: true, type: HomeSectionType.singleRowNormal, }),
-            App.createHomeSection({ id: 'new_updated', title: "TRUYỆN MỚI CẬP NHẬT", containsMoreItems: true, type: HomeSectionType.singleRowNormal, }),
-            App.createHomeSection({ id: 'full', title: "TRUYỆN ĐÃ HOÀN THÀNH", containsMoreItems: true, type: HomeSectionType.singleRowNormal, })
+            App.createHomeSection({ id: 'featured', title: 'TRUYỆN ĐỀ CỬ', containsMoreItems: false, type: HomeSectionType.featured, }),
+            App.createHomeSection({ id: 'viewest', title: 'TRUYỆN XEM NHIỀU NHẤT', containsMoreItems: true, type: HomeSectionType.singleRowNormal, }),
+            App.createHomeSection({ id: 'hot', title: 'TRUYỆN HOT NHẤT', containsMoreItems: true, type: HomeSectionType.singleRowNormal, }),
+            App.createHomeSection({ id: 'new_updated', title: 'TRUYỆN MỚI CẬP NHẬT', containsMoreItems: true, type: HomeSectionType.singleRowNormal, }),
+            App.createHomeSection({ id: 'full', title: 'TRUYỆN ĐÃ HOÀN THÀNH', containsMoreItems: true, type: HomeSectionType.singleRowNormal, })
         ];
 
         for (const section of sections) {
@@ -179,7 +179,7 @@ export class DocTruyen3Q implements SearchResultsProviding, MangaProviding, Chap
                     url = `${DOMAIN}tim-truyen?status=1&sort=2`;
                     break;
                 default:
-                    throw new Error(`Invalid home section ID`);
+                    throw new Error('Invalid home section ID');
             }
 
             const $ = await this.DOMHTML(url);
@@ -194,15 +194,15 @@ export class DocTruyen3Q implements SearchResultsProviding, MangaProviding, Chap
                     break;
                 case 'hot':
                     section.items = this.parser.parseHomeTemplate($, '#hot');
-                    console.log(section.items)
+                    console.log(section.items);
                     break;
                 case 'new_updated':
                     section.items = this.parser.parseHomeTemplate($, '#home');
-                    console.log(section.items)
+                    console.log(section.items);
                     break;
                 case 'full':
                     section.items = this.parser.parseSearchResults($);
-                    console.log(section.items)
+                    console.log(section.items);
                     break;
             }
             sectionCallback(section);
@@ -210,7 +210,7 @@ export class DocTruyen3Q implements SearchResultsProviding, MangaProviding, Chap
     }
 
     async getViewMoreItems(homepageSectionId: string, metadata: any): Promise<PagedResults> {
-        let page: number = metadata?.page ?? 1;
+        const page: number = metadata?.page ?? 1;
         let url: string;
         let param: string;
 
@@ -232,16 +232,16 @@ export class DocTruyen3Q implements SearchResultsProviding, MangaProviding, Chap
                 param = `?status=1&sort=2&page=${page}`;
                 break;
             default:
-                throw new Error("Requested to getViewMoreItems for a section ID which doesn't exist");
+                throw new Error('Requested to getViewMoreItems for a section ID which doesn\'t exist');
         }
 
         const $ = await this.DOMHTML(`${url}${encodeURI(param)}`);
-        let manga = this.parser.parseViewMoreItems($, homepageSectionId);
+        const manga = this.parser.parseViewMoreItems($, homepageSectionId);
         metadata = isLastPage($) ? undefined : { page: page + 1 };
         return App.createPagedResults({
             results: manga,
             metadata
-        })
+        });
     }
 
     async getSearchTags(): Promise<TagSection[]> {
@@ -252,11 +252,11 @@ export class DocTruyen3Q implements SearchResultsProviding, MangaProviding, Chap
 
     CloudFlareError(status: number): void {
         if (status == 503 || status == 403) {
-            throw new Error(`CLOUDFLARE BYPASS ERROR:\nPlease go to home page ${DocTruyen3Q.name} source and press the cloud icon.`)
+            throw new Error(`CLOUDFLARE BYPASS ERROR:\nPlease go to home page ${DocTruyen3Q.name} source and press the cloud icon.`);
         }
     }
 
-    async getCloudflareBypassRequestAsync() {
+    async getCloudflareBypassRequestAsync(): Promise<Request> {
         return App.createRequest({
             url: DOMAIN,
             method: 'GET',
@@ -265,6 +265,6 @@ export class DocTruyen3Q implements SearchResultsProviding, MangaProviding, Chap
                 'origin': `${DOMAIN}/`,
                 'user-agent': await this.requestManager.getDefaultUserAgent()
             }
-        })
+        });
     }
 }
