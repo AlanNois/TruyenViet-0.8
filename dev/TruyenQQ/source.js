@@ -477,7 +477,7 @@ const isLastPage = ($) => {
 };
 exports.isLastPage = isLastPage;
 exports.TruyenQQInfo = {
-    version: '1.0.10',
+    version: '1.0.11',
     name: 'TruyenQQ',
     icon: 'icon.png',
     author: 'AlanNois',
@@ -595,7 +595,10 @@ class TruyenQQ {
         search.exgenres = exgenres.join(',');
         const paramExgenres = search.exgenres ? `&notcategory==${search.exgenres}` : '';
         const url = `${DOMAIN}${query.title ? 'tim-kiem' : 'tim-kiem-nang-cao'}/trang-${page}.html`;
-        const param = encodeURI(`?q=${query.title ?? ''}&category=${search.genres}${paramExgenres}&country=${search.country}&status=${search.status}&minchapter=${search.minchapter}&sort=${search.sort}`);
+        const param = encodeURI(`?q=${query.title ?? ''}
+            &category=${search.genres}${paramExgenres}
+            &country=${search.country}&status=${search.status}
+            &minchapter=${search.minchapter}&sort=${search.sort}`);
         const $ = await this.DOMHTML(url + param);
         const tiles = this.parser.parseSearchResults($);
         metadata = !(0, exports.isLastPage)($) ? { page: page + 1 } : undefined;
@@ -658,8 +661,8 @@ class TruyenQQ {
     }
     async getViewMoreItems(homepageSectionId, metadata) {
         const page = metadata?.page ?? 1;
-        let param = "";
-        let url = "";
+        let param = '';
+        let url = '';
         switch (homepageSectionId) {
             case 'hot':
                 param = `trang-${page}.html`;
@@ -762,7 +765,7 @@ class Parser {
         const titles = [$('.book_other h1').text().trim()];
         const author = $('ul.list-info > li.author > p.col-xs-9').text();
         const artist = $('ul.list-info > li.author > p.col-xs-9').text();
-        const image = $('.book_avatar > img').attr('src') ?? "";
+        const image = $('.book_avatar > img').attr('src') ?? '';
         const desc = $('div.detail-content > p').text();
         const status = $('ul.list-info > li.status > p.col-xs-9').text();
         return App.createSourceManga({
@@ -780,7 +783,7 @@ class Parser {
     }
     parseChapterList($) {
         const chapters = [];
-        $(".works-chapter-list > .works-chapter-item").each((_, obj) => {
+        $('.works-chapter-list > .works-chapter-item').each((_, obj) => {
             const id = String($('.col-md-10.col-sm-10.col-xs-8 > a', obj).attr('href')?.split('/').pop());
             const time = $('.col-md-2.col-sm-2.col-xs-4', obj).text().trim();
             const name = $('.col-md-10.col-sm-10.col-xs-8 > a', obj).text();
@@ -819,8 +822,8 @@ class Parser {
         $('.list_grid li').each((_, manga) => {
             const title = $('.book_name > h3 > a', manga).text().trim();
             const id = $('.book_name > h3 > a', manga).attr('href')?.split('/').pop();
-            let image = $('.book_avatar > a > img', manga).attr("src") ?? "";
-            image = !image ? "https://i.imgur.com/GYUxEX8.png" : image;
+            let image = $('.book_avatar > a > img', manga).attr('src') ?? '';
+            image = !image ? 'https://i.imgur.com/GYUxEX8.png' : image;
             const subtitle = $('.last_chapter > a', manga).text().trim();
             tiles.push(App.createPartialSourceManga({
                 mangaId: String(id),
@@ -892,8 +895,8 @@ class Parser {
         $('#div_suggest .list_grid li').each((_, manga) => {
             const title = $('.book_name > h3 > a', manga).text().trim();
             const id = $('.book_name > h3 > a', manga).attr('href')?.split('/').pop();
-            let image = $('.book_avatar > a > img', manga).attr("src") ?? "";
-            image = !image ? "https://i.imgur.com/GYUxEX8.png" : image;
+            let image = $('.book_avatar > a > img', manga).attr('src') ?? '';
+            image = !image ? 'https://i.imgur.com/GYUxEX8.png' : image;
             const subtitle = $('.last_chapter > a', manga).text().trim();
             featuredItems.push(App.createPartialSourceManga({
                 mangaId: String(id),

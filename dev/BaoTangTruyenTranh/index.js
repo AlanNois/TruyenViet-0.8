@@ -1801,7 +1801,6 @@ class Parser {
         //         const title = $('h3 > a', element).text().trim();
         //         const image = $('.image img', element).attr("src") ?? "";
         //         const id = $('h3 > a', element).attr('href')?.split('/').slice(-2).join('/');
-        // eslint-disable-next-line max-len
         //         const chapter = $("ul .chapter > a", element).first().text().trim().replace('Chapter ', 'Ch.') + ' | ' + $("ul .chapter > i", element).first().text().trim();
         //         manga.push(App.createPartialSourceManga({
         //             mangaId: String(id),
@@ -1858,7 +1857,6 @@ class Parser {
         const chapters = [];
         $.chapters.map((obj) => {
             // const ids = String($('a', obj).first().attr('href'));
-            // eslint-disable-next-line max-len
             // const id = ids.replace(String(ids.match(/chapter-\d+/)), String(mangaId.split('/')[mangaId.split('/').length - 1]).split('-').slice(0, -1).join('-'));
             const id = obj.slug;
             const chapNum = parseFloat(String(obj.title.split(' ').pop()));
