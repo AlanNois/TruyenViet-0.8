@@ -46,7 +46,7 @@ export const isLastPage = ($: any): boolean => {
 };
 
 export const BaoTangTruyenTranhInfo: SourceInfo = {
-    version: '1.1.8',
+    version: '1.1.9',
     name: 'BaoTangTruyenTranh',
     icon: 'icon.png',
     author: 'AlanNois',
