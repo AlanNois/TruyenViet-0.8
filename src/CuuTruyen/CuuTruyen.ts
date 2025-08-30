@@ -22,7 +22,11 @@ import {
 } from '@paperback/types';
 
 import { Parser } from './CuuTruyenParser';
-import { getDomain, domainSettings, resetSettings } from './CuuTruyenSetting';
+import { 
+    getDomain, 
+    domainSettings,
+    resetSettings 
+} from './CuuTruyenSetting';
 import { unscrambleImage } from './CuuTruyenDrm';
 
 export const CuuTruyenInfo: SourceInfo = {
@@ -128,7 +132,6 @@ export class CuuTruyen implements ChapterProviding, MangaProviding, SearchResult
                     if (drmKey && response.rawData) {
                         const decryptedData = await unscrambleImage(response.rawData, drmKey);
                         response.rawData = decryptedData;
-                        // response.rawData = App.createRawData({ byteArray: await unscrambleImage(App.createByteArray(response.rawData ?? new Uint8Array()), drmKey) })
                     }
                 }
                 return response;
@@ -146,11 +149,11 @@ export class CuuTruyen implements ChapterProviding, MangaProviding, SearchResult
                     return [
                         domainSettings(this.stateManager),
                         resetSettings(this.stateManager)
-                    ]
+                    ];
                 },
                 isHidden: false
             }
-        )
+        );
 
     }
 
@@ -158,7 +161,7 @@ export class CuuTruyen implements ChapterProviding, MangaProviding, SearchResult
         return `${this.getBaseUrl()}/mangas/${mangaId}`;
     }
 
-    private async apiRequest(endpoint: string, params: string = ''): Promise<any> {
+    private async apiRequest(endpoint: string, params = ''): Promise<any> {
         const url = `${await this.getApiUrl()}/${endpoint}${params ? `?${params}` : ''}`;
         const request = App.createRequest({
             url,
@@ -195,7 +198,7 @@ export class CuuTruyen implements ChapterProviding, MangaProviding, SearchResult
     }
 
     async getSearchResults(query: SearchRequest, metadata: any): Promise<PagedResults> {
-        let page = metadata?.page ?? 1;
+        const page = metadata?.page ?? 1;
 
         const tag = query.includedTags[0]?.id;
         let endpoint: string;
@@ -222,7 +225,7 @@ export class CuuTruyen implements ChapterProviding, MangaProviding, SearchResult
         }
 
         const lastPage = response._metadata.total_pages;
-        metadata = lastPage > page ? { page: page + 1 } : lastPage;
+        metadata = lastPage > page ? { page: page + 1 } : undefined;
 
         return App.createPagedResults({
             results: mangas,
@@ -231,11 +234,11 @@ export class CuuTruyen implements ChapterProviding, MangaProviding, SearchResult
     }
 
     async getHomePageSections(sectionCallback: (section: HomeSection) => void): Promise<void> {
-        console.log("CuuTruyen Running...")
+        console.log('CuuTruyen Running...');
         const sections = [
-            App.createHomeSection({ id: 'popular', title: "Phổ Biến Nhất", containsMoreItems: true, type: HomeSectionType.singleRowNormal}),
-            App.createHomeSection({ id: 'latest', title: "Mới Cập Nhật", containsMoreItems: true, type: HomeSectionType.singleRowNormal}),
-            App.createHomeSection({ id: 'completed', title: "Đã Hoàn Thành", containsMoreItems: true, type: HomeSectionType.singleRowNormal})
+            App.createHomeSection({ id: 'popular', title: 'Phổ Biến Nhất', containsMoreItems: true, type: HomeSectionType.singleRowNormal}),
+            App.createHomeSection({ id: 'latest', title: 'Mới Cập Nhật', containsMoreItems: true, type: HomeSectionType.singleRowNormal}),
+            App.createHomeSection({ id: 'completed', title: 'Đã Hoàn Thành', containsMoreItems: true, type: HomeSectionType.singleRowNormal})
         ];
         for (const section of sections) {
             sectionCallback(section); // Send initial section with no items
@@ -265,7 +268,7 @@ export class CuuTruyen implements ChapterProviding, MangaProviding, SearchResult
     }
 
     async getViewMoreItems(homepageSectionId: string, metadata: any): Promise<PagedResults> {
-        let page = metadata?.page ?? 1;
+        const page = metadata?.page ?? 1;
         let response;
         switch (homepageSectionId) {
             case 'popular':
@@ -289,7 +292,7 @@ export class CuuTruyen implements ChapterProviding, MangaProviding, SearchResult
         }
 
         const lastPage = response._metadata.total_pages;
-        metadata = lastPage > page ? {page : page + 1} : lastPage;
+        metadata = lastPage > page ? {page : page + 1} : undefined;
 
         return App.createPagedResults({
             results: mangas,
@@ -298,7 +301,7 @@ export class CuuTruyen implements ChapterProviding, MangaProviding, SearchResult
     }
 
     async getSearchTags(): Promise<TagSection[]> {
-        return this.parser.parseTags()
+        return this.parser.parseTags();
     }
 
 }

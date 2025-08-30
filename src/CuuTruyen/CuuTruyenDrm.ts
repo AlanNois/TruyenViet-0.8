@@ -5,7 +5,7 @@
 
 import { RawData } from '@paperback/types';
 
-const DECRYPTION_KEY = "3141592653589793";
+const DECRYPTION_KEY = '3141592653589793';
 
 /**
  * Base64 decode utility
