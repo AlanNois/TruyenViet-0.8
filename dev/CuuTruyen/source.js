@@ -2566,7 +2566,6 @@ class CuuTruyen {
                         if (drmKey && response.rawData) {
                             const decryptedData = await (0, CuuTruyenDrm_1.unscrambleImage)(response.rawData, drmKey);
                             response.rawData = decryptedData;
-                            // response.rawData = App.createRawData({ byteArray: await unscrambleImage(App.createByteArray(response.rawData ?? new Uint8Array()), drmKey) })
                         }
                     }
                     return response;
@@ -2632,7 +2631,7 @@ class CuuTruyen {
         });
     }
     async getSearchResults(query, metadata) {
-        let page = metadata?.page ?? 1;
+        const page = metadata?.page ?? 1;
         const tag = query.includedTags[0]?.id;
         let endpoint;
         let params;
@@ -2658,18 +2657,18 @@ class CuuTruyen {
             mangas = this.parser.parseSearchResults(response.data.mangas);
         }
         const lastPage = response._metadata.total_pages;
-        metadata = lastPage > page ? { page: page + 1 } : lastPage;
+        metadata = lastPage > page ? { page: page + 1 } : undefined;
         return App.createPagedResults({
             results: mangas,
             metadata,
         });
     }
     async getHomePageSections(sectionCallback) {
-        console.log("CuuTruyen Running...");
+        console.log('CuuTruyen Running...');
         const sections = [
-            App.createHomeSection({ id: 'popular', title: "Phổ Biến Nhất", containsMoreItems: true, type: types_1.HomeSectionType.singleRowNormal }),
-            App.createHomeSection({ id: 'latest', title: "Mới Cập Nhật", containsMoreItems: true, type: types_1.HomeSectionType.singleRowNormal }),
-            App.createHomeSection({ id: 'completed', title: "Đã Hoàn Thành", containsMoreItems: true, type: types_1.HomeSectionType.singleRowNormal })
+            App.createHomeSection({ id: 'popular', title: 'Phổ Biến Nhất', containsMoreItems: true, type: types_1.HomeSectionType.singleRowNormal }),
+            App.createHomeSection({ id: 'latest', title: 'Mới Cập Nhật', containsMoreItems: true, type: types_1.HomeSectionType.singleRowNormal }),
+            App.createHomeSection({ id: 'completed', title: 'Đã Hoàn Thành', containsMoreItems: true, type: types_1.HomeSectionType.singleRowNormal })
         ];
         for (const section of sections) {
             sectionCallback(section); // Send initial section with no items
@@ -2697,7 +2696,7 @@ class CuuTruyen {
         }
     }
     async getViewMoreItems(homepageSectionId, metadata) {
-        let page = metadata?.page ?? 1;
+        const page = metadata?.page ?? 1;
         let response;
         switch (homepageSectionId) {
             case 'popular':
@@ -2720,7 +2719,7 @@ class CuuTruyen {
             mangas = this.parser.parseSearchResults(response.data);
         }
         const lastPage = response._metadata.total_pages;
-        metadata = lastPage > page ? { page: page + 1 } : lastPage;
+        metadata = lastPage > page ? { page: page + 1 } : undefined;
         return App.createPagedResults({
             results: mangas,
             metadata,
@@ -2741,7 +2740,7 @@ exports.CuuTruyen = CuuTruyen;
  */
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.unscrambleImage = void 0;
-const DECRYPTION_KEY = "3141592653589793";
+const DECRYPTION_KEY = '3141592653589793';
 /**
  * Base64 decode utility
  */
