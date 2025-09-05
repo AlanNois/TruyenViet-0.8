@@ -2,7 +2,7 @@ import {
     DUIButton,
     DUINavigationButton,
     SourceStateManager
-} from '@paperback/types'
+} from '@paperback/types';
 
 enum Domains {
     CUUTRUYEN = 'cuutruyen.net',
@@ -13,8 +13,8 @@ enum Domains {
 }
 
 export const getDomain = async (stateManager: SourceStateManager): Promise<string> => {
-    return (await stateManager.retrieve('domain') as string) ?? Domains.CUUTRUYEN
-}
+    return (await stateManager.retrieve('domain') as string) ?? Domains.CUUTRUYEN;
+};
 
 export const domainSettings = (stateManager: SourceStateManager): DUINavigationButton => {
     return App.createDUINavigationButton({
@@ -29,7 +29,7 @@ export const domainSettings = (stateManager: SourceStateManager): DUINavigationB
                         rows: async () => {
                             await Promise.all([
                                 getDomain(stateManager)
-                            ])
+                            ]);
 
                             return await [
                                 App.createDUISelect({
@@ -45,41 +45,41 @@ export const domainSettings = (stateManager: SourceStateManager): DUINavigationB
                                     labelResolver: async (option: string) => {
                                         switch (option) {
                                             case Domains.CUUTRUYEN:
-                                                return 'Cuu Truyen (.net)'
+                                                return 'Cuu Truyen (.net)';
                                             case Domains.NETTROM:
-                                                return 'Net Trom (.com)'
+                                                return 'Net Trom (.com)';
                                             case Domains.HETCUUTRUYEN:
-                                                return 'Het Cuu Truyen (.net)'
+                                                return 'Het Cuu Truyen (.net)';
                                             case Domains.CUUTRUYENPIP7Z:
-                                                return 'Cuu Truyen Pip7z (.site)'
+                                                return 'Cuu Truyen Pip7z (.site)';
                                             case Domains.CUUTRUYEN5C844:
-                                                return 'Cuu Truyen 5c844 (.site)'
+                                                return 'Cuu Truyen 5c844 (.site)';
                                             default:
-                                                return option
+                                                return option;
                                         }
                                     },
                                     value: App.createDUIBinding({
                                         get: async () => [await getDomain(stateManager)],
                                         set: async (value: string[]) => {
-                                            await stateManager.store('domain', value[0])
+                                            await stateManager.store('domain', value[0]);
                                         }
                                     }),
                                     allowsMultiselect: false
                                 })
-                            ]
+                            ];
                         }
                     })
                 ]
         })
-    })
-}
+    });
+};
 
 export function resetSettings(stateManager: SourceStateManager): DUIButton {
     return App.createDUIButton({
         id: 'reset',
         label: 'Reset to Default',
         onTap: async () => {
-            await stateManager.store('domain', Domains.CUUTRUYEN)
+            await stateManager.store('domain', Domains.CUUTRUYEN);
         }
-    })
+    });
 }

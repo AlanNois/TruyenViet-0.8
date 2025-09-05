@@ -5,7 +5,7 @@ import {
     TagSection,
     // MangaUpdates,
     PartialSourceManga
-} from '@paperback/types'
+} from '@paperback/types';
 
 // For the "tags" array items
 interface ApiTag {
@@ -160,7 +160,7 @@ export class Parser {
                 status: status,
                 tags: [App.createTagSection({ id: '0', label: 'genres', tags })],
                 additionalInfo: {
-                    "Updated": data.updated_at ?? 'Không rõ',
+                    'Updated': data.updated_at ?? 'Không rõ',
                 }
             }),
         });
@@ -196,7 +196,7 @@ export class Parser {
             }
         }
 
-        return pages
+        return pages;
     }
 
     parseSearchResults(data: MangaData[]): PartialSourceManga[] {
