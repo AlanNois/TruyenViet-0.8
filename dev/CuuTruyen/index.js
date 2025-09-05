@@ -2889,7 +2889,7 @@ class Parser {
                 status: status,
                 tags: [App.createTagSection({ id: '0', label: 'genres', tags })],
                 additionalInfo: {
-                    "Updated": data.updated_at ?? 'Không rõ',
+                    'Updated': data.updated_at ?? 'Không rõ',
                 }
             }),
         });
