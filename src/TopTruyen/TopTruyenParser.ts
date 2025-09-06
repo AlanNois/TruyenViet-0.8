@@ -75,12 +75,11 @@ export class Parser {
 
         $('div.list-chapter > nav > ul > li.row').not('li[style="display: none"]').each((_: any, obj: any) => {
             const id = String($('div.chapters a', obj).attr('href')).split('/truyen-tranh/').pop() || '';
-            const time = $('div.col-4', obj).text();
+            const time = $('div.col-4', obj).text().trim();
             const group = $('div.col-3', obj).text().trim();
             let name = $('div.chapters a', obj).text();
             const chapNum = $('div.chapters a', obj).text().split(' ')[1];
             name = name.includes(':') ? String(name.split(':')[1]).trim() : '';
-            console.log(time);
             const timeFinal = this.convertTime(time);
 
             chapters.push(App.createChapter({
@@ -97,7 +96,7 @@ export class Parser {
             throw new Error('No chapters found');
         }
 
-        console.log(chapters)
+        console.log(chapters);
 
         return chapters;
     }
