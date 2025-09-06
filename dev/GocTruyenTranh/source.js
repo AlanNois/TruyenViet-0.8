@@ -1441,7 +1441,7 @@ const GocTruyenTranhParser_1 = require("./GocTruyenTranhParser");
 const DOMAIN = 'https://goctruyentranhvui17.com/';
 const Auth = 'Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJWxINuIEhvw6BuZyDEkGluaCIsImNvbWljSWRzIjpbXSwicm9sZUlkIjpudWxsLCJncm91cElkIjpudWxsLCJhZG1pbiI6ZmFsc2UsInJhbmsiOjAsInBlcm1pc3Npb24iOltdLCJpZCI6IjAwMDA1MjYzNzAiLCJ0ZWFtIjpmYWxzZSwiaWF0IjoxNzE1NDI0NDU3LCJlbWFpbCI6Im51bGwifQ.EjYw-HvoWM6RhbNzJkp06sSh61leaPcND0gb94PlDKeTYxfxU-f6WaxINAVjVYOP0pcVcG3YmfBVb4FVEBqPxQ';
 exports.GocTruyenTranhInfo = {
-    version: '1.1.22',
+    version: '1.1.23',
     name: 'GocTruyenTranh',
     icon: 'icon.png',
     author: 'AlanNois',
@@ -1469,7 +1469,7 @@ class GocTruyenTranh {
                         ...(request.headers ?? {}),
                         ...{
                             'referer': DOMAIN,
-                            'user-agent': await this.requestManager.getDefaultUserAgent()
+                            'user-agent': await this.requestManager.getDefaultUserAgent(),
                         }
                     };
                     return request;
@@ -1482,7 +1482,7 @@ class GocTruyenTranh {
         this.parser = new GocTruyenTranhParser_1.Parser();
     }
     getMangaShareUrl(mangaId) {
-        return `${DOMAIN}truyen/${mangaId}`;
+        return `${DOMAIN}truyen/${mangaId.split('::')[0]}`;
     }
     async DOMHTML(url) {
         const request = App.createRequest({
