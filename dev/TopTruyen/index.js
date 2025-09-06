@@ -478,7 +478,7 @@ const isLastPage = ($) => {
 };
 exports.isLastPage = isLastPage;
 exports.TopTruyenInfo = {
-    version: '1.0.4',
+    version: '1.0.5',
     name: 'TopTruyen',
     icon: 'icon.png',
     author: 'AlanNois',
@@ -757,7 +757,7 @@ class Parser {
         }
         else if (timeAgo.includes('-')) {
             const [day, month, year] = timeAgo.split('-');
-            return new Date(`${year}-${month}-${day}`);
+            return new Date(`${month}/${day}/${year}`);
         }
         else {
             const split = timeAgo.split('/');
@@ -801,6 +801,7 @@ class Parser {
             let name = $('div.chapters a', obj).text();
             const chapNum = $('div.chapters a', obj).text().split(' ')[1];
             name = name.includes(':') ? String(name.split(':')[1]).trim() : '';
+            console.log(time);
             const timeFinal = this.convertTime(time);
             chapters.push(App.createChapter({
                 id: id,
@@ -814,9 +815,7 @@ class Parser {
         if (chapters.length == 0) {
             throw new Error('No chapters found');
         }
-        for (let i = 0; i < 10; i++) {
-            console.log(chapters[i]);
-        }
+        console.log(chapters);
         return chapters;
     }
     parseChapterDetails($) {
