@@ -31,7 +31,7 @@ export class Parser {
             return new Date(`${finalD} ${H}`);
         } else if (timeAgo.includes('-')) {
             const [day, month, year] = timeAgo.split('-');
-            return new Date(`${year}-${month}-${day}`);
+            return new Date(`${month}/${day}/${year}`);
         } else {
             const split = timeAgo.split('/');
             return new Date(`${split[1]}/${split[0]}/20${split[2]}`);
@@ -80,6 +80,7 @@ export class Parser {
             let name = $('div.chapters a', obj).text();
             const chapNum = $('div.chapters a', obj).text().split(' ')[1];
             name = name.includes(':') ? String(name.split(':')[1]).trim() : '';
+            console.log(time);
             const timeFinal = this.convertTime(time);
 
             chapters.push(App.createChapter({
@@ -96,9 +97,7 @@ export class Parser {
             throw new Error('No chapters found');
         }
 
-        for (let i = 0; i < 10; i++) {
-            console.log(chapters[i]);
-        }
+        console.log(chapters)
 
         return chapters;
     }
