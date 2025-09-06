@@ -478,7 +478,7 @@ const isLastPage = ($) => {
 };
 exports.isLastPage = isLastPage;
 exports.TopTruyenInfo = {
-    version: '1.0.5',
+    version: '1.0.6',
     name: 'TopTruyen',
     icon: 'icon.png',
     author: 'AlanNois',
@@ -796,12 +796,11 @@ class Parser {
         const chapters = [];
         $('div.list-chapter > nav > ul > li.row').not('li[style="display: none"]').each((_, obj) => {
             const id = String($('div.chapters a', obj).attr('href')).split('/truyen-tranh/').pop() || '';
-            const time = $('div.col-4', obj).text();
+            const time = $('div.col-4', obj).text().trim();
             const group = $('div.col-3', obj).text().trim();
             let name = $('div.chapters a', obj).text();
             const chapNum = $('div.chapters a', obj).text().split(' ')[1];
             name = name.includes(':') ? String(name.split(':')[1]).trim() : '';
-            console.log(time);
             const timeFinal = this.convertTime(time);
             chapters.push(App.createChapter({
                 id: id,
