@@ -478,7 +478,7 @@ const isLastPage = ($) => {
 };
 exports.isLastPage = isLastPage;
 exports.TopTruyenInfo = {
-    version: '1.0.3',
+    version: '1.0.4',
     name: 'TopTruyen',
     icon: 'icon.png',
     author: 'AlanNois',
@@ -743,6 +743,9 @@ class Parser {
         else if (timeAgo.includes('ngày')) {
             return new Date(Date.now() - trimmed * 86400000);
         }
+        else if (timeAgo.includes('tuần')) {
+            return new Date(Date.now() - trimmed * 604800000);
+        }
         else if (timeAgo.includes('năm')) {
             return new Date(Date.now() - trimmed * 31556952000);
         }
@@ -811,7 +814,9 @@ class Parser {
         if (chapters.length == 0) {
             throw new Error('No chapters found');
         }
-        console.log(chapters[0], chapters[chapters.length - 1]);
+        for (let i = 0; i < 10; i++) {
+            console.log(chapters[i]);
+        }
         return chapters;
     }
     parseChapterDetails($) {
@@ -893,7 +898,6 @@ class Parser {
                 subtitle: subtitle,
             }));
         });
-        console.log(featuredItems);
         return featuredItems;
     }
     parseSection($) {
@@ -914,7 +918,6 @@ class Parser {
                 subtitle: subtitle,
             }));
         });
-        console.log(sectionItems);
         return sectionItems;
     }
 }
