@@ -20,6 +20,8 @@ export class Parser {
             return new Date(Date.now() - trimmed * 3600000);
         } else if (timeAgo.includes('ngày')) {
             return new Date(Date.now() - trimmed * 86400000);
+        } else if (timeAgo.includes('tuần')) {
+            return new Date(Date.now() - trimmed * 604800000);
         } else if (timeAgo.includes('năm')) {
             return new Date(Date.now() - trimmed * 31556952000);
         } else if (timeAgo.includes(':')) {
@@ -94,7 +96,9 @@ export class Parser {
             throw new Error('No chapters found');
         }
 
-        console.log(chapters[0], chapters[chapters.length - 1]);
+        for (let i = 0; i < 10; i++) {
+            console.log(chapters[i]);
+        }
 
         return chapters;
     }
@@ -186,8 +190,6 @@ export class Parser {
             }));
         });
 
-        console.log(featuredItems);
-
         return featuredItems;
     }
 
@@ -209,8 +211,6 @@ export class Parser {
                 subtitle: subtitle,
             }));
         });
-
-        console.log(sectionItems);
 
         return sectionItems;
     }
