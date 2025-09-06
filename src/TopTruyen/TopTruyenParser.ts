@@ -180,11 +180,13 @@ export class Parser {
             if (!id || !title) return;
             featuredItems.push(App.createPartialSourceManga({
                 mangaId: String(id),
-                image: !image ? 'https://i.imgur.com/GYUxEX8.png' : 'https:' + image,
+                image: !image ? 'https://i.imgur.com/GYUxEX8.png' : image,
                 title: title,
                 subtitle: subtitle,
             }));
         });
+
+        console.log(featuredItems);
 
         return featuredItems;
     }
@@ -200,11 +202,13 @@ export class Parser {
             if (!id || !title) return;
             sectionItems.push(App.createPartialSourceManga({
                 mangaId: String(id),
-                image: !image ? 'https://i.imgur.com/GYUxEX8.png' : 'https:' + image,
+                image: !image ? 'https://i.imgur.com/GYUxEX8.png' : image,
                 title: title,
                 subtitle: subtitle,
             }));
         });
+
+        console.log(sectionItems);
 
         return sectionItems;
     }
