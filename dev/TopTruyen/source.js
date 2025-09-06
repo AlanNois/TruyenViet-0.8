@@ -478,7 +478,7 @@ const isLastPage = ($) => {
 };
 exports.isLastPage = isLastPage;
 exports.TopTruyenInfo = {
-    version: '1.0.1',
+    version: '1.0.2',
     name: 'TopTruyen',
     icon: 'icon.png',
     author: 'AlanNois',
@@ -901,7 +901,7 @@ class Parser {
         $('div.item', 'div.row').each((_, manga) => {
             const title = $('.clearfix > .caption > h3 > a', manga).first().text();
             const id = $('.clearfix > div.image-item > a', manga).attr('href')?.split('/truyen-tranh/').pop();
-            const image = $('.clearfix > div.image-item > a > img', manga).first().attr('data-original');
+            const image = $('.clearfix > div.image-item > a > img', manga).first().attr('src');
             const subtitle = $('.clearfix > .caption > ul > li.chapter-detail:nth-of-type(1) > a', manga).last().text().trim();
             if (!id || !title)
                 return;
