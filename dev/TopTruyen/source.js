@@ -478,7 +478,7 @@ const isLastPage = ($) => {
 };
 exports.isLastPage = isLastPage;
 exports.TopTruyenInfo = {
-    version: '1.0.0',
+    version: '1.0.1',
     name: 'TopTruyen',
     icon: 'icon.png',
     author: 'AlanNois',
@@ -888,11 +888,12 @@ class Parser {
                 return;
             featuredItems.push(App.createPartialSourceManga({
                 mangaId: String(id),
-                image: !image ? 'https://i.imgur.com/GYUxEX8.png' : 'https:' + image,
+                image: !image ? 'https://i.imgur.com/GYUxEX8.png' : image,
                 title: title,
                 subtitle: subtitle,
             }));
         });
+        console.log(featuredItems);
         return featuredItems;
     }
     parseSection($) {
@@ -906,11 +907,12 @@ class Parser {
                 return;
             sectionItems.push(App.createPartialSourceManga({
                 mangaId: String(id),
-                image: !image ? 'https://i.imgur.com/GYUxEX8.png' : 'https:' + image,
+                image: !image ? 'https://i.imgur.com/GYUxEX8.png' : image,
                 title: title,
                 subtitle: subtitle,
             }));
         });
+        console.log(sectionItems);
         return sectionItems;
     }
 }
