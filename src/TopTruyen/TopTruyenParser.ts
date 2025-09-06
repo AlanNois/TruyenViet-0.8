@@ -197,7 +197,7 @@ export class Parser {
         $('div.item', 'div.row').each((_: any, manga: any) => {
             const title = $('.clearfix > .caption > h3 > a', manga).first().text();
             const id = $('.clearfix > div.image-item > a', manga).attr('href')?.split('/truyen-tranh/').pop();
-            const image = $('.clearfix > div.image-item > a > img', manga).first().attr('data-original');
+            const image = $('.clearfix > div.image-item > a > img', manga).first().attr('src');
             const subtitle = $('.clearfix > .caption > ul > li.chapter-detail:nth-of-type(1) > a', manga).last().text().trim();
             if (!id || !title) return;
             sectionItems.push(App.createPartialSourceManga({
