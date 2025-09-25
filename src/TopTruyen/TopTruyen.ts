@@ -21,7 +21,7 @@ import {
 
 import { Parser } from './TopTruyenParser';
 
-const DOMAIN = 'https://www.toptruyentv9.com/';
+const DOMAIN = 'https://www.toptruyentv10.com/';
 
 export const isLastPage = ($: CheerioStatic): boolean => {
     const current = $('ul.pagination li.page-item.active a').text();
@@ -40,7 +40,7 @@ export const isLastPage = ($: CheerioStatic): boolean => {
 };
 
 export const TopTruyenInfo: SourceInfo = {
-    version: '1.0.6',
+    version: '1.0.7',
     name: 'TopTruyen',
     icon: 'icon.png',
     author: 'AlanNois',
