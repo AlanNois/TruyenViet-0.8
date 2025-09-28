@@ -478,7 +478,7 @@ const isLastPage = ($) => {
 };
 exports.isLastPage = isLastPage;
 exports.TopTruyenInfo = {
-    version: '1.0.7',
+    version: '1.0.8',
     name: 'TopTruyen',
     icon: 'icon.png',
     author: 'AlanNois',
@@ -683,12 +683,12 @@ class TopTruyen {
                 url = `${DOMAIN}tim-truyen`;
                 break;
             case 'hot':
-                param = `?page=${page}`;
-                url = `${DOMAIN}hot`;
+                param = '';
+                url = `${DOMAIN}hot?page=${page}`;
                 break;
             case 'new_updated':
-                param = `?page=${page}`;
-                url = DOMAIN;
+                param = '';
+                url = `${DOMAIN}?page=${page}`;
                 break;
             case 'new_added':
                 param = `?status=2&sort=1&page=${page}`;
@@ -822,7 +822,9 @@ class Parser {
         $('div.list-image-detail > div.page-chapter > img').each((_, obj) => {
             if (!obj.attribs['data-original'])
                 return;
-            const link = obj.attribs['data-original'];
+            const link = obj.attribs['data-original']?.includes('image_default.png')
+                ? obj.attribs['src']
+                : obj.attribs['data-original'];
             pages.push(link.indexOf('https') === -1 ? 'https:' + link : link);
         });
         return pages;
