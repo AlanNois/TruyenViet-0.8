@@ -21,10 +21,13 @@ import {
 
 import { Parser } from './TopTruyenParser';
 
-const DOMAIN = 'https://www.toptruyentv10.com/';
+const DOMAIN = 'https://www.toptruyentv11.com/';
 
 export const isLastPage = ($: CheerioStatic): boolean => {
-    const current = $('ul.pagination li.page-item.active a').text();
+    // try with span else a tag
+    let current = $('ul.pagination li.page-item.active span').text();
+    if (!current)
+        current = $('ul.pagination li.page-item.active a').text();
 
     const lastPage = $('ul.pagination li.page-item:nth-last-child(2) a').text();
 
@@ -40,7 +43,7 @@ export const isLastPage = ($: CheerioStatic): boolean => {
 };
 
 export const TopTruyenInfo: SourceInfo = {
-    version: '1.0.7',
+    version: '1.0.10',
     name: 'TopTruyen',
     icon: 'icon.png',
     author: 'AlanNois',
@@ -264,12 +267,12 @@ export class TopTruyen implements SearchResultsProviding, MangaProviding, Chapte
                 url = `${DOMAIN}tim-truyen`;
                 break;
             case 'hot':
-                param = `?page=${page}`;
-                url = `${DOMAIN}hot`;
+                param = '';
+                url = `${DOMAIN}hot?page=${page}`;
                 break;
             case 'new_updated':
-                param = `?page=${page}`;
-                url = DOMAIN;
+                param = '';
+                url = `${DOMAIN}?page=${page}`;
                 break;
             case 'new_added':
                 param = `?status=2&sort=1&page=${page}`;

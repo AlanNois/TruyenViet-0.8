@@ -22,10 +22,10 @@ import {
 
 import { Parser } from './CMangaParser';
 
-const DOMAIN = 'https://cmangax5.com/';
+const DOMAIN = 'https://cmangax6.com/';
 
 export const CMangaInfo: SourceInfo = {
-    version: '1.0.20',
+    version: '1.0.21',
     name: 'CManga',
     icon: 'icon.png',
     author: 'AlanNois',
@@ -107,11 +107,11 @@ export class CManga implements ChapterProviding, MangaProviding, SearchResultsPr
             id: chapterId,
             mangaId: mangaId,
             pages: pages,
-        })
+        });
     }
 
     async getSearchResults(query: SearchRequest, metadata: any): Promise<PagedResults> {
-        let page = metadata?.page ?? 1;
+        const page = metadata?.page ?? 1;
         // const tags = query.includedTags?.map(tag => tag.id) ?? [];
 
         // const search = {
@@ -142,7 +142,7 @@ export class CManga implements ChapterProviding, MangaProviding, SearchResultsPr
         //     }
         // });
 
-        const url = /*query.title ?*/ encodeURI(`${DOMAIN}api/search?string=${query.title}`)
+        const url = /*query.title ?*/ encodeURI(`${DOMAIN}api/search?string=${query.title}`);
         // : (search.top !== '' ? `${DOMAIN}api/top?data=book_top`
         // : encodeURI(`${DOMAIN}api/list_item?page=${page}&limit=40&sort=${search.sort}&type=all&tag=${search.tag}&child=off&status=${search.status}&num_chapter=${search.num_chapter}`))
 
@@ -153,20 +153,20 @@ export class CManga implements ChapterProviding, MangaProviding, SearchResultsPr
         // const response = await this.requestManager.schedule(request, 1);
         // const json = (query.title || search.top !== "") ? JSON.parse(response.data as string) : JSON.parse(JSON.parse(response.data as string));
         // const tiles = this.parser.parseSearch(json, search, DOMAIN);
-        const json = JSON.parse(await this.getAPI(url))
-        const tiles = this.parser.parseSearch(json, DOMAIN)
-        const allPage = (json['total'] / 40)
+        const json = JSON.parse(await this.getAPI(url));
+        const tiles = this.parser.parseSearch(json, DOMAIN);
+        const allPage = (json['total'] / 40);
         metadata = (page < allPage) ? { page: page + 1 } : undefined;
         return App.createPagedResults({
             results: tiles,
             metadata
-        })
+        });
     }
 
     async getHomePageSections(sectionCallback: (section: HomeSection) => void): Promise<void> {
-        console.log('CManga Running...')
+        console.log('CManga Running...');
         const sections: HomeSection[] = [
-            App.createHomeSection({ id: 'new_updated', title: "TRUYỆN MỚI CẬP NHẬT", containsMoreItems: true, type: HomeSectionType.singleRowNormal, }),
+            App.createHomeSection({ id: 'new_updated', title: 'TRUYỆN MỚI CẬP NHẬT', containsMoreItems: true, type: HomeSectionType.singleRowNormal, }),
             // App.createHomeSection({ id: 'new_added', title: "VIP TRUYỆN SIÊU HAY", containsMoreItems: true, type: HomeSectionType.singleRowNormal, })
         ];
 
@@ -181,7 +181,7 @@ export class CManga implements ChapterProviding, MangaProviding, SearchResultsPr
                 //     url = `${DOMAIN}api/list_item?page=1&limit=20&sort=new&type=all&tag=Truy%E1%BB%87n%20si%C3%AAu%20hay&child=off&status=all&num_chapter=0`;
                 //     break;
                 default:
-                    throw new Error(`Invalid home section ID`);
+                    throw new Error('Invalid home section ID');
             }
 
             const json = JSON.parse(await this.getAPI(url));
@@ -198,27 +198,27 @@ export class CManga implements ChapterProviding, MangaProviding, SearchResultsPr
     }
 
     async getViewMoreItems(homepageSectionId: string, metadata: any): Promise<PagedResults> {
-        let page = metadata?.page ?? 1;
+        const page = metadata?.page ?? 1;
         let url = '';
         switch (homepageSectionId) {
             case 'new_updated':
-                url = `${DOMAIN}api/home_album_list?num_chapter=0&sort=update&tag=&limit=36&page=${page}&user=0&child_protect=off`
+                url = `${DOMAIN}api/home_album_list?num_chapter=0&sort=update&tag=&limit=36&page=${page}&user=0&child_protect=off`;
                 break;
             // case 'new_added':
             //     url = `${DOMAIN}api/list_item?page=${page}&limit=40&sort=new&type=all&tag=Truy%E1%BB%87n%20si%C3%AAu%20hay&child=off&status=all&num_chapter=0`
             //     break;
             default:
-                throw new Error(`Requested to getViewMoreItems for a section ID which doesn't exist`);
+                throw new Error('Requested to getViewMoreItems for a section ID which doesn\'t exist');
         }
 
         const json = JSON.parse(await this.getAPI(url));
         const manga = this.parser.parseViewMore(json['data'], DOMAIN);
-        const allPage = (json['total'] / 40)
+        const allPage = (json['total'] / 40);
         metadata = (page < allPage) ? { page: page + 1 } : undefined;
         return App.createPagedResults({
             results: manga,
             metadata
-        })
+        });
     }
 
     // async getSearchTags(): Promise<TagSection[]> {
@@ -232,21 +232,21 @@ export class CManga implements ChapterProviding, MangaProviding, SearchResultsPr
         const updatedManga: any = [];
         const pages = 10;
         for (let page = 1; page <= pages; page++) {
-            let url = `${DOMAIN}api/list_item?page=${page}&limit=40&sort=new&type=all&tag=&child_protect=off&status=all&num_chapter=0`
+            const url = `${DOMAIN}api/list_item?page=${page}&limit=40&sort=new&type=all&tag=&child_protect=off&status=all&num_chapter=0`
             const json = JSON.parse(await this.getAPI(url));
             const updateManga = Object.keys(json).map(key => {
                 const id = `${json[key].url}-${json[key].id_book}`;
                 const [date, time] = json[key].last_update.split(' ');
                 const [year, month, day] = date.split('-');
                 const [hour, minute] = time.split(':');
-                const formattedTime = `${hour}:${minute}`
-                const formattedDate = `${month}/${day}/${year}`
+                const formattedTime = `${hour}:${minute}`;
+                const formattedDate = `${month}/${day}/${year}`;
                 const timeFinal = new Date(`${formattedDate} ${formattedTime}`);
 
                 return {
                     id,
                     time: timeFinal
-                }
+                };
             });
 
             updatedManga.push(...updateManga);
