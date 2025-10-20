@@ -14,8 +14,7 @@
 
 **CuuTruyen Extension:**
 
-- Added the `CuuTruyen` extension as a new source for reading manga.
-(Haiz, just add it recently, but the site is down for legal issues... I'll keep an eye on it and update the extension if the site comes back online with other owner or sth like that. R.I.P CuuTruyen.)
+It back babe!
 
 **Call for Collaboration:**
 
