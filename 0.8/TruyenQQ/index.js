@@ -477,7 +477,7 @@ const isLastPage = ($) => {
 };
 exports.isLastPage = isLastPage;
 exports.TruyenQQInfo = {
-    version: '1.0.11',
+    version: '1.1.0',
     name: 'TruyenQQ',
     icon: 'icon.png',
     author: 'AlanNois',
@@ -810,7 +810,7 @@ class Parser {
             const dataCdn = obj.attribs['data-cdn'];
             const urls = [src, dataOriginal, dataCdn];
             // Find the first URL that doesn't include the excluded domain
-            const validUrl = urls.find(url => url && !url.includes('tintruyen'));
+            const validUrl = urls.find(url => url);
             if (validUrl) {
                 pages.push(validUrl);
             }
