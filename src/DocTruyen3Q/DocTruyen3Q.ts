@@ -22,7 +22,7 @@ import {
 
 import { Parser } from './DocTruyen3QParser';
 
-const DOMAIN = 'https://doctruyen3qui15.com/';
+const DOMAIN = 'https://doctruyen3qui16.com/';
 
 export const isLastPage = ($: CheerioStatic): boolean => {
     const lastPage = Number($('ul.pagination > li.page-item:not(:has(a[rel=\'next\'])) a').last().text().trim());
@@ -32,7 +32,7 @@ export const isLastPage = ($: CheerioStatic): boolean => {
 };
 
 export const DocTruyen3QInfo: SourceInfo = {
-    version: '1.1.18',
+    version: '1.1.19',
     name: 'DocTruyen3Q',
     icon: 'icon.png',
     author: 'AlanNois',
@@ -186,23 +186,18 @@ export class DocTruyen3Q implements SearchResultsProviding, MangaProviding, Chap
             switch (section.id) {
                 case 'featured':
                     section.items = this.parser.parseFeaturedSection($);
-                    console.log(section.items);
                     break;
                 case 'viewest':
                     section.items = this.parser.parseSearchResults($);
-                    console.log(section.items);
                     break;
                 case 'hot':
                     section.items = this.parser.parseHomeTemplate($, '#hot');
-                    console.log(section.items);
                     break;
                 case 'new_updated':
                     section.items = this.parser.parseHomeTemplate($, '#home');
-                    console.log(section.items);
                     break;
                 case 'full':
                     section.items = this.parser.parseSearchResults($);
-                    console.log(section.items);
                     break;
             }
             sectionCallback(section);
@@ -247,6 +242,7 @@ export class DocTruyen3Q implements SearchResultsProviding, MangaProviding, Chap
     async getSearchTags(): Promise<TagSection[]> {
         const url = `${DOMAIN}tim-truyen`;
         const $ = await this.DOMHTML(url);
+        console.log(this.parser.parseTags($));
         return this.parser.parseTags($);
     }
 

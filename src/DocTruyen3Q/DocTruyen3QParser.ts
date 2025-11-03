@@ -53,7 +53,10 @@ export class Parser {
         });
 
         const titles = [$('.title-manga').text().trim()];
-        const image = $('.image-info img.image-comic').first().attr('src') ?? $('.image-info img.image-comic').first().attr('data-src') ?? $('.image-info img.image-comic').first().attr('data-cfsrc') ?? $('.image-info img.image-comic').first().attr('data-original') ?? '';
+        const image = $('.image-info img.image-comic').first().attr('src') ?? 
+            $('.image-info img.image-comic').first().attr('data-src') ?? 
+            $('.image-info img.image-comic').first().attr('data-cfsrc') ?? 
+            $('.image-info img.image-comic').first().attr('data-original') ?? '';
         const desc = $('.summary-content > p').text();
         const status = $('.status > .detail-info > span').text();
         const rating = parseFloat(String($('.star').attr('data-rating')));
@@ -134,8 +137,6 @@ export class Parser {
             }
         });
 
-        console.log(pages);
-
         return pages;
     }
 
@@ -144,7 +145,9 @@ export class Parser {
 
         $('.content-search-left > .main-left .item-manga > .item').each((_: any, obj: any) => {
             const title = $('.caption > h3 > a', obj).text().trim();
-            let image = $('.image-item > a > img.image-item', obj).attr('data-original') ?? $('.image-item > a > img', obj).attr('src') ?? $('.image-item > a > img', obj).attr('data-cfsrc');
+            let image = $('.image-item > a > img.image-item', obj).attr('data-original') ?? 
+                $('.image-item > a > img', obj).attr('src') ?? 
+                $('.image-item > a > img', obj).attr('data-cfsrc');
             image = !image ? 'https://i.imgur.com/GYUxEX8.png' : image;
             const mangaId = String($('.caption > h3 > a', obj).attr('href')?.split('/').slice(4).join('/'));
             const subtitle = $('ul > li:first-child > a', obj).text().trim();
@@ -190,9 +193,13 @@ export class Parser {
             const title = $('.caption > h3 > a', obj).text().trim();
             let image: any;
             if (id == '#home') {
-                image = $('.image-item > a > img', obj).attr('data-cfsrc') ?? $('.image-item > a > img', obj).attr('src') ?? $('.image-item > a > img', obj).attr('data-original');
+                image = $('.image-item > a > img', obj).attr('data-cfsrc') ?? 
+                    $('.image-item > a > img', obj).attr('src') ?? 
+                    $('.image-item > a > img', obj).attr('data-original');
             } else {
-                image = $('.image-item > a > img', obj).attr('data-original') ?? $('.image-item > a > img', obj).attr('data-cfsrc') ?? $('.image-item > a > img', obj).attr('src');
+                image = $('.image-item > a > img', obj).attr('data-original') ?? 
+                    $('.image-item > a > img', obj).attr('data-cfsrc') ?? 
+                    $('.image-item > a > img', obj).attr('src');
             }
             image = !image ? 'https://i.imgur.com/GYUxEX8.png' : image;
             const mangaId = String($('.caption > h3 > a', obj).attr('href')?.split('/').slice(4).join('/'));

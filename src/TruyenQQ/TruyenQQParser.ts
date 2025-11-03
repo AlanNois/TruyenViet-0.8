@@ -100,7 +100,7 @@ export class Parser {
             const urls = [src, dataOriginal, dataCdn];
 
             // Find the first URL that doesn't include the excluded domain
-            const validUrl = urls.find(url => url && !url.includes('tintruyen'));
+            const validUrl = urls.find(url => url);
 
             if (validUrl) {
                 pages.push(validUrl);
