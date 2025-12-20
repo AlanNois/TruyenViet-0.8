@@ -463,7 +463,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.TopTruyen = exports.TopTruyenInfo = exports.isLastPage = void 0;
 const types_1 = require("@paperback/types");
 const TopTruyenParser_1 = require("./TopTruyenParser");
-const DOMAIN = 'https://www.toptruyentv11.com/';
+const DOMAIN = 'https://www.toptruyentv14.com/';
 const isLastPage = ($) => {
     // try with span else a tag
     let current = $('ul.pagination li.page-item.active span').text();
@@ -481,7 +481,7 @@ const isLastPage = ($) => {
 };
 exports.isLastPage = isLastPage;
 exports.TopTruyenInfo = {
-    version: '1.0.10',
+    version: '1.0.11',
     name: 'TopTruyen',
     icon: 'icon.png',
     author: 'AlanNois',
