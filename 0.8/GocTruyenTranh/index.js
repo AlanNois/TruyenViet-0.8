@@ -1439,9 +1439,9 @@ exports.GocTruyenTranh = exports.GocTruyenTranhInfo = void 0;
 const types_1 = require("@paperback/types");
 const GocTruyenTranhParser_1 = require("./GocTruyenTranhParser");
 const DOMAIN = 'https://goctruyentranhvui17.com/';
-const Auth = 'Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJWxINuIEhvw6BuZyDEkGluaCIsImNvbWljSWRzIjpbXSwicm9sZUlkIjpudWxsLCJncm91cElkIjpudWxsLCJhZG1pbiI6ZmFsc2UsInJhbmsiOjEsInBlcm1pc3Npb24iOltdLCJpZCI6IjAwMDA1MjYzNzAiLCJ0ZWFtIjpmYWxzZSwiaWF0IjoxNzY1MTY5MTg4LCJlbWFpbCI6Im51bGwifQ.-MGstAwY_cxWFfekrHMkVbGzgOCUA-tOcboQXi4iWAbNa3tKpaTHGI_oL3saQlTlplMvQlLKY9qs1bV3Uzxf9g';
+const Auth = 'Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJIw6AgSOG7k2kgTmd1eeG7hW4iLCJjb21pY0lkcyI6W10sInJvbGVJZCI6bnVsbCwiZ3JvdXBJZCI6bnVsbCwiYWRtaW4iOmZhbHNlLCJyYW5rIjowLCJwZXJtaXNzaW9uIjpbXSwiaWQiOiIwMDAxMTU5MzUzIiwidGVhbSI6ZmFsc2UsImlhdCI6MTc2NjI0MzgzNiwiZW1haWwiOiJudWxsIn0.N8-89m_KxdSVIwDy918cfAHgFF0nbAwWu7nrpXg2MonfuTrmGUfp4xdtWNiO6Z3W4MNpbNj4cHWCIfkjMkT_ig';
 exports.GocTruyenTranhInfo = {
-    version: '1.2.0',
+    version: '1.2.1',
     name: 'GocTruyenTranh',
     icon: 'icon.png',
     author: 'AlanNois',
@@ -1512,15 +1512,30 @@ class GocTruyenTranh {
     }
     async getChapterDetails(mangaId, chapterId) {
         // Extract manga ID and chapter number using destructuring
+        const nameEn = mangaId.split('::')[0];
         const [mangaNumber, chapterNumber] = [mangaId.split('::')[1], chapterId.split('-')[1]];
         // Combine manga ID and chapter number into a single query parameter
-        const comicId = `${mangaNumber}&chapterNumber=${chapterNumber}`;
+        const comicId = `${mangaNumber}&chapterNumber=${chapterNumber}&nameEn=${nameEn}`;
+        const width = `414&name=false|${nameEn}&number=${chapterNumber}&direct=false`;
+        // Simulate the normal request to the API
+        const track = App.createRequest({
+            url: `${DOMAIN}api/user/tracking`,
+            method: 'POST',
+            headers: {
+                'authorization': Auth,
+                'content-type': 'application/x-www-form-urlencoded; charset=UTF-8',
+                'x-requested-with': 'XMLHttpRequest'
+            },
+            data: { width }
+        });
+        const trackResponse = await this.requestManager.schedule(track, 1);
+        console.log(JSON.parse(trackResponse.data));
         const request = App.createRequest({
             url: `${DOMAIN}api/chapter/loadAll`,
             method: 'POST',
             headers: {
                 'authorization': Auth,
-                'content-type': 'application/x-www-form-urlencoded',
+                'content-type': 'application/x-www-form-urlencoded; charset=UTF-8',
                 'x-requested-with': 'XMLHttpRequest'
             },
             data: { comicId }
