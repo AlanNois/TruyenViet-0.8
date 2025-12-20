@@ -1441,7 +1441,7 @@ const GocTruyenTranhParser_1 = require("./GocTruyenTranhParser");
 const DOMAIN = 'https://goctruyentranhvui17.com/';
 const Auth = 'Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJIw6AgSOG7k2kgTmd1eeG7hW4iLCJjb21pY0lkcyI6W10sInJvbGVJZCI6bnVsbCwiZ3JvdXBJZCI6bnVsbCwiYWRtaW4iOmZhbHNlLCJyYW5rIjowLCJwZXJtaXNzaW9uIjpbXSwiaWQiOiIwMDAxMTU5MzUzIiwidGVhbSI6ZmFsc2UsImlhdCI6MTc2NjI0MzgzNiwiZW1haWwiOiJudWxsIn0.N8-89m_KxdSVIwDy918cfAHgFF0nbAwWu7nrpXg2MonfuTrmGUfp4xdtWNiO6Z3W4MNpbNj4cHWCIfkjMkT_ig';
 exports.GocTruyenTranhInfo = {
-    version: '1.2.1',
+    version: '1.2.2 alpha',
     name: 'GocTruyenTranh',
     icon: 'icon.png',
     author: 'AlanNois',
@@ -1788,8 +1788,13 @@ class Parser {
             });
         }
         else {
-            for (const img of json.result.data) {
-                pages.push(img.indexOf('https') === -1 ? DOMAIN + img : img);
+            try {
+                for (const img of json.result.data) {
+                    pages.push(img.indexOf('https') === -1 ? DOMAIN + img : img);
+                }
+            }
+            catch {
+                throw new Error(json);
             }
         }
         return pages;
