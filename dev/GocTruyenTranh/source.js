@@ -1441,7 +1441,7 @@ const GocTruyenTranhParser_1 = require("./GocTruyenTranhParser");
 const DOMAIN = 'https://goctruyentranhvui17.com/';
 const Auth = 'Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJIw6AgSOG7k2kgTmd1eeG7hW4iLCJjb21pY0lkcyI6W10sInJvbGVJZCI6bnVsbCwiZ3JvdXBJZCI6bnVsbCwiYWRtaW4iOmZhbHNlLCJyYW5rIjowLCJwZXJtaXNzaW9uIjpbXSwiaWQiOiIwMDAxMTU5MzUzIiwidGVhbSI6ZmFsc2UsImlhdCI6MTc2NjI0MzgzNiwiZW1haWwiOiJudWxsIn0.N8-89m_KxdSVIwDy918cfAHgFF0nbAwWu7nrpXg2MonfuTrmGUfp4xdtWNiO6Z3W4MNpbNj4cHWCIfkjMkT_ig';
 exports.GocTruyenTranhInfo = {
-    version: '1.2.2 alpha',
+    version: '1.2.2.1 alpha',
     name: 'GocTruyenTranh',
     icon: 'icon.png',
     author: 'AlanNois',
@@ -1515,8 +1515,8 @@ class GocTruyenTranh {
         const nameEn = mangaId.split('::')[0];
         const [mangaNumber, chapterNumber] = [mangaId.split('::')[1], chapterId.split('-')[1]];
         // Combine manga ID and chapter number into a single query parameter
-        const comicId = `${mangaNumber}&chapterNumber=${chapterNumber}&nameEn=${nameEn}`;
-        const width = `414&name=false|${nameEn}&number=${chapterNumber}&direct=false`;
+        // const comicId = `comicId=${mangaNumber}&chapterNumber=${chapterNumber}&nameEn=${nameEn}`;
+        // const width = `width=414&name=false|${nameEn}&number=${chapterNumber}&direct=false`;
         // Simulate the normal request to the API
         const track = App.createRequest({
             url: `${DOMAIN}api/user/tracking`,
@@ -1526,7 +1526,13 @@ class GocTruyenTranh {
                 'content-type': 'application/x-www-form-urlencoded; charset=UTF-8',
                 'x-requested-with': 'XMLHttpRequest'
             },
-            data: { width }
+            // param: width
+            data: {
+                width: '414',
+                name: `false|${nameEn}`,
+                number: `${chapterNumber}`,
+                direct: 'false'
+            }
         });
         const trackResponse = await this.requestManager.schedule(track, 1);
         console.log(JSON.parse(trackResponse.data));
@@ -1538,7 +1544,12 @@ class GocTruyenTranh {
                 'content-type': 'application/x-www-form-urlencoded; charset=UTF-8',
                 'x-requested-with': 'XMLHttpRequest'
             },
-            data: { comicId }
+            // param: comicId
+            data: {
+                comicId: mangaNumber,
+                chapterNumber: chapterNumber,
+                nameEn: nameEn
+            }
         });
         const response = await this.requestManager.schedule(request, 1);
         const json = JSON.parse(response.data);
