@@ -22,7 +22,7 @@ import {
 import { Parser } from './GocTruyenTranhParser';
 
 const DOMAIN = 'https://goctruyentranhvui17.com/';
-const Auth = 'Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJWxINuIEhvw6BuZyDEkGluaCIsImNvbWljSWRzIjpbXSwicm9sZUlkIjpudWxsLCJncm91cElkIjpudWxsLCJhZG1pbiI6ZmFsc2UsInJhbmsiOjAsInBlcm1pc3Npb24iOltdLCJpZCI6IjAwMDA1MjYzNzAiLCJ0ZWFtIjpmYWxzZSwiaWF0IjoxNzE1NDI0NDU3LCJlbWFpbCI6Im51bGwifQ.EjYw-HvoWM6RhbNzJkp06sSh61leaPcND0gb94PlDKeTYxfxU-f6WaxINAVjVYOP0pcVcG3YmfBVb4FVEBqPxQ';
+const Auth = 'Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJWxINuIEhvw6BuZyDEkGluaCIsImNvbWljSWRzIjpbXSwicm9sZUlkIjpudWxsLCJncm91cElkIjpudWxsLCJhZG1pbiI6ZmFsc2UsInJhbmsiOjEsInBlcm1pc3Npb24iOltdLCJpZCI6IjAwMDA1MjYzNzAiLCJ0ZWFtIjpmYWxzZSwiaWF0IjoxNzY1MTY5MTg4LCJlbWFpbCI6Im51bGwifQ.-MGstAwY_cxWFfekrHMkVbGzgOCUA-tOcboQXi4iWAbNa3tKpaTHGI_oL3saQlTlplMvQlLKY9qs1bV3Uzxf9g';
 
 export const GocTruyenTranhInfo: SourceInfo = {
     version: '1.1.23',
@@ -110,7 +110,7 @@ export class GocTruyenTranh implements SearchResultsProviding, MangaProviding, C
         const comicId = `${mangaNumber}&chapterNumber=${chapterNumber}`;
 
         const request = App.createRequest({
-            url: `${DOMAIN}api/chapter/limitation`,
+            url: `${DOMAIN}api/chapter/loadAll`,
             method: 'POST',
             headers: {
                 'authorization': Auth,
@@ -121,6 +121,7 @@ export class GocTruyenTranh implements SearchResultsProviding, MangaProviding, C
         });
         const response = await this.requestManager.schedule(request, 1);
         const json = JSON.parse(response.data as string);
+        console.log(json)
 
         const pages = this.parser.parseChapterDetails(json, null, DOMAIN);
 
