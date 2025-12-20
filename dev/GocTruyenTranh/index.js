@@ -1439,7 +1439,7 @@ exports.GocTruyenTranh = exports.GocTruyenTranhInfo = void 0;
 const types_1 = require("@paperback/types");
 const GocTruyenTranhParser_1 = require("./GocTruyenTranhParser");
 const DOMAIN = 'https://goctruyentranhvui17.com/';
-const Auth = 'Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJWxINuIEhvw6BuZyDEkGluaCIsImNvbWljSWRzIjpbXSwicm9sZUlkIjpudWxsLCJncm91cElkIjpudWxsLCJhZG1pbiI6ZmFsc2UsInJhbmsiOjAsInBlcm1pc3Npb24iOltdLCJpZCI6IjAwMDA1MjYzNzAiLCJ0ZWFtIjpmYWxzZSwiaWF0IjoxNzE1NDI0NDU3LCJlbWFpbCI6Im51bGwifQ.EjYw-HvoWM6RhbNzJkp06sSh61leaPcND0gb94PlDKeTYxfxU-f6WaxINAVjVYOP0pcVcG3YmfBVb4FVEBqPxQ';
+const Auth = 'Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJWxINuIEhvw6BuZyDEkGluaCIsImNvbWljSWRzIjpbXSwicm9sZUlkIjpudWxsLCJncm91cElkIjpudWxsLCJhZG1pbiI6ZmFsc2UsInJhbmsiOjEsInBlcm1pc3Npb24iOltdLCJpZCI6IjAwMDA1MjYzNzAiLCJ0ZWFtIjpmYWxzZSwiaWF0IjoxNzY1MTY5MTg4LCJlbWFpbCI6Im51bGwifQ.-MGstAwY_cxWFfekrHMkVbGzgOCUA-tOcboQXi4iWAbNa3tKpaTHGI_oL3saQlTlplMvQlLKY9qs1bV3Uzxf9g';
 exports.GocTruyenTranhInfo = {
     version: '1.1.23',
     name: 'GocTruyenTranh',
@@ -1516,7 +1516,7 @@ class GocTruyenTranh {
         // Combine manga ID and chapter number into a single query parameter
         const comicId = `${mangaNumber}&chapterNumber=${chapterNumber}`;
         const request = App.createRequest({
-            url: `${DOMAIN}api/chapter/limitation`,
+            url: `${DOMAIN}api/chapter/loadAll`,
             method: 'POST',
             headers: {
                 'authorization': Auth,
@@ -1527,6 +1527,7 @@ class GocTruyenTranh {
         });
         const response = await this.requestManager.schedule(request, 1);
         const json = JSON.parse(response.data);
+        console.log(json);
         const pages = this.parser.parseChapterDetails(json, null, DOMAIN);
         return App.createChapterDetails({
             id: chapterId,
