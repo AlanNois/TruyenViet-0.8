@@ -1440,7 +1440,7 @@ const types_1 = require("@paperback/types");
 const CMangaParser_1 = require("./CMangaParser");
 const DOMAIN = 'https://cmangax10.com/';
 exports.CMangaInfo = {
-    version: '1.0.23',
+    version: '1.0.24',
     name: 'CManga',
     icon: 'icon.png',
     author: 'AlanNois',
@@ -1731,48 +1731,41 @@ class Parser {
         return manga;
     }
     parseNewUpdatedSection(json, DOMAIN) {
-        const newUpdatedItems = [];
-        for (var i of Object.keys(json)) {
-            var item = json[i];
-            var in4 = JSON.parse(item['info']);
-            // if (!item.name) continue;
-            newUpdatedItems.push(App.createPartialSourceManga({
+        const newAddedItems = [];
+        for (const item of json["data"]) {
+            const in4 = JSON.parse(item.info);
+            newAddedItems.push(App.createPartialSourceManga({
                 mangaId: `${item.id_album}`,
                 image: `${DOMAIN}assets/tmp/album/${in4.avatar}`,
                 title: this.titleCase(in4.name),
                 subtitle: `Chap ${in4.chapter.last}`,
             }));
         }
-        return newUpdatedItems;
+        return newAddedItems;
     }
     parseNewAddedSection(json, DOMAIN) {
         const newAddedItems = [];
-        for (var i of Object.keys(json)) {
-            var item = json[i];
-            if (!item.name)
-                continue;
+        for (const item of json["data"]) {
+            const in4 = JSON.parse(item.info);
             newAddedItems.push(App.createPartialSourceManga({
-                mangaId: `${item.url}-${item.id_book}`,
-                image: `${DOMAIN}assets/tmp/book/avatar/${item.avatar}.jpg`,
-                title: this.titleCase(item.name),
-                subtitle: `Chap ${item.last_chapter}`,
+                mangaId: `${item.id_album}`,
+                image: `${DOMAIN}assets/tmp/album/${in4.avatar}`,
+                title: this.titleCase(in4.name),
+                subtitle: `Chap ${in4.chapter.last}`,
             }));
         }
         return newAddedItems;
     }
     parseViewMore(json, DOMAIN) {
         const manga = [];
-        const getData = (item, in4) => ({
-            mangaId: `${item.id_album}`,
-            image: `${DOMAIN}assets/tmp/album/${in4.avatar}`,
-            title: this.titleCase(in4.name),
-            subtitle: `Chap ${in4.chapter.last}`,
-        });
-        for (const i of Object.keys(json)) {
-            const item = json[i];
-            var in4 = JSON.parse(item['info']);
-            // if (!item.name) continue;
-            manga.push(App.createPartialSourceManga(getData(item, in4)));
+        for (const item of json["data"]) {
+            const in4 = JSON.parse(item.info);
+            manga.push(App.createPartialSourceManga({
+                mangaId: `${item.id_album}`,
+                image: `${DOMAIN}assets/tmp/album/${in4.avatar}`,
+                title: this.titleCase(in4.name),
+                subtitle: `Chap ${in4.chapter.last}`,
+            }));
         }
         return manga;
     }
