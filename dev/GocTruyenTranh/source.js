@@ -1441,7 +1441,7 @@ const GocTruyenTranhParser_1 = require("./GocTruyenTranhParser");
 const DOMAIN = 'https://goctruyentranhvui17.com/';
 const Auth = 'Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJOZ8O0IFbEg24gTGnDqm4iLCJjb21pY0lkcyI6W10sInJvbGVJZCI6bnVsbCwiZ3JvdXBJZCI6bnVsbCwiYWRtaW4iOmZhbHNlLCJyYW5rIjowLCJwZXJtaXNzaW9uIjpbXSwiaWQiOiIwMDAxMTU5OTA1IiwidGVhbSI6ZmFsc2UsImlhdCI6MTc2NjM3NTQ2MCwiZW1haWwiOiJudWxsIn0.1tCEoaKMEA00uSsOPkGYwVtw9i2AQPGLUSf4jsZbL482tZ66ghSL91iJDS9h1woSU7p_Ail69uFP2b8Ychkt9A';
 exports.GocTruyenTranhInfo = {
-    version: '1.2.2',
+    version: '1.2.3',
     name: 'GocTruyenTranh',
     icon: 'icon.png',
     author: 'AlanNois',
