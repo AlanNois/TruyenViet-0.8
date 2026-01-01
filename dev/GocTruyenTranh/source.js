@@ -1529,7 +1529,7 @@ class GocTruyenTranh {
             }
         });
         const rpSSResponse = await this.requestManager.schedule(rpSS, 1);
-        console.log(JSON.parse(rpSSResponse.data));
+        console.log(rpSSResponse.data);
         const gCR = App.createRequest({
             url: `${DOMAIN}api/user/getCountReminder`,
             method: 'GET',
@@ -1539,7 +1539,7 @@ class GocTruyenTranh {
             }
         });
         const gCRResponse = await this.requestManager.schedule(gCR, 1);
-        console.log(JSON.parse(gCRResponse.data));
+        console.log(gCRResponse.data);
         const track = App.createRequest({
             url: `${DOMAIN}api/user/tracking?${width}`,
             method: 'POST',
@@ -1550,7 +1550,7 @@ class GocTruyenTranh {
             }
         });
         const trackResponse = await this.requestManager.schedule(track, 1);
-        console.log(JSON.parse(trackResponse.data));
+        console.log(trackResponse.data);
         const request = App.createRequest({
             url: `${DOMAIN}api/chapter/loadAll?${comicId}`,
             method: 'POST',
@@ -1760,7 +1760,7 @@ class Parser {
             }
         });
         const image = String($('.v-image > img').attr('src')?.indexOf('https') === -1 ?
-            DOMAIN + $('.v-image > img').attr('src') : $('.v-image > img').attr('src'));
+            DOMAIN + $('.v-image > img').attr('src') : $('.v-image > img').attr('src'))?.replace('//', '/');
         const desc = this.decodeHTMLEntity($('.v-card-text.pt-1.px-4.pb-4.text-secondary.font-weight-medium').text());
         const rating = parseFloat($('.pr-3 > b').text().trim());
         return App.createSourceManga({
@@ -1810,7 +1810,7 @@ class Parser {
         else {
             try {
                 for (const img of json.result.data) {
-                    pages.push(img.indexOf('https') === -1 ? DOMAIN + img : img);
+                    pages.push((img.indexOf('https') === -1 ? DOMAIN + img : img)?.replace('//', '/'));
                 }
             }
             catch {
@@ -1829,7 +1829,7 @@ class Parser {
             const mangaId = `${obj.nameEn}::${obj.id}`;
             tiles.push(App.createPartialSourceManga({
                 mangaId,
-                image: encodeURI(image.indexOf('https') === -1 ? DOMAIN + image : image) ?? '',
+                image: encodeURI(image.indexOf('https') === -1 ? DOMAIN + image : image).replace('//', '/') ?? '',
                 title,
                 subtitle
             }));
@@ -1847,7 +1847,7 @@ class Parser {
             if (!collectedIds.includes(mangaId)) {
                 manga.push(App.createPartialSourceManga({
                     mangaId,
-                    image: encodeURI(image.indexOf('https') === -1 ? DOMAIN + image : image) ?? '',
+                    image: encodeURI(image.indexOf('https') === -1 ? DOMAIN + image : image).replace('//', '/') ?? '',
                     title,
                     subtitle,
                 }));
