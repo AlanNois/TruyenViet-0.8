@@ -1439,9 +1439,9 @@ exports.GocTruyenTranh = exports.GocTruyenTranhInfo = void 0;
 const types_1 = require("@paperback/types");
 const GocTruyenTranhParser_1 = require("./GocTruyenTranhParser");
 const DOMAIN = 'https://goctruyentranhvui17.com/';
-const Auth = 'Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJIw6AgSOG7k2kgTmd1eeG7hW4iLCJjb21pY0lkcyI6W10sInJvbGVJZCI6bnVsbCwiZ3JvdXBJZCI6bnVsbCwiYWRtaW4iOmZhbHNlLCJyYW5rIjowLCJwZXJtaXNzaW9uIjpbXSwiaWQiOiIwMDAxMTU5MzUzIiwidGVhbSI6ZmFsc2UsImlhdCI6MTc2NjI0MzgzNiwiZW1haWwiOiJudWxsIn0.N8-89m_KxdSVIwDy918cfAHgFF0nbAwWu7nrpXg2MonfuTrmGUfp4xdtWNiO6Z3W4MNpbNj4cHWCIfkjMkT_ig';
+const Auth = 'Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJOZ8O0IFbEg24gTGnDqm4iLCJjb21pY0lkcyI6W10sInJvbGVJZCI6bnVsbCwiZ3JvdXBJZCI6bnVsbCwiYWRtaW4iOmZhbHNlLCJyYW5rIjowLCJwZXJtaXNzaW9uIjpbXSwiaWQiOiIwMDAxMTU5OTA1IiwidGVhbSI6ZmFsc2UsImlhdCI6MTc2NjM3NTQ2MCwiZW1haWwiOiJudWxsIn0.1tCEoaKMEA00uSsOPkGYwVtw9i2AQPGLUSf4jsZbL482tZ66ghSL91iJDS9h1woSU7p_Ail69uFP2b8Ychkt9A';
 exports.GocTruyenTranhInfo = {
-    version: '1.2.2.2 alpha',
+    version: '1.2.2',
     name: 'GocTruyenTranh',
     icon: 'icon.png',
     author: 'AlanNois',
@@ -1517,7 +1517,29 @@ class GocTruyenTranh {
         // Combine manga ID and chapter number into a single query parameter
         const comicId = `comicId=${mangaNumber}&chapterNumber=${chapterNumber}&nameEn=${nameEn}`;
         const width = `width=414&name=false|${nameEn}&number=${chapterNumber}&direct=false`;
+        const rpFXD = "localSessionId=";
         // Simulate the normal request to the API
+        const rpSS = App.createRequest({
+            url: `${DOMAIN}api/chapter/reportFixed?${rpFXD}`,
+            method: 'POST',
+            headers: {
+                'authorization': Auth,
+                'content-type': 'application/x-www-form-urlencoded; charset=UTF-8',
+                'x-requested-with': 'XMLHttpRequest'
+            }
+        });
+        const rpSSResponse = await this.requestManager.schedule(rpSS, 1);
+        console.log(JSON.parse(rpSSResponse.data));
+        const gCR = App.createRequest({
+            url: `${DOMAIN}api/user/getCountReminder`,
+            method: 'GET',
+            headers: {
+                'authorization': Auth,
+                'x-requested-with': 'XMLHttpRequest'
+            }
+        });
+        const gCRResponse = await this.requestManager.schedule(gCR, 1);
+        console.log(JSON.parse(gCRResponse.data));
         const track = App.createRequest({
             url: `${DOMAIN}api/user/tracking?${width}`,
             method: 'POST',
@@ -1526,13 +1548,6 @@ class GocTruyenTranh {
                 'content-type': 'application/x-www-form-urlencoded; charset=UTF-8',
                 'x-requested-with': 'XMLHttpRequest'
             }
-            // param: width
-            // data: {
-            //     width: '414',
-            //     name: `false|${nameEn}`,
-            //     number: `${chapterNumber}`,
-            //     direct: 'false'
-            // }
         });
         const trackResponse = await this.requestManager.schedule(track, 1);
         console.log(JSON.parse(trackResponse.data));
@@ -1544,12 +1559,6 @@ class GocTruyenTranh {
                 'content-type': 'application/x-www-form-urlencoded; charset=UTF-8',
                 'x-requested-with': 'XMLHttpRequest'
             }
-            // param: comicId
-            // data: {
-            //     comicId: mangaNumber,
-            //     chapterNumber: chapterNumber,
-            //     nameEn: nameEn
-            // }
         });
         const response = await this.requestManager.schedule(request, 1);
         const json = JSON.parse(response.data);
