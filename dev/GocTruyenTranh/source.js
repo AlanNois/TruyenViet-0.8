@@ -1439,9 +1439,9 @@ exports.GocTruyenTranh = exports.GocTruyenTranhInfo = void 0;
 const types_1 = require("@paperback/types");
 const GocTruyenTranhParser_1 = require("./GocTruyenTranhParser");
 const DOMAIN = 'https://goctruyentranhvui17.com/';
-const Auth = 'Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJOZ8O0IFbEg24gTGnDqm4iLCJjb21pY0lkcyI6W10sInJvbGVJZCI6bnVsbCwiZ3JvdXBJZCI6bnVsbCwiYWRtaW4iOmZhbHNlLCJyYW5rIjowLCJwZXJtaXNzaW9uIjpbXSwiaWQiOiIwMDAxMTU5OTA1IiwidGVhbSI6ZmFsc2UsImlhdCI6MTc2NjM3NTQ2MCwiZW1haWwiOiJudWxsIn0.1tCEoaKMEA00uSsOPkGYwVtw9i2AQPGLUSf4jsZbL482tZ66ghSL91iJDS9h1woSU7p_Ail69uFP2b8Ychkt9A';
+const Auth = 'Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJqbmkgcHJhdHR2b25kYSIsImNvbWljSWRzIjpbXSwicm9sZUlkIjpudWxsLCJncm91cElkIjpudWxsLCJhZG1pbiI6ZmFsc2UsInJhbmsiOjAsInBlcm1pc3Npb24iOltdLCJpZCI6IjAwMDExNjg0MzkiLCJ0ZWFtIjpmYWxzZSwiaWF0IjoxNzY3ODAzNDc4LCJlbWFpbCI6Im51bGwifQ.eWFypaV4dDZ_R5J9Gf0HqkbLaQDWCVwuja4yJJafl6KmPgaRk9TRHHX - 0X94rP6xQtpeZRS25RNjOT0RpIdffg';
 exports.GocTruyenTranhInfo = {
-    version: '1.2.3.1 alpha',
+    version: '1.2.3 beta',
     name: 'GocTruyenTranh',
     icon: 'icon.png',
     author: 'AlanNois',
@@ -1524,9 +1524,13 @@ class GocTruyenTranh {
             url: `${DOMAIN}api/chapter/reportFixed`,
             method: 'POST',
             headers: {
+                'referer': `${DOMAIN}truyen/${nameEn}/chuong-${chapterNumber}`,
                 'authorization': Auth,
                 'content-type': 'application/x-www-form-urlencoded; charset=UTF-8',
-                'x-requested-with': 'XMLHttpRequest'
+                'x-requested-with': 'XMLHttpRequest',
+                'sec-fetch-site': 'same-origin',
+                'sec-fetch-mode': 'cors',
+                'sec-fetch-dest': 'empty'
             },
             data: rpFXD
         });
@@ -1536,8 +1540,12 @@ class GocTruyenTranh {
             url: `${DOMAIN}api/user/getCountReminder`,
             method: 'GET',
             headers: {
+                'referer': `${DOMAIN}truyen/${nameEn}/chuong-${chapterNumber}`,
                 'authorization': Auth,
-                'x-requested-with': 'XMLHttpRequest'
+                'x-requested-with': 'XMLHttpRequest',
+                'sec-fetch-site': 'same-origin',
+                'sec-fetch-mode': 'cors',
+                'sec-fetch-dest': 'empty'
             }
         });
         const gCRResponse = await this.requestManager.schedule(gCR, 1);
@@ -1547,9 +1555,13 @@ class GocTruyenTranh {
             url: `${DOMAIN}api/user/tracking`,
             method: 'POST',
             headers: {
+                'referer': `${DOMAIN}truyen/${nameEn}/chuong-${chapterNumber}`,
                 'authorization': Auth,
                 'content-type': 'application/x-www-form-urlencoded; charset=UTF-8',
-                'x-requested-with': 'XMLHttpRequest'
+                'x-requested-with': 'XMLHttpRequest',
+                'sec-fetch-site': 'same-origin',
+                'sec-fetch-mode': 'cors',
+                'sec-fetch-dest': 'empty'
             },
             data: width
         });
@@ -1560,9 +1572,13 @@ class GocTruyenTranh {
             url: `${DOMAIN}api/chapter/loadAll`,
             method: 'POST',
             headers: {
+                'referer': `${DOMAIN}truyen/${nameEn}/chuong-${chapterNumber}`,
                 'authorization': Auth,
                 'content-type': 'application/x-www-form-urlencoded; charset=UTF-8',
-                'x-requested-with': 'XMLHttpRequest'
+                'x-requested-with': 'XMLHttpRequest',
+                'sec-fetch-site': 'same-origin',
+                'sec-fetch-mode': 'cors',
+                'sec-fetch-dest': 'empty'
             },
             data: comicId
         });

@@ -1439,9 +1439,9 @@ exports.GocTruyenTranh = exports.GocTruyenTranhInfo = void 0;
 const types_1 = require("@paperback/types");
 const GocTruyenTranhParser_1 = require("./GocTruyenTranhParser");
 const DOMAIN = 'https://goctruyentranhvui17.com/';
-const Auth = 'Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJOZ8O0IFbEg24gTGnDqm4iLCJjb21pY0lkcyI6W10sInJvbGVJZCI6bnVsbCwiZ3JvdXBJZCI6bnVsbCwiYWRtaW4iOmZhbHNlLCJyYW5rIjowLCJwZXJtaXNzaW9uIjpbXSwiaWQiOiIwMDAxMTU5OTA1IiwidGVhbSI6ZmFsc2UsImlhdCI6MTc2NjM3NTQ2MCwiZW1haWwiOiJudWxsIn0.1tCEoaKMEA00uSsOPkGYwVtw9i2AQPGLUSf4jsZbL482tZ66ghSL91iJDS9h1woSU7p_Ail69uFP2b8Ychkt9A';
+const Auth = 'Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJqbmkgcHJhdHR2b25kYSIsImNvbWljSWRzIjpbXSwicm9sZUlkIjpudWxsLCJncm91cElkIjpudWxsLCJhZG1pbiI6ZmFsc2UsInJhbmsiOjAsInBlcm1pc3Npb24iOltdLCJpZCI6IjAwMDExNjg0MzkiLCJ0ZWFtIjpmYWxzZSwiaWF0IjoxNzY3ODAzNDc4LCJlbWFpbCI6Im51bGwifQ.eWFypaV4dDZ_R5J9Gf0HqkbLaQDWCVwuja4yJJafl6KmPgaRk9TRHHX - 0X94rP6xQtpeZRS25RNjOT0RpIdffg';
 exports.GocTruyenTranhInfo = {
-    version: '1.2.2',
+    version: '1.2.3 beta',
     name: 'GocTruyenTranh',
     icon: 'icon.png',
     author: 'AlanNois',
@@ -1520,45 +1520,67 @@ class GocTruyenTranh {
         const rpFXD = "localSessionId=";
         // Simulate the normal request to the API
         const rpSS = App.createRequest({
-            url: `${DOMAIN}api/chapter/reportFixed?${rpFXD}`,
+            // url: `${DOMAIN}api/chapter/reportFixed?${rpFXD}`,
+            url: `${DOMAIN}api/chapter/reportFixed`,
             method: 'POST',
             headers: {
+                'referer': `${DOMAIN}truyen/${nameEn}/chuong-${chapterNumber}`,
                 'authorization': Auth,
                 'content-type': 'application/x-www-form-urlencoded; charset=UTF-8',
-                'x-requested-with': 'XMLHttpRequest'
-            }
+                'x-requested-with': 'XMLHttpRequest',
+                'sec-fetch-site': 'same-origin',
+                'sec-fetch-mode': 'cors',
+                'sec-fetch-dest': 'empty'
+            },
+            data: rpFXD
         });
         const rpSSResponse = await this.requestManager.schedule(rpSS, 1);
-        console.log(JSON.parse(rpSSResponse.data));
+        console.log(rpSSResponse.data);
         const gCR = App.createRequest({
             url: `${DOMAIN}api/user/getCountReminder`,
             method: 'GET',
             headers: {
+                'referer': `${DOMAIN}truyen/${nameEn}/chuong-${chapterNumber}`,
                 'authorization': Auth,
-                'x-requested-with': 'XMLHttpRequest'
+                'x-requested-with': 'XMLHttpRequest',
+                'sec-fetch-site': 'same-origin',
+                'sec-fetch-mode': 'cors',
+                'sec-fetch-dest': 'empty'
             }
         });
         const gCRResponse = await this.requestManager.schedule(gCR, 1);
-        console.log(JSON.parse(gCRResponse.data));
+        console.log(gCRResponse.data);
         const track = App.createRequest({
-            url: `${DOMAIN}api/user/tracking?${width}`,
+            // url: `${DOMAIN}api/user/tracking?${width}`,
+            url: `${DOMAIN}api/user/tracking`,
             method: 'POST',
             headers: {
+                'referer': `${DOMAIN}truyen/${nameEn}/chuong-${chapterNumber}`,
                 'authorization': Auth,
                 'content-type': 'application/x-www-form-urlencoded; charset=UTF-8',
-                'x-requested-with': 'XMLHttpRequest'
-            }
+                'x-requested-with': 'XMLHttpRequest',
+                'sec-fetch-site': 'same-origin',
+                'sec-fetch-mode': 'cors',
+                'sec-fetch-dest': 'empty'
+            },
+            data: width
         });
         const trackResponse = await this.requestManager.schedule(track, 1);
-        console.log(JSON.parse(trackResponse.data));
+        console.log(trackResponse.data);
         const request = App.createRequest({
-            url: `${DOMAIN}api/chapter/loadAll?${comicId}`,
+            // url: `${DOMAIN}api/chapter/loadAll?${comicId}`,
+            url: `${DOMAIN}api/chapter/loadAll`,
             method: 'POST',
             headers: {
+                'referer': `${DOMAIN}truyen/${nameEn}/chuong-${chapterNumber}`,
                 'authorization': Auth,
                 'content-type': 'application/x-www-form-urlencoded; charset=UTF-8',
-                'x-requested-with': 'XMLHttpRequest'
-            }
+                'x-requested-with': 'XMLHttpRequest',
+                'sec-fetch-site': 'same-origin',
+                'sec-fetch-mode': 'cors',
+                'sec-fetch-dest': 'empty'
+            },
+            data: comicId
         });
         const response = await this.requestManager.schedule(request, 1);
         const json = JSON.parse(response.data);
@@ -1759,8 +1781,9 @@ class Parser {
                     break;
             }
         });
-        const image = String($('.v-image > img').attr('src')?.indexOf('https') === -1 ?
+        const imageRaw = String($('.v-image > img').attr('src')?.indexOf('https') === -1 ?
             DOMAIN + $('.v-image > img').attr('src') : $('.v-image > img').attr('src'));
+        const image = encodeURI(imageRaw).replace(/([^:]\/)\/+/g, '$1');
         const desc = this.decodeHTMLEntity($('.v-card-text.pt-1.px-4.pb-4.text-secondary.font-weight-medium').text());
         const rating = parseFloat($('.pr-3 > b').text().trim());
         return App.createSourceManga({
@@ -1810,7 +1833,9 @@ class Parser {
         else {
             try {
                 for (const img of json.result.data) {
-                    pages.push(img.indexOf('https') === -1 ? DOMAIN + img : img);
+                    const imgStr = img.indexOf('https') === -1 ? DOMAIN + img : img;
+                    const encodedImg = encodeURI(imgStr ?? '').replace(/([^:]\/)\/+/g, '$1');
+                    pages.push(encodedImg);
                 }
             }
             catch {
@@ -1829,7 +1854,7 @@ class Parser {
             const mangaId = `${obj.nameEn}::${obj.id}`;
             tiles.push(App.createPartialSourceManga({
                 mangaId,
-                image: encodeURI(image.indexOf('https') === -1 ? DOMAIN + image : image) ?? '',
+                image: encodeURI(image.indexOf('https') === -1 ? DOMAIN + image : image).replace(/([^:]\/)\/+/g, '$1') ?? '',
                 title,
                 subtitle
             }));
@@ -1847,7 +1872,7 @@ class Parser {
             if (!collectedIds.includes(mangaId)) {
                 manga.push(App.createPartialSourceManga({
                     mangaId,
-                    image: encodeURI(image.indexOf('https') === -1 ? DOMAIN + image : image) ?? '',
+                    image: encodeURI(image.indexOf('https') === -1 ? DOMAIN + image : image).replace(/([^:]\/)\/+/g, '$1') ?? '',
                     title,
                     subtitle,
                 }));
