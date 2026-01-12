@@ -463,7 +463,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.TopTruyen = exports.TopTruyenInfo = exports.isLastPage = void 0;
 const types_1 = require("@paperback/types");
 const TopTruyenParser_1 = require("./TopTruyenParser");
-const DOMAIN = 'https://www.toptruyentv12.com/';
+const DOMAIN = 'https://www.toptruyentv15.com/';
 const isLastPage = ($) => {
     // try with span else a tag
     let current = $('ul.pagination li.page-item.active span').text();
@@ -481,7 +481,7 @@ const isLastPage = ($) => {
 };
 exports.isLastPage = isLastPage;
 exports.TopTruyenInfo = {
-    version: '1.0.12',
+    version: '1.1.0',
     name: 'TopTruyen',
     icon: 'icon.png',
     author: 'AlanNois',
@@ -823,9 +823,9 @@ class Parser {
     parseChapterDetails($) {
         const pages = [];
         $('div.list-image-detail > div.page-chapter > img').each((_, obj) => {
-            if (!obj.attribs['data-original'])
+            if (!obj)
                 return;
-            const link = obj.attribs['data-original']?.includes('image_default.png')
+            const link = !obj.attribs['data-original']
                 ? obj.attribs['src']
                 : obj.attribs['data-original'];
             pages.push(link.indexOf('https') === -1 ? 'https:' + link : link);
