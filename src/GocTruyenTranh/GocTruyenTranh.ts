@@ -21,11 +21,11 @@ import {
 
 import { Parser } from './GocTruyenTranhParser';
 
-const DOMAIN = 'https://goctruyentranhvui17.com/';
-const Auth = 'Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJWxINuIEhvw6BuZyDEkGluaCIsImNvbWljSWRzIjpbXSwicm9sZUlkIjpudWxsLCJncm91cElkIjpudWxsLCJhZG1pbiI6ZmFsc2UsInJhbmsiOjEsInBlcm1pc3Npb24iOltdLCJpZCI6IjAwMDA1MjYzNzAiLCJ0ZWFtIjpmYWxzZSwiaWF0IjoxNzY1MTY5MTg4LCJlbWFpbCI6Im51bGwifQ.-MGstAwY_cxWFfekrHMkVbGzgOCUA-tOcboQXi4iWAbNa3tKpaTHGI_oL3saQlTlplMvQlLKY9qs1bV3Uzxf9g';
+const DOMAIN = 'https://goctruyentranhvui20.com/';
+const Auth = 'Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJqbmkgcHJhdHR2b25kYSIsImNvbWljSWRzIjpbXSwicm9sZUlkIjpudWxsLCJncm91cElkIjpudWxsLCJhZG1pbiI6ZmFsc2UsInJhbmsiOjAsInBlcm1pc3Npb24iOltdLCJpZCI6IjAwMDExNjg0MzkiLCJ0ZWFtIjpmYWxzZSwiaWF0IjoxNzY3ODAzNDc4LCJlbWFpbCI6Im51bGwifQ.eWFypaV4dDZ_R5J9Gf0HqkbLaQDWCVwuja4yJJafl6KmPgaRk9TRHHX-0X94rP6xQtpeZRS25RNjOT0RpIdffg';
 
 export const GocTruyenTranhInfo: SourceInfo = {
-    version: '1.2.0',
+    version: '1.2.3',
     name: 'GocTruyenTranh',
     icon: 'icon.png',
     author: 'AlanNois',
@@ -54,7 +54,7 @@ export class GocTruyenTranh implements SearchResultsProviding, MangaProviding, C
                 request.headers = {
                     ...(request.headers ?? {}),
                     ...{
-                        'referer': DOMAIN,
+                        // 'referer': DOMAIN,
                         'user-agent': await this.requestManager.getDefaultUserAgent(),
                     }
                 };
@@ -76,6 +76,9 @@ export class GocTruyenTranh implements SearchResultsProviding, MangaProviding, C
         const request = App.createRequest({
             url: url,
             method: 'GET',
+            headers: {
+                'referer': `${DOMAIN}`,
+            }
         });
         const response = await this.requestManager.schedule(request, 1);
         this.CloudFlareError(response.status);
@@ -86,6 +89,9 @@ export class GocTruyenTranh implements SearchResultsProviding, MangaProviding, C
         const request = App.createRequest({
             url: url,
             method: 'GET',
+            headers: {
+                'referer': `${DOMAIN}`,
+            }
         });
         const response = await this.requestManager.schedule(request, 1);
         this.CloudFlareError(response.status);
@@ -104,20 +110,83 @@ export class GocTruyenTranh implements SearchResultsProviding, MangaProviding, C
 
     async getChapterDetails(mangaId: string, chapterId: string): Promise<ChapterDetails> {
         // Extract manga ID and chapter number using destructuring
+        const nameEn = mangaId.split('::')[0];
         const [mangaNumber, chapterNumber] = [mangaId.split('::')[1], chapterId.split('-')[1]];
 
         // Combine manga ID and chapter number into a single query parameter
-        const comicId = `${mangaNumber}&chapterNumber=${chapterNumber}`;
+        const comicId = `comicId=${mangaNumber}&chapterNumber=${chapterNumber}&nameEn=${nameEn}`;
+        const width = `width=414&name=false|${nameEn}&number=${chapterNumber}&direct=false`;
+        const rpFXD = "localSessionId="
+
+        // Simulate the normal request to the API
+        const rpSS = App.createRequest({
+            // url: `${DOMAIN}api/chapter/reportFixed?${rpFXD}`,
+            url: `${DOMAIN}api/chapter/reportFixed`,
+            method: 'POST',
+            headers: {
+                'referer': `${DOMAIN}truyen/${nameEn}/chuong-${chapterNumber}`,
+                'authorization': Auth,
+                'content-type': 'application/x-www-form-urlencoded; charset=UTF-8',
+                'x-requested-with': 'XMLHttpRequest',
+                'sec-fetch-site': 'same-origin',
+                'sec-fetch-mode': 'cors',
+                'sec-fetch-dest': 'empty',
+                'accept': 'application/json, text/javascript, */*; q=0.01'
+            },
+            data: rpFXD
+        })
+        const rpSSResponse = await this.requestManager.schedule(rpSS, 1);
+        console.log(rpSSResponse.data as string);
+
+        const gCR = App.createRequest({
+            url: `${DOMAIN}api/user/getCountReminder`,
+            method: 'GET',
+            headers: {
+                'referer': `${DOMAIN}truyen/${nameEn}/chuong-${chapterNumber}`,
+                'authorization': Auth,
+                'x-requested-with': 'XMLHttpRequest',
+                'sec-fetch-site': 'same-origin',
+                'sec-fetch-mode': 'cors',
+                'sec-fetch-dest': 'empty'
+            }
+        });
+        const gCRResponse = await this.requestManager.schedule(gCR, 1);
+        console.log(gCRResponse.data as string);
+        
+        const track = App.createRequest({
+            // url: `${DOMAIN}api/user/tracking?${width}`,
+            url: `${DOMAIN}api/user/tracking`,
+            method: 'POST',
+            headers: {
+                'referer': `${DOMAIN}truyen/${nameEn}/chuong-${chapterNumber}`,
+                'authorization': Auth,
+                'content-type': 'application/x-www-form-urlencoded; charset=UTF-8',
+                'x-requested-with': 'XMLHttpRequest',
+                'sec-fetch-site': 'same-origin',
+                'sec-fetch-mode': 'cors',
+                'sec-fetch-dest': 'empty',
+                'accept': 'application/json, text/javascript, */*; q=0.01'
+            },
+            data: width
+        })
+        const trackResponse = await this.requestManager.schedule(track, 1);
+        console.log(trackResponse.data as string);
 
         const request = App.createRequest({
+            // url: `${DOMAIN}api/chapter/loadAll?${comicId}`,
             url: `${DOMAIN}api/chapter/loadAll`,
             method: 'POST',
             headers: {
+                'referer': `${DOMAIN}truyen/${nameEn}/chuong-${chapterNumber}`,
                 'authorization': Auth,
-                'content-type': 'application/x-www-form-urlencoded',
-                'x-requested-with': 'XMLHttpRequest'
+                'content-type': 'application/x-www-form-urlencoded; charset=UTF-8',
+                'x-requested-with': 'XMLHttpRequest',
+                'sec-fetch-site': 'same-origin',
+                'sec-fetch-mode': 'cors',
+                'sec-fetch-dest': 'empty',
+                'accept': 'application/json, text/javascript, */*; q=0.01'
             },
-            data: { comicId }
+            data: comicId
         });
         const response = await this.requestManager.schedule(request, 1);
         const json = JSON.parse(response.data as string);

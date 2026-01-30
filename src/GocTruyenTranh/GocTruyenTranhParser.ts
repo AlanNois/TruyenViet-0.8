@@ -66,10 +66,11 @@ export class Parser {
                     break;
             }
         });
-        const image = String(
+        const imageRaw = String(
             $('.v-image > img').attr('src')?.indexOf('https') === -1 ? 
                 DOMAIN + $('.v-image > img').attr('src') : $('.v-image > img').attr('src')
         );
+        const image = encodeURI(imageRaw).replace(/([^:]\/)\/+/g, '$1');
         const desc = this.decodeHTMLEntity($('.v-card-text.pt-1.px-4.pb-4.text-secondary.font-weight-medium').text());
         const rating = parseFloat($('.pr-3 > b').text().trim());
 
@@ -121,8 +122,14 @@ export class Parser {
                 pages.push(encodeURI(link));
             });
         } else {
-            for (const img of json.result.data) {
-                pages.push(img.indexOf('https') === -1 ? DOMAIN + img : img);
+            try {
+                for (const img of json.result.data) {
+                    const imgStr = img.indexOf('https') === -1 ? DOMAIN + img : img;
+                    const encodedImg = encodeURI(imgStr ?? '').replace(/([^:]\/)\/+/g, '$1');
+                    pages.push(encodedImg);
+                }
+            } catch {
+                throw new Error(json);
             }
         }
 
@@ -139,7 +146,7 @@ export class Parser {
             const mangaId = `${obj.nameEn}::${obj.id}`;
             tiles.push(App.createPartialSourceManga({
                 mangaId,
-                image: encodeURI(image.indexOf('https') === -1 ? DOMAIN + image : image) ?? '',
+                image: encodeURI(image.indexOf('https') === -1 ? DOMAIN + image : image).replace(/([^:]\/)\/+/g, '$1') ?? '',
                 title,
                 subtitle
             }));
@@ -159,7 +166,7 @@ export class Parser {
             if (!collectedIds.includes(mangaId)) {
                 manga.push(App.createPartialSourceManga({
                     mangaId,
-                    image: encodeURI(image.indexOf('https') === -1 ? DOMAIN + image : image) ?? '',
+                    image: encodeURI(image.indexOf('https') === -1 ? DOMAIN + image : image).replace(/([^:]\/)\/+/g, '$1') ?? '',
                     title,
                     subtitle,
                 }));
