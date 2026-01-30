@@ -105,8 +105,8 @@ export class Parser {
         const pages: string[] = [];
 
         $('div.list-image-detail > div.page-chapter > img').each((_: any, obj: any) => {
-            if (!obj.attribs['data-original']) return;
-            const link = obj.attribs['data-original']?.includes('image_default.png') 
+            if (!obj) return;
+            const link = !obj.attribs['data-original'] 
                 ? obj.attribs['src'] 
                 : obj.attribs['data-original'];
             pages.push(link.indexOf('https') === -1 ? 'https:' + link : link);
