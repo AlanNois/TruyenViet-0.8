@@ -463,7 +463,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.DocTruyen3Q = exports.DocTruyen3QInfo = exports.isLastPage = void 0;
 const types_1 = require("@paperback/types");
 const DocTruyen3QParser_1 = require("./DocTruyen3QParser");
-const DOMAIN = 'https://doctruyen3qui20.com/';
+const DOMAIN = 'https://doctruyen3qui17.com/';
 const isLastPage = ($) => {
     const lastPage = Number($('ul.pagination > li.page-item:not(:has(a[rel=\'next\'])) a').last().text().trim());
     const currentPage = Number($('ul.pagination > li.active').text().trim());
@@ -471,7 +471,7 @@ const isLastPage = ($) => {
 };
 exports.isLastPage = isLastPage;
 exports.DocTruyen3QInfo = {
-    version: '1.2.1',
+    version: '1.1.20',
     name: 'DocTruyen3Q',
     icon: 'icon.png',
     author: 'AlanNois',
@@ -564,10 +564,8 @@ class DocTruyen3Q {
             }
         }
         const url = `${DOMAIN}tim-truyen`;
-        // const search_query = (!query.title) ? '?' : `?keyword=${query.title}&`;
-        // const param = `${search.cate}${search_query}sort=${search.sort}&status=${search.status}&page=${page}`;
-        const search_query = (!query.title) ? '' : `?keyword=${query.title}`;
-        const param = !search_query ? `/${search.cate}?sort=${search.sort}&status=${search.status}&page=${page}` : `${search_query}&page=${page}`;
+        const search_query = (!query.title) ? '?' : `?keyword=${query.title}&`;
+        const param = `${search.cate}${search_query}sort=${search.sort}&status=${search.status}&page=${page}`;
         const $ = await this.DOMHTML(`${url}${encodeURI(param)}`);
         const tiles = this.parser.parseSearchResults($);
         metadata = (0, exports.isLastPage)($) ? undefined : { page: page + 1 };
