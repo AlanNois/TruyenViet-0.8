@@ -73,85 +73,23 @@ export class Parser {
         const pages: string[] = [];
 
         for (const img of json['image']) {
-            pages.push(img.replace('?v=1&', '?v=9999&'));
+            pages.push(img?.replace('?v=1&', '?v=9999&'));
         }
 
         return pages
     }
 
-    parseSearch(json: any, /*search: any,*/ DOMAIN: string): PartialSourceManga[] {
+    parseSectionAPI(json: any, DOMAIN: string): PartialSourceManga[] {
         const manga: PartialSourceManga[] = [];
 
-        const getData = (item: any, in4: any) => ({
-            mangaId: `${item.id_album}`,
-            image: `${DOMAIN}assets/tmp/album/${in4.avatar}`,
-            title: this.titleCase(in4.name),
-            subtitle: `Chap ${in4.chapter.last}`,
-            // subtitle: search.top !== '' ? `${Number(item.total_view).toLocaleString()} views` : `Chap ${item.last_chapter}`
-        });
-
-        // const itemList = search.top !== '' ? json[search.top] : json;
-        for (const i of Object.keys(json)) {
-            // const item = itemList[i];
-            const item = json[i];
-            var in4 = JSON.parse(item['info'])
-            // if (!item.name) continue;
-            manga.push(App.createPartialSourceManga(getData(item, in4)));
-        }
-
-        return manga;
-    }
-
-    parseNewUpdatedSection(json: any, DOMAIN: string): PartialSourceManga[] {
-        const newUpdatedItems: PartialSourceManga[] = [];
-
-        for (var i of Object.keys(json)) {
-            var item = json[i];
-            var in4 = JSON.parse(item['info'])
-            // if (!item.name) continue;
-            newUpdatedItems.push(App.createPartialSourceManga({
+        for (const item of json["data"]) {
+            const in4 = JSON.parse(item.info);
+            manga.push(App.createPartialSourceManga({
                 mangaId: `${item.id_album}`,
                 image: `${DOMAIN}assets/tmp/album/${in4.avatar}`,
                 title: this.titleCase(in4.name),
                 subtitle: `Chap ${in4.chapter.last}`,
-            }))
-        }
-
-        return newUpdatedItems;
-    }
-
-    parseNewAddedSection(json: any, DOMAIN: string): PartialSourceManga[] {
-        const newAddedItems: PartialSourceManga[] = [];
-
-        for (var i of Object.keys(json)) {
-            var item = json[i];
-            if (!item.name) continue;
-            newAddedItems.push(App.createPartialSourceManga({
-                mangaId: `${item.url}-${item.id_book}`,
-                image: `${DOMAIN}assets/tmp/book/avatar/${item.avatar}.jpg`,
-                title: this.titleCase(item.name),
-                subtitle: `Chap ${item.last_chapter}`,
-            }))
-        }
-
-        return newAddedItems;
-    }
-
-    parseViewMore(json: any, DOMAIN: string): PartialSourceManga[] {
-        const manga: PartialSourceManga[] = [];
-
-        const getData = (item: any, in4: any) => ({
-            mangaId: `${item.id_album}`,
-            image: `${DOMAIN}assets/tmp/album/${in4.avatar}`,
-            title: this.titleCase(in4.name),
-            subtitle: `Chap ${in4.chapter.last}`,
-        });
-
-        for (const i of Object.keys(json)) {
-            const item = json[i];
-            var in4 = JSON.parse(item['info'])
-            // if (!item.name) continue;
-            manga.push(App.createPartialSourceManga(getData(item, in4)));
+            }));
         }
 
         return manga;
