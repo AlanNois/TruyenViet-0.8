@@ -1438,9 +1438,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.CManga = exports.CMangaInfo = void 0;
 const types_1 = require("@paperback/types");
 const CMangaParser_1 = require("./CMangaParser");
-const DOMAIN = 'https://cmangax10.com/';
+const DOMAIN = 'https://cmangax12.com/';
 exports.CMangaInfo = {
-    version: '1.0.24',
+    version: '1.1.0',
     name: 'CManga',
     icon: 'icon.png',
     author: 'AlanNois',
@@ -1500,16 +1500,16 @@ class CManga {
         return response.data;
     }
     async getMangaDetails(mangaId) {
-        const json = JSON.parse(JSON.parse(await this.getAPI(`${DOMAIN}api/get_data_by_id?table=album&data=info&id=${mangaId}`))['info']);
+        const json = JSON.parse(JSON.parse(await this.getAPI(`${DOMAIN}api/get_data_by_id?table=album&data=info&id=${mangaId}`))['data']['info']);
         return this.parser.parseMangaDetails(json, mangaId, DOMAIN);
     }
     async getChapters(mangaId) {
-        const json = JSON.parse(await this.getAPI(`${DOMAIN}api/chapter_list?album=${mangaId}&page=1&limit=99999999&v=0`));
-        return this.parser.parseChapters(json);
+        const json = JSON.parse(await this.getAPI(`${DOMAIN}api/chapter_list?album=${mangaId}&page=1&limit=99999999&v=1v16`));
+        return this.parser.parseChapters(json['data']);
     }
     async getChapterDetails(mangaId, chapterId) {
         const json = await this.getAPI(`${DOMAIN}api/chapter_image?chapter=${chapterId}&v=0`);
-        const pages = this.parser.parseChapterDetails(JSON.parse(json));
+        const pages = this.parser.parseChapterDetails(JSON.parse(json)['data']);
         return App.createChapterDetails({
             id: chapterId,
             mangaId: mangaId,
@@ -1545,7 +1545,7 @@ class CManga {
         //             break;
         //     }
         // });
-        const url = /*query.title ?*/ encodeURI(`${DOMAIN}api/search?string=${query.title}`);
+        const url = /*query.title ?*/ encodeURI(`${DOMAIN}api/home_album_list?file=image&sort=update&string=${query.title}&type=all&limit=40&page=${page}`);
         // : (search.top !== '' ? `${DOMAIN}api/top?data=book_top`
         // : encodeURI(`${DOMAIN}api/list_item?page=${page}&limit=40&sort=${search.sort}&type=all&tag=${search.tag}&child=off&status=${search.status}&num_chapter=${search.num_chapter}`))
         // const request = App.createRequest({
@@ -1556,7 +1556,7 @@ class CManga {
         // const json = (query.title || search.top !== "") ? JSON.parse(response.data as string) : JSON.parse(JSON.parse(response.data as string));
         // const tiles = this.parser.parseSearch(json, search, DOMAIN);
         const json = JSON.parse(await this.getAPI(url));
-        const tiles = this.parser.parseSearch(json, DOMAIN);
+        const tiles = this.parser.parseSectionAPI(json['data'], DOMAIN);
         const allPage = (json['total'] / 40);
         metadata = (page < allPage) ? { page: page + 1 } : undefined;
         return App.createPagedResults({
@@ -1567,31 +1567,48 @@ class CManga {
     async getHomePageSections(sectionCallback) {
         console.log('CManga Running...');
         const sections = [
+            App.createHomeSection({ id: 'featured', title: 'TRUYỆN NỔI BẬT', containsMoreItems: false, type: types_1.HomeSectionType.featured, }),
             App.createHomeSection({ id: 'new_updated', title: 'TRUYỆN MỚI CẬP NHẬT', containsMoreItems: true, type: types_1.HomeSectionType.singleRowNormal, }),
-            // App.createHomeSection({ id: 'new_added', title: "VIP TRUYỆN SIÊU HAY", containsMoreItems: true, type: HomeSectionType.singleRowNormal, })
+            App.createHomeSection({ id: 'recommended', title: 'TRUYỆN ĐỀ CỬ', containsMoreItems: true, type: types_1.HomeSectionType.singleRowNormal, }),
+            App.createHomeSection({ id: 'locked', title: 'TRUYỆN KHÓA', containsMoreItems: true, type: types_1.HomeSectionType.singleRowNormal, }),
+            App.createHomeSection({ id: 'exclusive', title: 'TRUYỆN ĐỘC QUYỀN', containsMoreItems: true, type: types_1.HomeSectionType.singleRowNormal, }),
+            App.createHomeSection({ id: 'top_fire', title: 'TRUYỆN CHÁY HÀNG', containsMoreItems: false, type: types_1.HomeSectionType.singleRowLarge, }),
+            App.createHomeSection({ id: 'new_coin_top', title: 'TRUYỆN XU/MỚI TOP', containsMoreItems: false, type: types_1.HomeSectionType.singleRowLarge, }),
+            App.createHomeSection({ id: 'completed', title: 'TRUYỆN HOÀN THÀNH', containsMoreItems: true, type: types_1.HomeSectionType.singleRowNormal, }),
         ];
         for (const section of sections) {
             sectionCallback(section);
             let url;
             switch (section.id) {
-                case 'new_updated':
-                    url = `${DOMAIN}api/home_album_list?num_chapter=0&sort=update&tag=&limit=20&page=1&user=0&child_protect=off`;
+                case 'featured':
+                    url = `${DOMAIN}api/home_album_list?file=image&sort=update&tag=&type=hot&limit=30&page=1`;
                     break;
-                // case 'new_added':
-                //     url = `${DOMAIN}api/list_item?page=1&limit=20&sort=new&type=all&tag=Truy%E1%BB%87n%20si%C3%AAu%20hay&child=off&status=all&num_chapter=0`;
-                //     break;
+                case 'new_updated':
+                    url = `${DOMAIN}api/home_album_list?file=image&type=unique&sort=update&tag=&limit=21&page=1`;
+                    break;
+                case 'recommended':
+                    url = `${DOMAIN}api/home_album_list?file=image&type=hot&sort=update&tag=&limit=30&page=1`;
+                    break;
+                case 'locked':
+                    url = `${DOMAIN}api/home_album_list?file=image&type=new&sort=update&tag=&limit=21&page=1`;
+                    break;
+                case 'exclusive':
+                    url = `${DOMAIN}api/home_album_list?file=image&type=done&sort=update&tag=&limit=21&page=1`;
+                    break;
+                case 'top_fire':
+                    url = `${DOMAIN}api/home_album_top?file=image&type=fire&limit=10`;
+                    break;
+                case 'new_coin_top':
+                    url = `${DOMAIN}api/home_album_top?file=image&type=coin&limit=10`;
+                    break;
+                case 'completed':
+                    url = `${DOMAIN}api/home_album_list?file=image&type=complete&sort=update&tag=&limit=21&page=1`;
+                    break;
                 default:
                     throw new Error('Invalid home section ID');
             }
             const json = JSON.parse(await this.getAPI(url));
-            switch (section.id) {
-                case 'new_updated':
-                    section.items = this.parser.parseNewUpdatedSection(json['data'], DOMAIN);
-                    break;
-                // case 'new_added':
-                //     section.items = this.parser.parseNewAddedSection(json, DOMAIN);
-                //     break;
-            }
+            section.items = this.parser.parseSectionAPI(json['data'], DOMAIN);
             sectionCallback(section);
         }
     }
@@ -1600,17 +1617,43 @@ class CManga {
         let url = '';
         switch (homepageSectionId) {
             case 'new_updated':
-                url = `${DOMAIN}api/home_album_list?num_chapter=0&sort=update&tag=&limit=36&page=${page}&user=0&child_protect=off`;
+                url = `${DOMAIN}api/home_album_list?file=image&type=unique&sort=update&tag=&limit=21&page=${page}`;
                 break;
-            // case 'new_added':
-            //     url = `${DOMAIN}api/list_item?page=${page}&limit=40&sort=new&type=all&tag=Truy%E1%BB%87n%20si%C3%AAu%20hay&child=off&status=all&num_chapter=0`
-            //     break;
+            case 'recommended':
+                url = `${DOMAIN}api/home_album_list?file=image&type=hot&sort=update&tag=&limit=30&page=${page}`;
+                break;
+            case 'locked':
+                url = `${DOMAIN}api/home_album_list?file=image&type=new&sort=update&tag=&limit=21&page=${page}`;
+                break;
+            case 'exclusive':
+                url = `${DOMAIN}api/home_album_list?file=image&type=done&sort=update&tag=&limit=21&page=${page}`;
+                break;
+            case 'completed':
+                url = `${DOMAIN}api/home_album_list?file=image&type=complete&sort=update&tag=&limit=21&page=${page}`;
+                break;
             default:
                 throw new Error('Requested to getViewMoreItems for a section ID which doesn\'t exist');
         }
         const json = JSON.parse(await this.getAPI(url));
-        const manga = this.parser.parseViewMore(json['data'], DOMAIN);
-        const allPage = (json['total'] / 40);
+        const manga = this.parser.parseSectionAPI(json['data'], DOMAIN);
+        let allPage;
+        switch (homepageSectionId) {
+            case 'new_updated':
+                allPage = (json['total'] / 21);
+                break;
+            case 'locked':
+                allPage = (json['total'] / 21);
+                break;
+            case 'exclusive':
+                allPage = (json['total'] / 21);
+                break;
+            case 'recommended':
+                allPage = (json['total'] / 30);
+                break;
+            case 'completed':
+                allPage = (json['total'] / 21);
+                break;
+        }
         metadata = (page < allPage) ? { page: page + 1 } : undefined;
         return App.createPagedResults({
             results: manga,
@@ -1707,56 +1750,11 @@ class Parser {
     parseChapterDetails(json) {
         const pages = [];
         for (const img of json['image']) {
-            pages.push(img.replace('?v=1&', '?v=9999&'));
+            pages.push(img?.replace('?v=1&', '?v=9999&'));
         }
         return pages;
     }
-    parseSearch(json, /*search: any,*/ DOMAIN) {
-        const manga = [];
-        const getData = (item, in4) => ({
-            mangaId: `${item.id_album}`,
-            image: `${DOMAIN}assets/tmp/album/${in4.avatar}`,
-            title: this.titleCase(in4.name),
-            subtitle: `Chap ${in4.chapter.last}`,
-            // subtitle: search.top !== '' ? `${Number(item.total_view).toLocaleString()} views` : `Chap ${item.last_chapter}`
-        });
-        // const itemList = search.top !== '' ? json[search.top] : json;
-        for (const i of Object.keys(json)) {
-            // const item = itemList[i];
-            const item = json[i];
-            var in4 = JSON.parse(item['info']);
-            // if (!item.name) continue;
-            manga.push(App.createPartialSourceManga(getData(item, in4)));
-        }
-        return manga;
-    }
-    parseNewUpdatedSection(json, DOMAIN) {
-        const newAddedItems = [];
-        for (const item of json["data"]) {
-            const in4 = JSON.parse(item.info);
-            newAddedItems.push(App.createPartialSourceManga({
-                mangaId: `${item.id_album}`,
-                image: `${DOMAIN}assets/tmp/album/${in4.avatar}`,
-                title: this.titleCase(in4.name),
-                subtitle: `Chap ${in4.chapter.last}`,
-            }));
-        }
-        return newAddedItems;
-    }
-    parseNewAddedSection(json, DOMAIN) {
-        const newAddedItems = [];
-        for (const item of json["data"]) {
-            const in4 = JSON.parse(item.info);
-            newAddedItems.push(App.createPartialSourceManga({
-                mangaId: `${item.id_album}`,
-                image: `${DOMAIN}assets/tmp/album/${in4.avatar}`,
-                title: this.titleCase(in4.name),
-                subtitle: `Chap ${in4.chapter.last}`,
-            }));
-        }
-        return newAddedItems;
-    }
-    parseViewMore(json, DOMAIN) {
+    parseSectionAPI(json, DOMAIN) {
         const manga = [];
         for (const item of json["data"]) {
             const in4 = JSON.parse(item.info);
