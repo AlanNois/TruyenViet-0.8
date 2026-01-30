@@ -1438,10 +1438,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.GocTruyenTranh = exports.GocTruyenTranhInfo = void 0;
 const types_1 = require("@paperback/types");
 const GocTruyenTranhParser_1 = require("./GocTruyenTranhParser");
-const DOMAIN = 'https://goctruyentranhvui17.com/';
-const Auth = 'Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJWxINuIEhvw6BuZyDEkGluaCIsImNvbWljSWRzIjpbXSwicm9sZUlkIjpudWxsLCJncm91cElkIjpudWxsLCJhZG1pbiI6ZmFsc2UsInJhbmsiOjEsInBlcm1pc3Npb24iOltdLCJpZCI6IjAwMDA1MjYzNzAiLCJ0ZWFtIjpmYWxzZSwiaWF0IjoxNzY1MTY5MTg4LCJlbWFpbCI6Im51bGwifQ.-MGstAwY_cxWFfekrHMkVbGzgOCUA-tOcboQXi4iWAbNa3tKpaTHGI_oL3saQlTlplMvQlLKY9qs1bV3Uzxf9g';
+const DOMAIN = 'https://goctruyentranhvui20.com/';
+const Auth = 'Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJqbmkgcHJhdHR2b25kYSIsImNvbWljSWRzIjpbXSwicm9sZUlkIjpudWxsLCJncm91cElkIjpudWxsLCJhZG1pbiI6ZmFsc2UsInJhbmsiOjAsInBlcm1pc3Npb24iOltdLCJpZCI6IjAwMDExNjg0MzkiLCJ0ZWFtIjpmYWxzZSwiaWF0IjoxNzY3ODAzNDc4LCJlbWFpbCI6Im51bGwifQ.eWFypaV4dDZ_R5J9Gf0HqkbLaQDWCVwuja4yJJafl6KmPgaRk9TRHHX-0X94rP6xQtpeZRS25RNjOT0RpIdffg';
 exports.GocTruyenTranhInfo = {
-    version: '1.2.0',
+    version: '1.2.3',
     name: 'GocTruyenTranh',
     icon: 'icon.png',
     author: 'AlanNois',
@@ -1468,7 +1468,7 @@ class GocTruyenTranh {
                     request.headers = {
                         ...(request.headers ?? {}),
                         ...{
-                            'referer': DOMAIN,
+                            // 'referer': DOMAIN,
                             'user-agent': await this.requestManager.getDefaultUserAgent(),
                         }
                     };
@@ -1488,6 +1488,9 @@ class GocTruyenTranh {
         const request = App.createRequest({
             url: url,
             method: 'GET',
+            headers: {
+                'referer': `${DOMAIN}`,
+            }
         });
         const response = await this.requestManager.schedule(request, 1);
         this.CloudFlareError(response.status);
@@ -1497,6 +1500,9 @@ class GocTruyenTranh {
         const request = App.createRequest({
             url: url,
             method: 'GET',
+            headers: {
+                'referer': `${DOMAIN}`,
+            }
         });
         const response = await this.requestManager.schedule(request, 1);
         this.CloudFlareError(response.status);
@@ -1512,18 +1518,78 @@ class GocTruyenTranh {
     }
     async getChapterDetails(mangaId, chapterId) {
         // Extract manga ID and chapter number using destructuring
+        const nameEn = mangaId.split('::')[0];
         const [mangaNumber, chapterNumber] = [mangaId.split('::')[1], chapterId.split('-')[1]];
         // Combine manga ID and chapter number into a single query parameter
-        const comicId = `${mangaNumber}&chapterNumber=${chapterNumber}`;
+        const comicId = `comicId=${mangaNumber}&chapterNumber=${chapterNumber}&nameEn=${nameEn}`;
+        const width = `width=414&name=false|${nameEn}&number=${chapterNumber}&direct=false`;
+        const rpFXD = "localSessionId=";
+        // Simulate the normal request to the API
+        const rpSS = App.createRequest({
+            // url: `${DOMAIN}api/chapter/reportFixed?${rpFXD}`,
+            url: `${DOMAIN}api/chapter/reportFixed`,
+            method: 'POST',
+            headers: {
+                'referer': `${DOMAIN}truyen/${nameEn}/chuong-${chapterNumber}`,
+                'authorization': Auth,
+                'content-type': 'application/x-www-form-urlencoded; charset=UTF-8',
+                'x-requested-with': 'XMLHttpRequest',
+                'sec-fetch-site': 'same-origin',
+                'sec-fetch-mode': 'cors',
+                'sec-fetch-dest': 'empty',
+                'accept': 'application/json, text/javascript, */*; q=0.01'
+            },
+            data: rpFXD
+        });
+        const rpSSResponse = await this.requestManager.schedule(rpSS, 1);
+        console.log(rpSSResponse.data);
+        const gCR = App.createRequest({
+            url: `${DOMAIN}api/user/getCountReminder`,
+            method: 'GET',
+            headers: {
+                'referer': `${DOMAIN}truyen/${nameEn}/chuong-${chapterNumber}`,
+                'authorization': Auth,
+                'x-requested-with': 'XMLHttpRequest',
+                'sec-fetch-site': 'same-origin',
+                'sec-fetch-mode': 'cors',
+                'sec-fetch-dest': 'empty'
+            }
+        });
+        const gCRResponse = await this.requestManager.schedule(gCR, 1);
+        console.log(gCRResponse.data);
+        const track = App.createRequest({
+            // url: `${DOMAIN}api/user/tracking?${width}`,
+            url: `${DOMAIN}api/user/tracking`,
+            method: 'POST',
+            headers: {
+                'referer': `${DOMAIN}truyen/${nameEn}/chuong-${chapterNumber}`,
+                'authorization': Auth,
+                'content-type': 'application/x-www-form-urlencoded; charset=UTF-8',
+                'x-requested-with': 'XMLHttpRequest',
+                'sec-fetch-site': 'same-origin',
+                'sec-fetch-mode': 'cors',
+                'sec-fetch-dest': 'empty',
+                'accept': 'application/json, text/javascript, */*; q=0.01'
+            },
+            data: width
+        });
+        const trackResponse = await this.requestManager.schedule(track, 1);
+        console.log(trackResponse.data);
         const request = App.createRequest({
+            // url: `${DOMAIN}api/chapter/loadAll?${comicId}`,
             url: `${DOMAIN}api/chapter/loadAll`,
             method: 'POST',
             headers: {
+                'referer': `${DOMAIN}truyen/${nameEn}/chuong-${chapterNumber}`,
                 'authorization': Auth,
-                'content-type': 'application/x-www-form-urlencoded',
-                'x-requested-with': 'XMLHttpRequest'
+                'content-type': 'application/x-www-form-urlencoded; charset=UTF-8',
+                'x-requested-with': 'XMLHttpRequest',
+                'sec-fetch-site': 'same-origin',
+                'sec-fetch-mode': 'cors',
+                'sec-fetch-dest': 'empty',
+                'accept': 'application/json, text/javascript, */*; q=0.01'
             },
-            data: { comicId }
+            data: comicId
         });
         const response = await this.requestManager.schedule(request, 1);
         const json = JSON.parse(response.data);
@@ -1724,8 +1790,9 @@ class Parser {
                     break;
             }
         });
-        const image = String($('.v-image > img').attr('src')?.indexOf('https') === -1 ?
+        const imageRaw = String($('.v-image > img').attr('src')?.indexOf('https') === -1 ?
             DOMAIN + $('.v-image > img').attr('src') : $('.v-image > img').attr('src'));
+        const image = encodeURI(imageRaw).replace(/([^:]\/)\/+/g, '$1');
         const desc = this.decodeHTMLEntity($('.v-card-text.pt-1.px-4.pb-4.text-secondary.font-weight-medium').text());
         const rating = parseFloat($('.pr-3 > b').text().trim());
         return App.createSourceManga({
@@ -1773,8 +1840,15 @@ class Parser {
             });
         }
         else {
-            for (const img of json.result.data) {
-                pages.push(img.indexOf('https') === -1 ? DOMAIN + img : img);
+            try {
+                for (const img of json.result.data) {
+                    const imgStr = img.indexOf('https') === -1 ? DOMAIN + img : img;
+                    const encodedImg = encodeURI(imgStr ?? '').replace(/([^:]\/)\/+/g, '$1');
+                    pages.push(encodedImg);
+                }
+            }
+            catch {
+                throw new Error(json);
             }
         }
         return pages;
@@ -1789,7 +1863,7 @@ class Parser {
             const mangaId = `${obj.nameEn}::${obj.id}`;
             tiles.push(App.createPartialSourceManga({
                 mangaId,
-                image: encodeURI(image.indexOf('https') === -1 ? DOMAIN + image : image) ?? '',
+                image: encodeURI(image.indexOf('https') === -1 ? DOMAIN + image : image).replace(/([^:]\/)\/+/g, '$1') ?? '',
                 title,
                 subtitle
             }));
@@ -1807,7 +1881,7 @@ class Parser {
             if (!collectedIds.includes(mangaId)) {
                 manga.push(App.createPartialSourceManga({
                     mangaId,
-                    image: encodeURI(image.indexOf('https') === -1 ? DOMAIN + image : image) ?? '',
+                    image: encodeURI(image.indexOf('https') === -1 ? DOMAIN + image : image).replace(/([^:]\/)\/+/g, '$1') ?? '',
                     title,
                     subtitle,
                 }));
