@@ -162,7 +162,7 @@ export class CuuTruyen implements ChapterProviding, MangaProviding, SearchResult
     }
 
     private async apiRequest(endpoint: string, params = ''): Promise<any> {
-        const url = `${await this.getApiUrl()}/${endpoint}${params ? `?${params}` : ''}`;
+        const url = `https://hard-emu-60.deno.dev/?url=${await this.getApiUrl()}/${endpoint}${params ? `?${params}` : ''}`; // Using a proxy to bypass ISP blocks
         const request = App.createRequest({
             url,
             method: 'GET',
