@@ -119,13 +119,13 @@ export class Parser {
             $('.image-section > .img-block > img').each((_: any, obj: any) => {
                 if (!obj.attribs['src']) return;
                 const link = obj.attribs['src'];
-                pages.push(encodeURI(link));
+                pages.push(String(link));
             });
         } else {
             try {
                 for (const img of json.result.data) {
                     const imgStr = img.indexOf('https') === -1 ? DOMAIN + img : img;
-                    const encodedImg = encodeURI(imgStr ?? '').replace(/([^:]\/)\/+/g, '$1');
+                    const encodedImg = String(imgStr ?? '').replace(/([^:]\/)\/+/g, '$1');
                     pages.push(encodedImg);
                 }
             } catch {
