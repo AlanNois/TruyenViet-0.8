@@ -1441,7 +1441,7 @@ const GocTruyenTranhParser_1 = require("./GocTruyenTranhParser");
 const DOMAIN = 'https://goctruyentranhvui20.com/';
 const Auth = 'Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJqbmkgcHJhdHR2b25kYSIsImNvbWljSWRzIjpbXSwicm9sZUlkIjpudWxsLCJncm91cElkIjpudWxsLCJhZG1pbiI6ZmFsc2UsInJhbmsiOjAsInBlcm1pc3Npb24iOltdLCJpZCI6IjAwMDExNjg0MzkiLCJ0ZWFtIjpmYWxzZSwiaWF0IjoxNzY3ODAzNDc4LCJlbWFpbCI6Im51bGwifQ.eWFypaV4dDZ_R5J9Gf0HqkbLaQDWCVwuja4yJJafl6KmPgaRk9TRHHX-0X94rP6xQtpeZRS25RNjOT0RpIdffg';
 exports.GocTruyenTranhInfo = {
-    version: '1.2.3',
+    version: '1.2.4',
     name: 'GocTruyenTranh',
     icon: 'icon.png',
     author: 'AlanNois',
@@ -1496,24 +1496,40 @@ class GocTruyenTranh {
         this.CloudFlareError(response.status);
         return this.cheerio.load(response.data);
     }
-    async callAPI(url) {
+    async callAPI(url, xToken = '') {
         const request = App.createRequest({
             url: url,
             method: 'GET',
             headers: {
                 'referer': `${DOMAIN}`,
+                'x-token': xToken
             }
         });
         const response = await this.requestManager.schedule(request, 1);
         this.CloudFlareError(response.status);
         return JSON.parse(response.data);
     }
+    async getXToken(url) {
+        const request = App.createRequest({
+            url: url,
+            method: 'GET',
+            headers: {
+                'referer': `${DOMAIN}`,
+                'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7'
+            }
+        });
+        const response = await this.requestManager.schedule(request, 2);
+        this.CloudFlareError(response.status);
+        const xToken = (response.headers?.['set-cookie'] ?? response.headers?.['Set-Cookie']);
+        return xToken;
+    }
     async getMangaDetails(mangaId) {
         const $ = await this.DOMHTML(`${DOMAIN}truyen/${mangaId.split('::')[0]}`);
         return this.parser.parseMangaDetails($, mangaId, DOMAIN);
     }
     async getChapters(mangaId) {
-        const json = await this.callAPI(`${DOMAIN}api/comic/${mangaId.split('::')[1]}/chapter?offset=0&limit=-1`);
+        const xToken = await this.getXToken(`${DOMAIN}truyen/${mangaId.split('::')[0]}`);
+        const json = await this.callAPI(`${DOMAIN}api/comic/${mangaId.split('::')[1]}/chapter?offset=0&limit=-1`, xToken);
         return this.parser.parseChapterList(json);
     }
     async getChapterDetails(mangaId, chapterId) {
@@ -1575,6 +1591,7 @@ class GocTruyenTranh {
         });
         const trackResponse = await this.requestManager.schedule(track, 1);
         console.log(trackResponse.data);
+        const xToken = await this.getXToken(`${DOMAIN}truyen/${mangaId.split('::')[0]}`);
         const request = App.createRequest({
             // url: `${DOMAIN}api/chapter/loadAll?${comicId}`,
             url: `${DOMAIN}api/chapter/loadAll`,
@@ -1587,7 +1604,8 @@ class GocTruyenTranh {
                 'sec-fetch-site': 'same-origin',
                 'sec-fetch-mode': 'cors',
                 'sec-fetch-dest': 'empty',
-                'accept': 'application/json, text/javascript, */*; q=0.01'
+                'accept': 'application/json, text/javascript, */*; q=0.01',
+                'cookie': xToken
             },
             data: comicId
         });
@@ -1687,7 +1705,7 @@ class GocTruyenTranh {
     }
     async getCloudflareBypassRequestAsync() {
         return App.createRequest({
-            url: `${DOMAIN}/trang-chu`,
+            url: `${DOMAIN}trang-chu`,
             method: 'GET',
             headers: {
                 'referer': `${DOMAIN}`,
