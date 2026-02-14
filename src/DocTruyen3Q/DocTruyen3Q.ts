@@ -22,7 +22,7 @@ import {
 
 import { Parser } from './DocTruyen3QParser';
 
-const DOMAIN = 'https://doctruyen3qhubz.com/';
+const DOMAIN = 'https://doctruyen3qhubx.com/';
 
 export const isLastPage = ($: CheerioStatic): boolean => {
     const lastPage = Number($('ul.pagination > li.page-item:not(:has(a[rel=\'next\'])) a').last().text().trim());
@@ -32,7 +32,7 @@ export const isLastPage = ($: CheerioStatic): boolean => {
 };
 
 export const DocTruyen3QInfo: SourceInfo = {
-    version: '1.2.2',
+    version: '1.2.3',
     name: 'DocTruyen3Q',
     icon: 'icon.png',
     author: 'AlanNois',
