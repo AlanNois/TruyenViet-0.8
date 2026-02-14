@@ -52,12 +52,6 @@ export class Parser {
             const chapNum = parseFloat(in4.num);
             const name = this.titleCase(in4.name);
 
-            console.log(`Type of id: ${typeof id}`);
-            console.log(`Type of chapNum: ${typeof chapNum}`);
-            console.log(`Type of name: ${typeof name}`);
-            console.log(`Type of formattedDate: ${typeof new Date(`${formattedDate} ${formattedTime}`)}`);
-            console.log(`Type of group: ${typeof `${in4.statics.view} lượt xem`}`);
-
             chapters.push(App.createChapter({
                 id,
                 chapNum,
