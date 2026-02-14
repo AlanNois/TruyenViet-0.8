@@ -1440,7 +1440,7 @@ const types_1 = require("@paperback/types");
 const CMangaParser_1 = require("./CMangaParser");
 const DOMAIN = 'https://cmangax13.com/';
 exports.CMangaInfo = {
-    version: '1.1.1',
+    version: '1.1.1 alpha',
     name: 'CManga',
     icon: 'icon.png',
     author: 'AlanNois',
@@ -1725,7 +1725,6 @@ class Parser {
         const chapters = [];
         for (const obj of json) {
             const in4 = JSON.parse(obj.info);
-            console.log(in4);
             const [date, time] = in4.last_update.split(' ');
             const [year, month, day] = date.split('-');
             const [hour, minute] = time.split(':');
@@ -1734,6 +1733,8 @@ class Parser {
             const id = obj.id_chapter;
             const chapNum = parseFloat(in4.num);
             const name = this.titleCase(in4.name);
+            console.log(`Chapter ID: ${id}, Chapter Number: ${chapNum}, Chapter Name: ${name}`);
+            console.log(`Chapter Date: ${formattedDate}, Chapter Time: ${formattedTime}`);
             chapters.push(App.createChapter({
                 id,
                 chapNum,
