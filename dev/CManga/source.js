@@ -1440,7 +1440,7 @@ const types_1 = require("@paperback/types");
 const CMangaParser_1 = require("./CMangaParser");
 const DOMAIN = 'https://cmangax13.com/';
 exports.CMangaInfo = {
-    version: '1.1.1 alpha',
+    version: '1.1.1 alp',
     name: 'CManga',
     icon: 'icon.png',
     author: 'AlanNois',
@@ -1736,12 +1736,13 @@ class Parser {
             const name = `Chap ${in4.num}`;
             console.log(`Chapter ID: ${id}, Chapter Number: ${chapNum}, Chapter Name: ${name}`);
             console.log(`Chapter Date: ${formattedDate}, Chapter Time: ${formattedTime}`);
+            console.log(`Chapter Views: ${in4.statics.view}`);
             chapters.push(App.createChapter({
                 id,
                 chapNum,
                 name,
                 langCode: '🇻🇳',
-                time: new Date(`${formattedDate} ${formattedTime}`),
+                // time: new Date(`${formattedDate} ${formattedTime}`),
                 group: `${in4.statics.view} lượt xem`,
             }));
         }
