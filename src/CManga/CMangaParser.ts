@@ -50,7 +50,8 @@ export class Parser {
 
             const id = obj.id_chapter;
             const chapNum = parseFloat(in4.num);
-            const name = this.titleCase(in4.name) ?? `Chap ${in4.num}`;
+            // const name = this.titleCase(in4.name) ?? `Chap ${in4.num}`;
+            const name = `Chap ${in4.num}`;
             console.log(`Chapter ID: ${id}, Chapter Number: ${chapNum}, Chapter Name: ${name}`);
             console.log(`Chapter Date: ${formattedDate}, Chapter Time: ${formattedTime}`);
 
