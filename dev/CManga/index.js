@@ -1440,7 +1440,7 @@ const types_1 = require("@paperback/types");
 const CMangaParser_1 = require("./CMangaParser");
 const DOMAIN = 'https://cmangax13.com/';
 exports.CMangaInfo = {
-    version: '1.1.1 alp',
+    version: '1.1.1 alpha',
     name: 'CManga',
     icon: 'icon.png',
     author: 'AlanNois',
@@ -1730,19 +1730,20 @@ class Parser {
             const [hour, minute] = time.split(':');
             const formattedTime = `${hour}:${minute}`;
             const formattedDate = `${month}/${day}/${year}`;
-            const id = obj.id_chapter;
+            const id = String(obj.id_chapter);
             const chapNum = parseFloat(in4.num);
-            // const name = this.titleCase(in4.name) ?? `Chap ${in4.num}`;
-            const name = `Chap ${in4.num}`;
-            console.log(`Chapter ID: ${id}, Chapter Number: ${chapNum}, Chapter Name: ${name}`);
-            console.log(`Chapter Date: ${formattedDate}, Chapter Time: ${formattedTime}`);
-            console.log(`Chapter Views: ${in4.statics.view}`);
+            const name = this.titleCase(in4.name);
+            console.log(`Type of id: ${typeof id}`);
+            console.log(`Type of chapNum: ${typeof chapNum}`);
+            console.log(`Type of name: ${typeof name}`);
+            console.log(`Type of formattedDate: ${typeof new Date(`${formattedDate} ${formattedTime}`)}`);
+            console.log(`Type of group: ${typeof `${in4.statics.view} lượt xem`}`);
             chapters.push(App.createChapter({
                 id,
                 chapNum,
                 name,
                 langCode: '🇻🇳',
-                // time: new Date(`${formattedDate} ${formattedTime}`),
+                time: new Date(`${formattedDate} ${formattedTime}`),
                 group: `${in4.statics.view} lượt xem`,
             }));
         }
