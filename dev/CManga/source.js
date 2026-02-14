@@ -1725,6 +1725,7 @@ class Parser {
         const chapters = [];
         for (const obj of json) {
             const in4 = JSON.parse(obj.info);
+            console.log(in4);
             const [date, time] = in4.last_update.split(' ');
             const [year, month, day] = date.split('-');
             const [hour, minute] = time.split(':');
