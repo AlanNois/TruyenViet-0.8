@@ -1438,9 +1438,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.CManga = exports.CMangaInfo = void 0;
 const types_1 = require("@paperback/types");
 const CMangaParser_1 = require("./CMangaParser");
-const DOMAIN = 'https://cmangax12.com/';
+const DOMAIN = 'https://cmangax13.com/';
 exports.CMangaInfo = {
-    version: '1.1.0',
+    version: '1.1.1',
     name: 'CManga',
     icon: 'icon.png',
     author: 'AlanNois',
@@ -1730,7 +1730,7 @@ class Parser {
             const [hour, minute] = time.split(':');
             const formattedTime = `${hour}:${minute}`;
             const formattedDate = `${month}/${day}/${year}`;
-            const id = obj.id_chapter;
+            const id = String(obj.id_chapter);
             const chapNum = parseFloat(in4.num);
             const name = this.titleCase(in4.name);
             chapters.push(App.createChapter({
