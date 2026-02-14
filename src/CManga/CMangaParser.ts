@@ -54,13 +54,14 @@ export class Parser {
             const name = `Chap ${in4.num}`;
             console.log(`Chapter ID: ${id}, Chapter Number: ${chapNum}, Chapter Name: ${name}`);
             console.log(`Chapter Date: ${formattedDate}, Chapter Time: ${formattedTime}`);
+            console.log(`Chapter Views: ${in4.statics.view}`);
 
             chapters.push(App.createChapter({
                 id,
                 chapNum,
                 name,
                 langCode: '🇻🇳',
-                time: new Date(`${formattedDate} ${formattedTime}`),
+                // time: new Date(`${formattedDate} ${formattedTime}`),
                 group: `${in4.statics.view} lượt xem`,
             }));
         }
