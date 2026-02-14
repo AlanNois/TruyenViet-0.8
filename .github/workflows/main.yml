@@ -42,6 +42,10 @@ jobs:
       - run: npx paperback --version
       - run: npm run bundle -- --folder=${{ steps.extract_branch.outputs.branch }}
 
+      - name: Fix URL case
+        run: |
+          find bundles -name "index.html" -exec sed -i 's|truyenviet-0.8|TruyenViet-0.8|g' {} \;
+
       - name: Deploy to GitHub Pages
         uses: JamesIves/github-pages-deploy-action@v4.5.0
         with:
