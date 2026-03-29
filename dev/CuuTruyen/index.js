@@ -2486,7 +2486,7 @@ const CuuTruyenParser_1 = require("./CuuTruyenParser");
 const CuuTruyenSetting_1 = require("./CuuTruyenSetting");
 const CuuTruyenDrm_1 = require("./CuuTruyenDrm");
 exports.CuuTruyenInfo = {
-    version: '1.0.2',
+    version: '1.0.3',
     name: 'CuuTruyen',
     icon: 'icon.png',
     author: 'AlanNois',
@@ -2506,6 +2506,7 @@ exports.CuuTruyenInfo = {
     ],
     intents: types_1.SourceIntents.MANGA_CHAPTERS | types_1.SourceIntents.HOMEPAGE_SECTIONS | types_1.SourceIntents.SETTINGS_UI
 };
+const PROXY_URL = 'https://light-pig-37.tachibana-shin.deno.net'; // Using a proxy to bypass ISP blocks
 class CuuTruyen {
     constructor() {
         this.stateManager = App.createSourceStateManager();
@@ -2599,7 +2600,7 @@ class CuuTruyen {
         return `${this.getBaseUrl()}/mangas/${mangaId}`;
     }
     async apiRequest(endpoint, params = '') {
-        const url = `https://hard-emu-60.deno.dev/?url=${await this.getApiUrl()}/${endpoint}${params ? `?${params}` : ''}`; // Using a proxy to bypass ISP blocks
+        const url = `${PROXY_URL}?url=${await this.getApiUrl()}/${endpoint}${params ? `?${params}` : ''}`; // Using a proxy to bypass ISP blocks
         const request = App.createRequest({
             url,
             method: 'GET',
