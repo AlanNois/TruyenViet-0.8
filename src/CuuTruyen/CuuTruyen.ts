@@ -30,7 +30,7 @@ import {
 import { unscrambleImage } from './CuuTruyenDrm';
 
 export const CuuTruyenInfo: SourceInfo = {
-    version: '1.0.2',
+    version: '1.0.3',
     name: 'CuuTruyen',
     icon: 'icon.png',
     author: 'AlanNois',
@@ -50,6 +50,8 @@ export const CuuTruyenInfo: SourceInfo = {
     ],
     intents: SourceIntents.MANGA_CHAPTERS | SourceIntents.HOMEPAGE_SECTIONS | SourceIntents.SETTINGS_UI
 };
+
+const PROXY_URL = 'https://light-pig-37.tachibana-shin.deno.net'; // Using a proxy to bypass ISP blocks
 
 export class CuuTruyen implements ChapterProviding, MangaProviding, SearchResultsProviding, HomePageSectionsProviding {
 
@@ -162,7 +164,7 @@ export class CuuTruyen implements ChapterProviding, MangaProviding, SearchResult
     }
 
     private async apiRequest(endpoint: string, params = ''): Promise<any> {
-        const url = `https://hard-emu-60.deno.dev/?url=${await this.getApiUrl()}/${endpoint}${params ? `?${params}` : ''}`; // Using a proxy to bypass ISP blocks
+        const url = `${PROXY_URL}?url=${await this.getApiUrl()}/${endpoint}${params ? `?${params}` : ''}`; // Using a proxy to bypass ISP blocks
         const request = App.createRequest({
             url,
             method: 'GET',
