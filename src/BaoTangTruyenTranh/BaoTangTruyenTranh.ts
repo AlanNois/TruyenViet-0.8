@@ -23,7 +23,7 @@ import {
 
 import { Parser } from './BaoTangTruyenTranhParser';
 
-const DOMAIN = 'https://baotangtruyen36.top/';
+const DOMAIN = 'https://baotangtruyen37.top/';
 const API = 'https://api.chilltruyentranh.site/';
 
 // export const isLastPage = ($: CheerioStatic): boolean => {
@@ -46,7 +46,7 @@ export const isLastPage = ($: any): boolean => {
 };
 
 export const BaoTangTruyenTranhInfo: SourceInfo = {
-    version: '1.1.12',
+    version: '1.1.13',
     name: 'BaoTangTruyenTranh',
     icon: 'icon.png',
     author: 'AlanNois',
