@@ -27,7 +27,7 @@ const DOMAIN = 'https://goctruyentranhvui23.com/';
 const Auth = 'Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJqbmkgcHJhdHR2b25kYSIsImNvbWljSWRzIjpbXSwicm9sZUlkIjpudWxsLCJncm91cElkIjpudWxsLCJhZG1pbiI6ZmFsc2UsInJhbmsiOjAsInBlcm1pc3Npb24iOltdLCJpZCI6IjAwMDExNjg0MzkiLCJ0ZWFtIjpmYWxzZSwiaWF0IjoxNzY3ODAzNDc4LCJlbWFpbCI6Im51bGwifQ.eWFypaV4dDZ_R5J9Gf0HqkbLaQDWCVwuja4yJJafl6KmPgaRk9TRHHX-0X94rP6xQtpeZRS25RNjOT0RpIdffg';
 
 export const GocTruyenTranhInfo: SourceInfo = {
-    version: '1.2.7',
+    version: '1.2.8',
     name: 'GocTruyenTranh',
     icon: 'icon.png',
     author: 'AlanNois',
@@ -74,7 +74,7 @@ export class GocTruyenTranh implements SearchResultsProviding, MangaProviding, C
 
     parser = new Parser();
 
-    private async DOMHTML(url: string): Promise<CheerioStatic> {
+    private async DOMHTML(url: string): Promise<CheerioAPI> {
         const request = App.createRequest({
             url: url,
             method: 'GET',

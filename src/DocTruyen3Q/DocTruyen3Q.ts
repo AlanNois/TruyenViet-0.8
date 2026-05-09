@@ -20,11 +20,12 @@ import {
     BadgeColor,
 } from '@paperback/types';
 
+import type { CheerioAPI } from 'cheerio';
 import { Parser } from './DocTruyen3QParser';
 
 const DOMAIN = 'https://doctruyen3qhubz.net/';
 
-export const isLastPage = ($: CheerioStatic): boolean => {
+export const isLastPage = ($: CheerioAPI): boolean => {
     const lastPage = Number($('ul.pagination > li.page-item:not(:has(a[rel=\'next\'])) a').last().text().trim());
     const currentPage = Number($('ul.pagination > li.active').text().trim());
 
@@ -32,7 +33,7 @@ export const isLastPage = ($: CheerioStatic): boolean => {
 };
 
 export const DocTruyen3QInfo: SourceInfo = {
-    version: '1.2.6',
+    version: '1.2.7',
     name: 'DocTruyen3Q',
     icon: 'icon.png',
     author: 'AlanNois',
@@ -81,7 +82,7 @@ export class DocTruyen3Q implements SearchResultsProviding, MangaProviding, Chap
 
     parser = new Parser();
 
-    private async DOMHTML(url: string): Promise<CheerioStatic> {
+    private async DOMHTML(url: string): Promise<CheerioAPI> {
         const request = App.createRequest({
             url: url,
             method: 'GET',
