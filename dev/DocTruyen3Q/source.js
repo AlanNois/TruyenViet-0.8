@@ -471,7 +471,7 @@ const isLastPage = ($) => {
 };
 exports.isLastPage = isLastPage;
 exports.DocTruyen3QInfo = {
-    version: '1.2.6',
+    version: '1.2.7',
     name: 'DocTruyen3Q',
     icon: 'icon.png',
     author: 'AlanNois',
