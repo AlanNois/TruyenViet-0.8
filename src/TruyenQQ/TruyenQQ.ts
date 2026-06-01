@@ -20,10 +20,11 @@ import {
 } from '@paperback/types';
 
 import { Parser } from './TruyenQQParser';
+import { CheerioAPI } from 'cheerio';
 
 const DOMAIN = 'https://truyenqqko.com/';
-
-export const isLastPage = ($: CheerioStatic): boolean => {
+    
+export const isLastPage = ($: CheerioAPI): boolean => {
     const current = $('div.page_redirect > a > p.active').text();
     const lastLinkHref = $('div.page_redirect > a').last().attr('href');
 
@@ -37,7 +38,7 @@ export const isLastPage = ($: CheerioStatic): boolean => {
 };
 
 export const TruyenQQInfo: SourceInfo = {
-    version: '1.1.3',
+    version: '1.1.4',
     name: 'TruyenQQ',
     icon: 'icon.png',
     author: 'AlanNois',
@@ -85,7 +86,7 @@ export class TruyenQQ implements SearchResultsProviding, MangaProviding, Chapter
 
     parser = new Parser();
 
-    private async DOMHTML(url: string): Promise<CheerioStatic> {
+    private async DOMHTML(url: string): Promise<CheerioAPI> {
         const request = App.createRequest({
             url: url,
             method: 'GET',
@@ -168,7 +169,6 @@ export class TruyenQQ implements SearchResultsProviding, MangaProviding, Chapter
 
         const url = `${DOMAIN}${query.title ? 'tim-kiem' : 'tim-kiem-nang-cao'}/trang-${page}`;
         const param = `?q=${query.title?.replaceAll(" ", "%20") ?? ''}`+encodeURI(`&category=${search.genres}${paramExgenres}&country=${search.country}&status=${search.status}&minchapter=${search.minchapter}&sort=${search.sort}`);
-        );
         console.log('Search URL:', url + param);
         const $ = await this.DOMHTML(url + param);
         const tiles = this.parser.parseSearchResults($);

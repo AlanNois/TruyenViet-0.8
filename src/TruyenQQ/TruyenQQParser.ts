@@ -5,6 +5,7 @@ import {
     TagSection,
     PartialSourceManga
 } from '@paperback/types';
+import { CheerioAPI } from 'cheerio';
 
 export class Parser {
 
@@ -33,7 +34,7 @@ export class Parser {
         }
     }
 
-    parseMangaDetails($: CheerioStatic, mangaId: string): SourceManga {
+    parseMangaDetails($: CheerioAPI, mangaId: string): SourceManga {
         const tags: Tag[] = [];
 
         $('a', '.list01').each((_: any, obj: any) => {
@@ -63,7 +64,7 @@ export class Parser {
         });
     }
 
-    parseChapterList($: CheerioStatic): Chapter[] {
+    parseChapterList($: CheerioAPI): Chapter[] {
         const chapters: Chapter[] = [];
 
         $('.works-chapter-list > .works-chapter-item').each((_: any, obj: any) => {
@@ -89,7 +90,7 @@ export class Parser {
         return chapters;
     }
 
-    parseChapterDetails($: CheerioStatic): string[] {
+    parseChapterDetails($: CheerioAPI): string[] {
         const pages: string[] = [];
 
         $('.chapter_content div .page-chapter img').each((_: any, obj: any) => {
@@ -110,7 +111,7 @@ export class Parser {
         return pages;
     }
 
-    parseSearchResults($: CheerioStatic): PartialSourceManga[] {
+    parseSearchResults($: CheerioAPI): PartialSourceManga[] {
         const tiles: PartialSourceManga[] = [];
 
         $('.list_grid li').each((_: any, manga: any) => {
@@ -131,7 +132,7 @@ export class Parser {
         return tiles;
     }
 
-    parseTags($: any): TagSection[] {
+    parseTags($: CheerioAPI): TagSection[] {
         //id tag đéo đc trùng nhau
         const arrayTags: Tag[] = [];
         const arrayTags2: Tag[] = [];
@@ -184,7 +185,7 @@ export class Parser {
         return tagSections;
     }
 
-    parseFeaturedSection($: CheerioStatic): PartialSourceManga[] {
+    parseFeaturedSection($: CheerioAPI): PartialSourceManga[] {
         const featuredItems: PartialSourceManga[] = [];
 
         $('#div_suggest .list_grid li').each((_: any, manga: any) => {
