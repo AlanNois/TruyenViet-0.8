@@ -471,14 +471,14 @@ const isLastPage = ($) => {
 };
 exports.isLastPage = isLastPage;
 exports.LuotTruyenInfo = {
-    version: '1.0.0',
+    version: '1.0.1',
     name: 'LuotTruyen',
     icon: 'icon.png',
     author: 'AlanNois',
     authorWebsite: 'https://github.com/AlanNois',
     description: 'Extension that pulls manga from LuotTruyen',
     contentRating: types_1.ContentRating.MATURE,
-    websiteBaseURL: 'https://luottruyen5.com',
+    websiteBaseURL: 'https://luottruyen7.com',
     sourceTags: [
         {
             text: 'Vietnamese',
@@ -937,7 +937,7 @@ exports.Parser = Parser;
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.resetSettings = exports.domainSettings = exports.getDomain = void 0;
-const DEFAULT_BASE_URL = 'https://luottruyen5.com';
+const DEFAULT_BASE_URL = 'https://luottruyen7.com';
 const getDomain = async (stateManager) => {
     return await stateManager.retrieve('baseUrl') ?? DEFAULT_BASE_URL;
 };
