@@ -35,14 +35,14 @@ export const isLastPage = ($: CheerioAPI): boolean => {
 };
 
 export const LuotTruyenInfo: SourceInfo = {
-    version: '1.0.0',
+    version: '1.0.1',
     name: 'LuotTruyen',
     icon: 'icon.png',
     author: 'AlanNois',
     authorWebsite: 'https://github.com/AlanNois',
     description: 'Extension that pulls manga from LuotTruyen',
     contentRating: ContentRating.MATURE,
-    websiteBaseURL: 'https://luottruyen5.com',
+    websiteBaseURL: 'https://luottruyen7.com',
     sourceTags: [
         {
             text: 'Vietnamese',

@@ -21,7 +21,7 @@ import {
 
 import { Parser } from './TopTruyenParser';
 
-const DOMAIN = 'https://www.toptruyenzone.com/';
+const DOMAIN = 'https://www.toptruyenzone3.com/';
 
 export const isLastPage = ($: CheerioStatic): boolean => {
     // try with span else a tag
@@ -43,7 +43,7 @@ export const isLastPage = ($: CheerioStatic): boolean => {
 };
 
 export const TopTruyenInfo: SourceInfo = {
-    version: '1.1.4',
+    version: '1.1.5',
     name: 'TopTruyen',
     icon: 'icon.png',
     author: 'AlanNois',

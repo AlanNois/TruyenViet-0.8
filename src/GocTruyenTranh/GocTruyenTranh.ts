@@ -23,11 +23,11 @@ import type { CheerioAPI } from 'cheerio';
 
 import { Parser } from './GocTruyenTranhParser';
 
-const DOMAIN = 'https://goctruyentranhvui23.com/';
+const DOMAIN = 'https://goctruyentranhvui30.com/';
 const Auth = 'Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJqbmkgcHJhdHR2b25kYSIsImNvbWljSWRzIjpbXSwicm9sZUlkIjpudWxsLCJncm91cElkIjpudWxsLCJhZG1pbiI6ZmFsc2UsInJhbmsiOjAsInBlcm1pc3Npb24iOltdLCJpZCI6IjAwMDExNjg0MzkiLCJ0ZWFtIjpmYWxzZSwiaWF0IjoxNzY3ODAzNDc4LCJlbWFpbCI6Im51bGwifQ.eWFypaV4dDZ_R5J9Gf0HqkbLaQDWCVwuja4yJJafl6KmPgaRk9TRHHX-0X94rP6xQtpeZRS25RNjOT0RpIdffg';
 
 export const GocTruyenTranhInfo: SourceInfo = {
-    version: '1.2.8',
+    version: '1.2.9',
     name: 'GocTruyenTranh',
     icon: 'icon.png',
     author: 'AlanNois',
