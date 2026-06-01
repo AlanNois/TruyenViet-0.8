@@ -90,7 +90,7 @@ export class Parser {
 
             const chapNum = parseFloat(name.replace(/[^0-9.]/g, '') || '0') || 0;
             const dateText = $('div.col-xs-4', obj).text().trim();
-            const time = this.convertTime(dateText);
+            const time = this.convertTime(entities.decodeHTML(dateText));
             const views = $('div.col-xs-3', obj).text().trim();
 
             chapters.push(App.createChapter({
@@ -98,7 +98,7 @@ export class Parser {
                 chapNum,
                 name: entities.decodeHTML(name),
                 langCode: '🇻🇳',
-                time,
+                time: new Date(time),
                 group: `${views} lượt xem`,
             }));
         });

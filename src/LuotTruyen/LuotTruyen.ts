@@ -35,7 +35,7 @@ export const isLastPage = ($: CheerioAPI): boolean => {
 };
 
 export const LuotTruyenInfo: SourceInfo = {
-    version: '1.1.0',
+    version: '1.1.1',
     name: 'LuotTruyen',
     icon: 'icon.png',
     author: 'AlanNois',
@@ -127,7 +127,6 @@ export class LuotTruyen implements ChapterProviding, MangaProviding, SearchResul
 
     async getMangaDetails(mangaId: string): Promise<SourceManga> {
         const baseUrl = await this.getBaseUrl();
-        console.log(`${baseUrl}/truyen-tranh/${mangaId}`);
         const $ = await this.DOMHTML(`${baseUrl}/truyen-tranh/${mangaId}`);
         return this.parser.parseMangaDetails($, mangaId);
     }
