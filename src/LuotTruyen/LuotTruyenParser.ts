@@ -7,6 +7,7 @@ import {
 } from '@paperback/types';
 
 import type { CheerioAPI } from 'cheerio';
+import * as entities from 'entities';
 
 export class Parser {
 
@@ -65,10 +66,10 @@ export class Parser {
         return App.createSourceManga({
             id: mangaId,
             mangaInfo: App.createMangaInfo({
-                titles: [title],
-                author,
+                titles: [entities.decodeHTML(title)],
+                author: entities.decodeHTML(author),
                 image: image.startsWith('//') ? `https:${image}` : image,
-                desc,
+                desc: entities.decodeHTML(desc),
                 status,
                 tags: [App.createTagSection({ id: '0', label: 'genres', tags })],
             }),
@@ -95,7 +96,7 @@ export class Parser {
             chapters.push(App.createChapter({
                 id: chapterId,
                 chapNum,
-                name,
+                name: entities.decodeHTML(name),
                 langCode: '🇻🇳',
                 time,
                 group: `${views} lượt xem`,
@@ -168,8 +169,8 @@ export class Parser {
             tiles.push(App.createPartialSourceManga({
                 mangaId,
                 image: image.startsWith('//') ? `https:${image}` : image,
-                title,
-                subtitle,
+                title: entities.decodeHTML(title),
+                subtitle: entities.decodeHTML(subtitle),
             }));
         });
 
@@ -191,7 +192,7 @@ export class Parser {
             tiles.push(App.createPartialSourceManga({
                 mangaId,
                 image: image.startsWith('//') ? `https:${image}` : image,
-                title,
+                title: entities.decodeHTML(title),
             }));
         });
 
