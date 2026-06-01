@@ -1446,7 +1446,7 @@ const isLastPage = ($) => {
 };
 exports.isLastPage = isLastPage;
 exports.LuotTruyenInfo = {
-    version: '1.1.0',
+    version: '1.1.1',
     name: 'LuotTruyen',
     icon: 'icon.png',
     author: 'AlanNois',
@@ -1530,7 +1530,6 @@ class LuotTruyen {
     }
     async getMangaDetails(mangaId) {
         const baseUrl = await this.getBaseUrl();
-        console.log(`${baseUrl}/truyen-tranh/${mangaId}`);
         const $ = await this.DOMHTML(`${baseUrl}/truyen-tranh/${mangaId}`);
         return this.parser.parseMangaDetails($, mangaId);
     }
@@ -1768,14 +1767,14 @@ class Parser {
             const chapterId = href.replace(/^https?:\/\/[^/]+\/truyen-tranh\//, '');
             const chapNum = parseFloat(name.replace(/[^0-9.]/g, '') || '0') || 0;
             const dateText = $('div.col-xs-4', obj).text().trim();
-            const time = this.convertTime(dateText);
+            const time = this.convertTime(entities.decodeHTML(dateText));
             const views = $('div.col-xs-3', obj).text().trim();
             chapters.push(App.createChapter({
                 id: chapterId,
                 chapNum,
                 name: entities.decodeHTML(name),
                 langCode: '🇻🇳',
-                time,
+                time: new Date(time),
                 group: `${views} lượt xem`,
             }));
         });
