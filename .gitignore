@@ -3,6 +3,7 @@ node_modules
 dist
 bundles
 tmp
+deprecated/
 
 #compiled sources
 reference
