@@ -166,13 +166,10 @@ export class TruyenQQ implements SearchResultsProviding, MangaProviding, Chapter
         search.exgenres = exgenres.join(',');
         const paramExgenres = search.exgenres ? `&notcategory==${search.exgenres}` : '';
 
-        const url = `${DOMAIN}${query.title ? 'tim-kiem' : 'tim-kiem-nang-cao'}/trang-${page}.html`;
-        const param = encodeURI(
-            `?q=${query.title ?? ''}
-            &category=${search.genres}${paramExgenres}
-            &country=${search.country}&status=${search.status}
-            &minchapter=${search.minchapter}&sort=${search.sort}`
+        const url = `${DOMAIN}${query.title ? 'tim-kiem' : 'tim-kiem-nang-cao'}/trang-${page}`;
+        const param = `?q=${query.title?.replaceAll(" ", "%20") ?? ''}`+encodeURI(`&category=${search.genres}${paramExgenres}&country=${search.country}&status=${search.status}&minchapter=${search.minchapter}&sort=${search.sort}`);
         );
+        console.log('Search URL:', url + param);
         const $ = await this.DOMHTML(url + param);
         const tiles = this.parser.parseSearchResults($);
         metadata = !isLastPage($) ? { page: page + 1 } : undefined;
@@ -201,16 +198,16 @@ export class TruyenQQ implements SearchResultsProviding, MangaProviding, Chapter
                     url = `${DOMAIN}`;
                     break;
                 case 'hot':
-                    url = `${DOMAIN}truyen-yeu-thich.html`;
+                    url = `${DOMAIN}truyen-yeu-thich`;
                     break;
                 case 'new_updated':
-                    url = `${DOMAIN}truyen-moi-cap-nhat.html`;
+                    url = `${DOMAIN}truyen-moi-cap-nhat`;
                     break;
                 case 'new_added':
-                    url = `${DOMAIN}truyen-tranh-moi.html`;
+                    url = `${DOMAIN}truyen-tranh-moi`;
                     break;
                 case 'full':
-                    url = `${DOMAIN}truyen-hoan-thanh.html`;
+                    url = `${DOMAIN}truyen-hoan-thanh`;
                     break;
                 default:
                     throw new Error('Invalid homepage section ID');
@@ -245,19 +242,19 @@ export class TruyenQQ implements SearchResultsProviding, MangaProviding, Chapter
 
         switch (homepageSectionId) {
             case 'hot':
-                param = `trang-${page}.html`;
+                param = `trang-${page}`;
                 url = `${DOMAIN}truyen-yeu-thich/`;
                 break;
             case 'new_updated':
-                param = `trang-${page}.html`;
+                param = `trang-${page}`;
                 url = `${DOMAIN}truyen-moi-cap-nhat/`;
                 break;
             case 'new_added':
-                param = `trang-${page}.html`;
+                param = `trang-${page}`;
                 url = `${DOMAIN}truyen-tranh-moi/`;
                 break;
             case 'full':
-                param = `trang-${page}.html?status=2`;
+                param = `trang-${page}?status=2`;
                 url = `${DOMAIN}truyen-hoan-thanh/`;
                 break;
             default:
