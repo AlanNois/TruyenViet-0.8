@@ -477,7 +477,7 @@ const isLastPage = ($) => {
 };
 exports.isLastPage = isLastPage;
 exports.TruyenQQInfo = {
-    version: '1.1.3',
+    version: '1.1.4',
     name: 'TruyenQQ',
     icon: 'icon.png',
     author: 'AlanNois',
@@ -596,7 +596,6 @@ class TruyenQQ {
         const paramExgenres = search.exgenres ? `&notcategory==${search.exgenres}` : '';
         const url = `${DOMAIN}${query.title ? 'tim-kiem' : 'tim-kiem-nang-cao'}/trang-${page}`;
         const param = `?q=${query.title?.replaceAll(" ", "%20") ?? ''}` + encodeURI(`&category=${search.genres}${paramExgenres}&country=${search.country}&status=${search.status}&minchapter=${search.minchapter}&sort=${search.sort}`);
-        ;
         console.log('Search URL:', url + param);
         const $ = await this.DOMHTML(url + param);
         const tiles = this.parser.parseSearchResults($);
