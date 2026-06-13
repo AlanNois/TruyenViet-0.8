@@ -1446,7 +1446,7 @@ const isLastPage = ($) => {
 };
 exports.isLastPage = isLastPage;
 exports.LuotTruyenInfo = {
-    version: '1.1.1',
+    version: '1.1.2',
     name: 'LuotTruyen',
     icon: 'icon.png',
     author: 'AlanNois',
@@ -1488,7 +1488,7 @@ class LuotTruyen {
         });
     }
     async getBaseUrl() {
-        return (0, LuotTruyenSetting_1.getDomain)(this.stateManager);
+        return await (0, LuotTruyenSetting_1.getDomain)(this.stateManager);
     }
     async getSourceMenu() {
         return App.createDUISection({
@@ -1935,7 +1935,7 @@ exports.Parser = Parser;
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.resetSettings = exports.domainSettings = exports.getDomain = void 0;
-const DEFAULT_BASE_URL = 'https://luottruyen7.com';
+const DEFAULT_BASE_URL = 'https://luottruyen8.com';
 const getDomain = async (stateManager) => {
     return await stateManager.retrieve('baseUrl') ?? DEFAULT_BASE_URL;
 };
