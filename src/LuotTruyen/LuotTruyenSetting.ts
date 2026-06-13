@@ -4,7 +4,7 @@ import {
     SourceStateManager,
 } from '@paperback/types';
 
-const DEFAULT_BASE_URL = 'https://luottruyen7.com';
+const DEFAULT_BASE_URL = 'https://luottruyen8.com';
 
 export const getDomain = async (stateManager: SourceStateManager): Promise<string> => {
     return (await stateManager.retrieve('baseUrl') as string) ?? DEFAULT_BASE_URL;
