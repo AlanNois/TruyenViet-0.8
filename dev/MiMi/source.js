@@ -464,7 +464,7 @@ exports.MiMi = exports.MiMiInfo = void 0;
 const types_1 = require("@paperback/types");
 const MiMiParser_1 = require("./MiMiParser");
 exports.MiMiInfo = {
-    version: '1.0.0',
+    version: '1.0.1',
     name: 'MiMi',
     icon: 'icon.png',
     author: 'AlanNois',
