@@ -2486,7 +2486,7 @@ const CuuTruyenParser_1 = require("./CuuTruyenParser");
 const CuuTruyenSetting_1 = require("./CuuTruyenSetting");
 const CuuTruyenDrm_1 = require("./CuuTruyenDrm");
 exports.CuuTruyenInfo = {
-    version: '1.0.3',
+    version: '1.0.4',
     name: 'CuuTruyen',
     icon: 'icon.png',
     author: 'AlanNois',
@@ -2845,7 +2845,24 @@ exports.unscrambleImage = unscrambleImage;
 },{"buffer":63}],67:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Parser = void 0;
+exports.Parser = exports.rewriteStorageUrl = void 0;
+// Storage host rewrite rules (converted from Aidoku Rust source)
+const REPLACEMENTS = [
+    ['storage-ct.lrclib.net', 'storage-bravo.cuutruyen.net'],
+    ['storage-ct-riften.site', 'storage-charlie.cuutruyen.net'],
+];
+/**
+ * Rewrites storage image URLs to working hosts.
+ * Replaces all occurrences of each old host with its new host.
+ */
+function rewriteStorageUrl(url) {
+    let result = url;
+    for (const [oldHost, newHost] of REPLACEMENTS) {
+        result = result.replaceAll(oldHost, newHost);
+    }
+    return result;
+}
+exports.rewriteStorageUrl = rewriteStorageUrl;
 class Parser {
     parseMangaDetails(data, mangaId) {
         const tags = [];
@@ -2859,8 +2876,8 @@ class Parser {
         }
         const titles = [data.name ?? ''];
         const author = data.author?.name ?? data.author_name ?? '';
-        const image = data.cover_url ?? data.cover_mobile_url ?? '';
-        const banner = data.panorama_url ?? '';
+        const image = rewriteStorageUrl(data.cover_url ?? data.cover_mobile_url ?? '');
+        const banner = rewriteStorageUrl(data.panorama_url ?? '');
         let desc = data.description ?? '';
         if (data.team?.name) {
             desc = `Nhóm dịch: ${data.team.name}\n\n${desc}`;
@@ -2918,7 +2935,7 @@ class Parser {
         if (data.pages) {
             for (const page of data.pages) {
                 const drmData = page.drm_data.replace(/\n/g, '');
-                const imageUrl = `${page.image_url}${drmData ? `#drm_data=${drmData}` : ''}`;
+                const imageUrl = `${rewriteStorageUrl(page.image_url)}${drmData ? `#drm_data=${drmData}` : ''}`;
                 pages.push(imageUrl);
             }
         }
@@ -2930,7 +2947,7 @@ class Parser {
             if (!manga.id || !manga.name)
                 continue;
             const title = manga.name.trim();
-            const image = manga.cover_url ?? manga.cover_mobile_url ?? '';
+            const image = rewriteStorageUrl(manga.cover_url ?? manga.cover_mobile_url ?? '');
             const subtitle = `Chương ${manga.newest_chapter_number}`;
             const mangaId = manga.id.toString();
             results.push(App.createPartialSourceManga({
@@ -3012,6 +3029,8 @@ class Parser {
             { label: 'Samurai', id: 'samurai' },
             { label: 'Virtual reality', id: 'virtual-reality' },
             { label: 'Video games', id: 'video-games' },
+            { label: 'NTR', id: 'ntr' },
+            { label: 'NSFW', id: 'nsfw' },
         ];
         return [
             App.createTagSection({
