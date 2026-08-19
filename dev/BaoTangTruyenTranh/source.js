@@ -1440,7 +1440,7 @@ const types_1 = require("@paperback/types");
 const BaoTangTruyenTranhParser_1 = require("./BaoTangTruyenTranhParser");
 const DOMAIN = 'https://baotangtruyen37.top/';
 const API = 'https://api.chilltruyentranh.site/';
-// export const isLastPage = ($: CheerioStatic): boolean => {
+// export const isLastPage = ($: CheerioAPI): boolean => {
 //     const pages: number[] = [];
 //     $("li", "ul.pagination").each((_, page) => {
 //         const p = Number($('a', page).text().trim());
@@ -1507,7 +1507,7 @@ class BaoTangTruyenTranh {
     getMangaShareUrl(mangaId) {
         return `${DOMAIN}${mangaId}`;
     }
-    // private async DOMHTML(url: string): Promise<CheerioStatic> {
+    // private async DOMHTML(url: string): Promise<CheerioAPI> {
     //     const request = App.createRequest({
     //         url: url,
     //         method: 'GET',
@@ -1795,7 +1795,7 @@ exports.Parser = void 0;
 const entities = __importStar(require("entities"));
 class Parser {
     constructor() {
-        // parseViewMore($: CheerioStatic): PartialSourceManga[] {
+        // parseViewMore($: CheerioAPI): PartialSourceManga[] {
         //     const manga: PartialSourceManga[] = [];
         //     $('.row .item').each((_, element) => {
         //         const title = $('h3 > a', element).text().trim();
