@@ -477,7 +477,7 @@ const isLastPage = ($) => {
 };
 exports.isLastPage = isLastPage;
 exports.TruyenQQInfo = {
-    version: '1.1.4',
+    version: '1.1.5',
     name: 'TruyenQQ',
     icon: 'icon.png',
     author: 'AlanNois',
@@ -619,7 +619,7 @@ class TruyenQQ {
             let url;
             switch (section.id) {
                 case 'featured':
-                    url = `${DOMAIN}`;
+                    url = `${DOMAIN}doc-truyen`;
                     break;
                 case 'hot':
                     url = `${DOMAIN}truyen-yeu-thich`;
