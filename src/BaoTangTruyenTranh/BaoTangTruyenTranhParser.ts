@@ -129,7 +129,7 @@ export class Parser {
         return sectionItems;
     }
 
-    // parseViewMore($: CheerioStatic): PartialSourceManga[] {
+    // parseViewMore($: CheerioAPI): PartialSourceManga[] {
     //     const manga: PartialSourceManga[] = [];
     //     $('.row .item').each((_, element) => {
     //         const title = $('h3 > a', element).text().trim();

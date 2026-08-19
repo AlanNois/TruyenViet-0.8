@@ -26,7 +26,7 @@ import { Parser } from './BaoTangTruyenTranhParser';
 const DOMAIN = 'https://baotangtruyen37.top/';
 const API = 'https://api.chilltruyentranh.site/';
 
-// export const isLastPage = ($: CheerioStatic): boolean => {
+// export const isLastPage = ($: CheerioAPI): boolean => {
 //     const pages: number[] = [];
 //     $("li", "ul.pagination").each((_, page) => {
 //         const p = Number($('a', page).text().trim());
@@ -97,7 +97,7 @@ export class BaoTangTruyenTranh implements ChapterProviding, MangaProviding, Sea
 
     parser = new Parser();
 
-    // private async DOMHTML(url: string): Promise<CheerioStatic> {
+    // private async DOMHTML(url: string): Promise<CheerioAPI> {
     //     const request = App.createRequest({
     //         url: url,
     //         method: 'GET',
