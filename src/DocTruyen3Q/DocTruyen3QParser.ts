@@ -7,6 +7,8 @@ import {
     PartialSourceManga
 } from '@paperback/types';
 
+import type { CheerioAPI } from 'cheerio';
+
 export class Parser {
 
     protected convertTime(timeAgo: string): Date {
@@ -43,7 +45,7 @@ export class Parser {
         return time;
     }
 
-    parseMangaDetails($: CheerioStatic, mangaId: string): SourceManga {
+    parseMangaDetails($: CheerioAPI, mangaId: string): SourceManga {
         const tags: Tag[] = [];
 
         $('.info-detail-comic > .category > .detail-info > a').each((_: any, obj: any) => {
@@ -53,9 +55,9 @@ export class Parser {
         });
 
         const titles = [$('.title-manga').text().trim()];
-        const image = $('.image-info img.image-comic').first().attr('src') ?? 
-            $('.image-info img.image-comic').first().attr('data-src') ?? 
-            $('.image-info img.image-comic').first().attr('data-cfsrc') ?? 
+        const image = $('.image-info img.image-comic').first().attr('src') ??
+            $('.image-info img.image-comic').first().attr('data-src') ??
+            $('.image-info img.image-comic').first().attr('data-cfsrc') ??
             $('.image-info img.image-comic').first().attr('data-original') ?? '';
         const desc = $('.summary-content > p').text();
         const status = $('.status > .detail-info > span').text();
@@ -74,7 +76,7 @@ export class Parser {
         });
     }
 
-    parseChapterList($: CheerioStatic): Chapter[] {
+    parseChapterList($: CheerioAPI): Chapter[] {
         const chapters: Chapter[] = [];
 
         $('#list-chapter-dt > nav > ul > .row:not([style])').each((_: any, obj: any) => {
@@ -101,7 +103,7 @@ export class Parser {
         return chapters;
     }
 
-    parseChapterDetails($: CheerioStatic): string[] {
+    parseChapterDetails($: CheerioAPI): string[] {
         const pages: string[] = [];
         const DEFAULT_IMAGE = 'images/default/chapter_default.png';
 
@@ -140,13 +142,13 @@ export class Parser {
         return pages;
     }
 
-    parseSearchResults($: CheerioStatic): PartialSourceManga[] {
+    parseSearchResults($: CheerioAPI): PartialSourceManga[] {
         const tiles: PartialSourceManga[] = [];
 
         $('.content-search-left > .main-left .item-manga > .item').each((_: any, obj: any) => {
             const title = $('.caption > h3 > a', obj).text().trim();
-            let image = $('.image-item > a > img.image-item', obj).attr('data-original') ?? 
-                $('.image-item > a > img', obj).attr('src') ?? 
+            let image = $('.image-item > a > img.image-item', obj).attr('data-original') ??
+                $('.image-item > a > img', obj).attr('src') ??
                 $('.image-item > a > img', obj).attr('data-cfsrc');
             image = !image ? 'https://i.imgur.com/GYUxEX8.png' : image;
             const mangaId = String($('.caption > h3 > a', obj).attr('href')?.split('/').slice(4).join('/'));
@@ -164,7 +166,7 @@ export class Parser {
         return tiles;
     }
 
-    parseFeaturedSection($: CheerioStatic): PartialSourceManga[] {
+    parseFeaturedSection($: CheerioAPI): PartialSourceManga[] {
         const featuredItems: PartialSourceManga[] = [];
 
         $('.owl-carousel .slide-item').each((_: any, obj: any) => {
@@ -186,19 +188,19 @@ export class Parser {
         return featuredItems;
     }
 
-    parseHomeTemplate($: CheerioStatic, id: string): PartialSourceManga[] {
+    parseHomeTemplate($: CheerioAPI, id: string): PartialSourceManga[] {
         const homeItems: PartialSourceManga[] = [];
 
         $(`${id} > .body > .main-left .item-manga > .item`).each((_: any, obj: any) => {
             const title = $('.caption > h3 > a', obj).text().trim();
             let image: any;
             if (id == '#home') {
-                image = $('.image-item > a > img', obj).attr('data-cfsrc') ?? 
-                    $('.image-item > a > img', obj).attr('src') ?? 
+                image = $('.image-item > a > img', obj).attr('data-cfsrc') ??
+                    $('.image-item > a > img', obj).attr('src') ??
                     $('.image-item > a > img', obj).attr('data-original');
             } else {
-                image = $('.image-item > a > img', obj).attr('data-original') ?? 
-                    $('.image-item > a > img', obj).attr('data-cfsrc') ?? 
+                image = $('.image-item > a > img', obj).attr('data-original') ??
+                    $('.image-item > a > img', obj).attr('data-cfsrc') ??
                     $('.image-item > a > img', obj).attr('src');
             }
             image = !image ? 'https://i.imgur.com/GYUxEX8.png' : image;
@@ -217,7 +219,7 @@ export class Parser {
         return homeItems;
     }
 
-    parseViewMoreItems($: CheerioStatic, homepageSectionId: string): PartialSourceManga[] {
+    parseViewMoreItems($: CheerioAPI, homepageSectionId: string): PartialSourceManga[] {
         switch (homepageSectionId) {
             case 'featured':
                 return this.parseFeaturedSection($);
@@ -234,7 +236,7 @@ export class Parser {
         }
     }
 
-    parseTags($: CheerioStatic): TagSection[] {
+    parseTags($: CheerioAPI): TagSection[] {
         const tags: Tag[] = [];
         const tags1: Tag[] = [];
         const tags2: Tag[] = [];
@@ -255,7 +257,7 @@ export class Parser {
 
         $('.list-select > a').each((_: any, obj: any) => {
             const label = $(obj).text().trim();
-            const id = 'sort.' + $(tags2).attr('href')?.split('=')[1];
+            const id = 'sort.' + $(obj).attr('href')?.split('=')[1];
             if (!id || !label) return;
             tags2.push({ id: id, label: label });
         });

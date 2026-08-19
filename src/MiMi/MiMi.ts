@@ -17,13 +17,12 @@ import {
     ContentRating,
     SourceIntents,
     BadgeColor,
-    DUISection,
 } from '@paperback/types';
 
 import { Parser } from './MiMiParser';
 
 export const MiMiInfo: SourceInfo = {
-    version: '1.0.0',
+    version: '1.0.1',
     name: 'MiMi',
     icon: 'icon.png',
     author: 'AlanNois',
