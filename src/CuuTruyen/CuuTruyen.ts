@@ -30,7 +30,7 @@ import {
 import { unscrambleImage } from './CuuTruyenDrm';
 
 export const CuuTruyenInfo: SourceInfo = {
-    version: '1.0.3',
+    version: '1.0.4',
     name: 'CuuTruyen',
     icon: 'icon.png',
     author: 'AlanNois',

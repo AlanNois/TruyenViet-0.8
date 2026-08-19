@@ -7,6 +7,24 @@ import {
     PartialSourceManga
 } from '@paperback/types';
 
+// Storage host rewrite rules (converted from Aidoku Rust source)
+const REPLACEMENTS: [string, string][] = [
+    ['storage-ct.lrclib.net', 'storage-bravo.cuutruyen.net'],
+    ['storage-ct-riften.site', 'storage-charlie.cuutruyen.net'],
+];
+
+/**
+ * Rewrites storage image URLs to working hosts.
+ * Replaces all occurrences of each old host with its new host.
+ */
+export function rewriteStorageUrl(url: string): string {
+    let result = url;
+    for (const [oldHost, newHost] of REPLACEMENTS) {
+        result = result.replaceAll(oldHost, newHost);
+    }
+    return result;
+}
+
 // For the "tags" array items
 interface ApiTag {
     name: string;
@@ -128,8 +146,8 @@ export class Parser {
 
         const titles = [data.name ?? ''];
         const author = data.author?.name ?? data.author_name ?? '';
-        const image = data.cover_url ?? data.cover_mobile_url ?? '';
-        const banner = data.panorama_url ?? '';
+        const image = rewriteStorageUrl(data.cover_url ?? data.cover_mobile_url ?? '');
+        const banner = rewriteStorageUrl(data.panorama_url ?? '');
 
         let desc = data.description ?? '';
         if (data.team?.name) {
@@ -191,7 +209,7 @@ export class Parser {
         if (data.pages) {
             for (const page of data.pages) {
                 const drmData = page.drm_data.replace(/\n/g, '');
-                const imageUrl = `${page.image_url}${drmData ? `#drm_data=${drmData}` : ''}`;
+                const imageUrl = `${rewriteStorageUrl(page.image_url)}${drmData ? `#drm_data=${drmData}` : ''}`;
                 pages.push(imageUrl);
             }
         }
@@ -206,7 +224,7 @@ export class Parser {
             if (!manga.id || !manga.name) continue;
 
             const title = manga.name.trim();
-            const image = manga.cover_url ?? manga.cover_mobile_url ?? '';
+            const image = rewriteStorageUrl(manga.cover_url ?? manga.cover_mobile_url ?? '');
             const subtitle = `Chương ${manga.newest_chapter_number}`;
             const mangaId = manga.id.toString();
             results.push(App.createPartialSourceManga({
@@ -222,7 +240,7 @@ export class Parser {
 
     parseTags(): TagSection[] {
         // Static tag list based on the Kotlin implementation
-        const tags = [
+        const tags: { label: string; id: string }[] = [
             { label: 'Tất cả', id: '' },
             { label: 'Manga', id: 'manga' },
             { label: 'Đang tiến hành', id: 'dang-tien-hanh' },
@@ -290,6 +308,8 @@ export class Parser {
             { label: 'Samurai', id: 'samurai' },
             { label: 'Virtual reality', id: 'virtual-reality' },
             { label: 'Video games', id: 'video-games' },
+            { label: 'NTR', id: 'ntr' },
+            { label: 'NSFW', id: 'nsfw' },
         ];
 
         return [
