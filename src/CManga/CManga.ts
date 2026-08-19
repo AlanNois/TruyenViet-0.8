@@ -22,10 +22,10 @@ import {
 
 import { Parser } from './CMangaParser';
 
-const DOMAIN = 'https://cmangax17.com/';
+const DOMAIN = 'https://cmangax18.com/';
 
 export const CMangaInfo: SourceInfo = {
-    version: '1.1.3',
+    version: '1.1.4',
     name: 'CManga',
     icon: 'icon.png',
     author: 'AlanNois',
@@ -72,7 +72,7 @@ export class CManga implements ChapterProviding, MangaProviding, SearchResultsPr
 
     parser = new Parser();
 
-    // private async DOMTHML(url: string): Promise<CheerioStatic> {
+    // private async DOMTHML(url: string): Promise<CheerioAPI> {
     //     const request = App.createRequest({
     //         url: url,
     //         method: 'GET',

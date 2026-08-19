@@ -95,7 +95,7 @@ export class Parser {
         return manga;
     }
 
-    // parseTags($: CheerioStatic): TagSection[] {
+    // parseTags($: CheerioAPI): TagSection[] {
     //     const arrayTags: Tag[] = [];
 
     //     for (const tag of $('.book_tags_content a').toArray()) {
