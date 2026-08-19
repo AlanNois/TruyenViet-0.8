@@ -1438,9 +1438,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.CManga = exports.CMangaInfo = void 0;
 const types_1 = require("@paperback/types");
 const CMangaParser_1 = require("./CMangaParser");
-const DOMAIN = 'https://cmangax17.com/';
+const DOMAIN = 'https://cmangax18.com/';
 exports.CMangaInfo = {
-    version: '1.1.3',
+    version: '1.1.4',
     name: 'CManga',
     icon: 'icon.png',
     author: 'AlanNois',
@@ -1483,7 +1483,7 @@ class CManga {
     getMangaShareUrl(mangaId) {
         return `${DOMAIN}${mangaId}`;
     }
-    // private async DOMTHML(url: string): Promise<CheerioStatic> {
+    // private async DOMTHML(url: string): Promise<CheerioAPI> {
     //     const request = App.createRequest({
     //         url: url,
     //         method: 'GET',
@@ -1767,7 +1767,7 @@ class Parser {
         }
         return manga;
     }
-    // parseTags($: CheerioStatic): TagSection[] {
+    // parseTags($: CheerioAPI): TagSection[] {
     //     const arrayTags: Tag[] = [];
     //     for (const tag of $('.book_tags_content a').toArray()) {
     //         const label = $(tag).text().trim();
