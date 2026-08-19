@@ -38,7 +38,7 @@ export const isLastPage = ($: CheerioAPI): boolean => {
 };
 
 export const TruyenQQInfo: SourceInfo = {
-    version: '1.1.4',
+    version: '1.1.5',
     name: 'TruyenQQ',
     icon: 'icon.png',
     author: 'AlanNois',
@@ -195,7 +195,7 @@ export class TruyenQQ implements SearchResultsProviding, MangaProviding, Chapter
             let url: string;
             switch (section.id) {
                 case 'featured':
-                    url = `${DOMAIN}`;
+                    url = `${DOMAIN}doc-truyen`;
                     break;
                 case 'hot':
                     url = `${DOMAIN}truyen-yeu-thich`;
