@@ -6,6 +6,8 @@ import {
     PartialSourceManga
 } from '@paperback/types';
 
+import type { CheerioAPI } from 'cheerio';
+
 export class Parser {
 
     protected convertTime(timeAgo: string): Date {
@@ -38,7 +40,7 @@ export class Parser {
         }
     }
 
-    parseMangaDetails($: CheerioStatic, mangaId: string): SourceManga {
+    parseMangaDetails($: CheerioAPI, mangaId: string): SourceManga {
         const tags: Tag[] = [];
 
         $('li.category > p.col-sm-8 > a').each((_: any, obj: any) => {
@@ -70,7 +72,7 @@ export class Parser {
         });
     }
 
-    parseChapterList($: CheerioStatic): Chapter[] {
+    parseChapterList($: CheerioAPI): Chapter[] {
         const chapters: Chapter[] = [];
 
         $('div.list-chapter > nav > ul > li.row').not('li[style="display: none"]').each((_: any, obj: any) => {
@@ -101,7 +103,7 @@ export class Parser {
         return chapters;
     }
 
-    parseChapterDetails($: CheerioStatic): string[] {
+    parseChapterDetails($: CheerioAPI): string[] {
         const pages: string[] = [];
 
         $('div.list-image-detail > div.page-chapter > img').each((_: any, obj: any) => {
@@ -173,7 +175,7 @@ export class Parser {
         return tagSections;
     }
 
-    parseFeaturedSection($: CheerioStatic): PartialSourceManga[] {
+    parseFeaturedSection($: CheerioAPI): PartialSourceManga[] {
         const featuredItems: PartialSourceManga[] = [];
 
         $('div.slide-item', 'div.slide-show').each((_: any, manga: any) => {
@@ -193,7 +195,7 @@ export class Parser {
         return featuredItems;
     }
 
-    parseSection($: CheerioStatic): PartialSourceManga[] {
+    parseSection($: CheerioAPI): PartialSourceManga[] {
         const sectionItems: PartialSourceManga[] = [];
 
         $('div.item', 'div.row').each((_: any, manga: any) => {

@@ -19,11 +19,13 @@ import {
     BadgeColor,
 } from '@paperback/types';
 
+import type { CheerioAPI } from 'cheerio';
+
 import { Parser } from './TopTruyenParser';
 
-const DOMAIN = 'https://www.toptruyenzone3.com/';
+const DOMAIN = 'https://www.toptruyenzone10.com/';
 
-export const isLastPage = ($: CheerioStatic): boolean => {
+export const isLastPage = ($: CheerioAPI): boolean => {
     // try with span else a tag
     let current = $('ul.pagination li.page-item.active span').text();
     if (!current)
@@ -43,7 +45,7 @@ export const isLastPage = ($: CheerioStatic): boolean => {
 };
 
 export const TopTruyenInfo: SourceInfo = {
-    version: '1.1.5',
+    version: '1.1.6',
     name: 'TopTruyen',
     icon: 'icon.png',
     author: 'AlanNois',
@@ -94,7 +96,7 @@ export class TopTruyen implements SearchResultsProviding, MangaProviding, Chapte
 
     parser = new Parser();
 
-    private async DOMHTML(url: string): Promise<CheerioStatic> {
+    private async DOMHTML(url: string): Promise<CheerioAPI> {
         const request = App.createRequest({
             url: url,
             method: 'GET',
