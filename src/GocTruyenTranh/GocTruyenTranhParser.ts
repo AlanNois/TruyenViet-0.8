@@ -6,6 +6,8 @@ import {
     PartialSourceManga
 } from '@paperback/types';
 
+import type { CheerioAPI } from 'cheerio';
+
 import * as entities from 'entities'; //Import package for decoding HTML entities
 
 export class Parser {
@@ -43,7 +45,7 @@ export class Parser {
         return time;
     }
 
-    parseMangaDetails($: CheerioStatic, mangaId: string, DOMAIN: any): SourceManga {
+    parseMangaDetails($: CheerioAPI, mangaId: string, DOMAIN: any): SourceManga {
         const tags: Tag[] = [];
 
         $('.group-content a').each((_: any, obj: any) => {
@@ -67,7 +69,7 @@ export class Parser {
             }
         });
         const imageRaw = String(
-            $('.v-image > img').attr('src')?.indexOf('https') === -1 ? 
+            $('.v-image > img').attr('src')?.indexOf('https') === -1 ?
                 DOMAIN + $('.v-image > img').attr('src') : $('.v-image > img').attr('src')
         );
         const image = encodeURI(imageRaw).replace(/([^:]\/)\/+/g, '$1');
