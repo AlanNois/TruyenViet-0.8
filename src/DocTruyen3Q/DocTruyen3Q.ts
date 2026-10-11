@@ -33,7 +33,7 @@ export const isLastPage = ($: CheerioAPI): boolean => {
 };
 
 export const DocTruyen3QInfo: SourceInfo = {
-    version: '1.2.9',
+    version: '1.2.10',
     name: 'DocTruyen3Q',
     icon: 'icon.png',
     author: 'AlanNois',
