@@ -166,12 +166,7 @@ export class CuuTruyen implements ChapterProviding, MangaProviding, SearchResult
     private async apiRequest(endpoint: string, params = ''): Promise<any> {
         const baseUrl = await this.getBaseUrl();
         const targetUrl = `${await this.getApiUrl()}/${endpoint}${params ? `?${params}` : ''}`;
-        const proxyParams = new URLSearchParams({
-            url: targetUrl,
-            origin: baseUrl,
-            referer: baseUrl,
-        });
-        const url = `${PROXY_URL}/api/proxy?${proxyParams.toString()}`;
+        const url = `${PROXY_URL}/api/proxy?url=${encodeURIComponent(targetUrl)}&origin=${encodeURIComponent(baseUrl)}&referer=${encodeURIComponent(baseUrl)}`;
         const request = App.createRequest({
             url,
             method: 'GET',
