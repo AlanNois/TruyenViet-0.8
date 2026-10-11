@@ -23,7 +23,7 @@ import {
 import type { CheerioAPI } from 'cheerio';
 import { Parser } from './DocTruyen3QParser';
 
-const DOMAIN = 'https://doctruyen3qhub.vip/';
+const DOMAIN = 'https://doctruyen3qhub.fit/';
 
 export const isLastPage = ($: CheerioAPI): boolean => {
     const lastPage = Number($('ul.pagination > li.page-item:not(:has(a[rel=\'next\'])) a').last().text().trim());
