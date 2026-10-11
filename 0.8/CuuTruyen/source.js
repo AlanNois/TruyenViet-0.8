@@ -2486,7 +2486,7 @@ const CuuTruyenParser_1 = require("./CuuTruyenParser");
 const CuuTruyenSetting_1 = require("./CuuTruyenSetting");
 const CuuTruyenDrm_1 = require("./CuuTruyenDrm");
 exports.CuuTruyenInfo = {
-    version: '1.0.4',
+    version: '1.1.0',
     name: 'CuuTruyen',
     icon: 'icon.png',
     author: 'AlanNois',
@@ -2506,7 +2506,7 @@ exports.CuuTruyenInfo = {
     ],
     intents: types_1.SourceIntents.MANGA_CHAPTERS | types_1.SourceIntents.HOMEPAGE_SECTIONS | types_1.SourceIntents.SETTINGS_UI
 };
-const PROXY_URL = 'https://light-pig-37.tachibana-shin.deno.net'; // Using a proxy to bypass ISP blocks
+const PROXY_URL = 'https://reimagined-invention--main.dinhtrung0706.deno.net'; // Using a proxy to bypass ISP blocks
 class CuuTruyen {
     constructor() {
         this.stateManager = App.createSourceStateManager();
@@ -2600,7 +2600,14 @@ class CuuTruyen {
         return `${this.getBaseUrl()}/mangas/${mangaId}`;
     }
     async apiRequest(endpoint, params = '') {
-        const url = `${PROXY_URL}?url=${await this.getApiUrl()}/${endpoint}${params ? `?${params}` : ''}`; // Using a proxy to bypass ISP blocks
+        const baseUrl = await this.getBaseUrl();
+        const targetUrl = `${await this.getApiUrl()}/${endpoint}${params ? `?${params}` : ''}`;
+        const proxyParams = new URLSearchParams({
+            url: targetUrl,
+            origin: baseUrl,
+            referer: baseUrl,
+        });
+        const url = `${PROXY_URL}/api/proxy?${proxyParams.toString()}`;
         const request = App.createRequest({
             url,
             method: 'GET',
