@@ -23,7 +23,7 @@ import type { CheerioAPI } from 'cheerio';
 
 import { Parser } from './TopTruyenParser';
 
-const DOMAIN = 'https://www.toptruyenzone10.com/';
+const DOMAIN = 'https://www.toptruyenzone12.com/';
 
 export const isLastPage = ($: CheerioAPI): boolean => {
     // try with span else a tag
