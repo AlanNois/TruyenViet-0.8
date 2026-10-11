@@ -51,7 +51,7 @@ export const CuuTruyenInfo: SourceInfo = {
     intents: SourceIntents.MANGA_CHAPTERS | SourceIntents.HOMEPAGE_SECTIONS | SourceIntents.SETTINGS_UI
 };
 
-const PROXY_URL = 'https://light-pig-37.tachibana-shin.deno.net'; // Using a proxy to bypass ISP blocks
+const PROXY_URL = 'https://reimagined-invention--main.dinhtrung0706.deno.net'; // Using a proxy to bypass ISP blocks
 
 export class CuuTruyen implements ChapterProviding, MangaProviding, SearchResultsProviding, HomePageSectionsProviding {
 
@@ -164,7 +164,14 @@ export class CuuTruyen implements ChapterProviding, MangaProviding, SearchResult
     }
 
     private async apiRequest(endpoint: string, params = ''): Promise<any> {
-        const url = `${PROXY_URL}?url=${await this.getApiUrl()}/${endpoint}${params ? `?${params}` : ''}`; // Using a proxy to bypass ISP blocks
+        const baseUrl = await this.getBaseUrl();
+        const targetUrl = `${await this.getApiUrl()}/${endpoint}${params ? `?${params}` : ''}`;
+        const proxyParams = new URLSearchParams({
+            url: targetUrl,
+            origin: baseUrl,
+            referer: baseUrl,
+        });
+        const url = `${PROXY_URL}/api/proxy?${proxyParams.toString()}`;
         const request = App.createRequest({
             url,
             method: 'GET',
